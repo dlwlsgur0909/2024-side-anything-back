@@ -20,7 +20,7 @@ public class MemberJoinRequest {
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
     }
 

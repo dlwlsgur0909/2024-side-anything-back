@@ -1,11 +1,12 @@
 package com.side.anything.back.jwt;
 
+import com.side.anything.back.member.domain.Member;
+import com.side.anything.back.member.domain.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -15,19 +16,30 @@ public class JwtUtil {
 
     private final Key secretKey;
 
-    public JwtUtil(@Value("spring.jwt.secret") String secret) {
+    public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
         secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createJwt(String username, String role, Long expiration) {
+    public String createJwt(Member member, Long expiration) {
 
         return Jwts.builder()
-                .claim("username", username)
-                .claim("role", role)
+                .claim("id", member.getId())
+                .claim("username", member.getUsername())
+                .claim("role", member.getRole())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public Long getId(String token) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJwt(token)
+                .getBody()
+                .get("id", Long.class);
     }
 
     public String getUsername(String token) {
@@ -41,7 +53,7 @@ public class JwtUtil {
                 .get("username", String.class);
     }
 
-    public String getRole(String token) {
+    public Role getRole(String token) {
 
         return Jwts
                 .parserBuilder()
@@ -49,7 +61,7 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJwt(token)
                 .getBody()
-                .get("role", String.class);
+                .get("role", Role.class);
     }
 
     public Boolean isExpired(String token) {
