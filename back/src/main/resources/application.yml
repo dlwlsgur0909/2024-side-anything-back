@@ -19,3 +19,5 @@ spring:
       org.hibernate.orm.jdbc.bind: trace
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbaklwjeiobjvpawkldjwlkcnzxklcjogr
+    access-timeout: 30
+    refresh-timeout: 60
