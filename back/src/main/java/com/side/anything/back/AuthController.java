@@ -1,13 +1,11 @@
 package com.side.anything.back;
 
 import com.side.anything.back.member.dto.request.MemberJoinRequest;
+import com.side.anything.back.member.dto.request.MemberLoginRequest;
 import com.side.anything.back.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +20,14 @@ public class AuthController {
         return ResponseEntity
                 .ok()
                 .body(memberService.join(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody MemberLoginRequest request) {
+
+        return ResponseEntity
+                .ok()
+                .body(memberService.login(request));
     }
 
 }

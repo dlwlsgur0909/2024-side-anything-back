@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .authorizeHttpRequests(request ->
                     request
-                            .requestMatchers("/", "/auth/login", "/auth/join").permitAll()
+                            .requestMatchers("/auth/login", "/auth/join").permitAll()
                             .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)

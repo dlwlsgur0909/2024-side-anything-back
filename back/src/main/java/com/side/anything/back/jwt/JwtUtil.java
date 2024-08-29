@@ -56,7 +56,7 @@ public class JwtUtil {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .get("id", Long.class);
     }
@@ -67,20 +67,20 @@ public class JwtUtil {
                 .parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .get("username", String.class);
     }
 
-    public Role getRole(String token) {
+    public String getRole(String token) {
 
         return Jwts
                 .parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
-                .get("role", Role.class);
+                .get("role", String.class);
     }
 
     public Boolean isExpired(String token) {
@@ -89,7 +89,7 @@ public class JwtUtil {
                 .parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .getExpiration()
                 .before(new Date());
