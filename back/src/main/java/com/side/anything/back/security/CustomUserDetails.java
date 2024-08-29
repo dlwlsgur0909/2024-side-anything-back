@@ -1,5 +1,6 @@
-package com.side.anything.back.member;
+package com.side.anything.back.security;
 
+import com.side.anything.back.member.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
