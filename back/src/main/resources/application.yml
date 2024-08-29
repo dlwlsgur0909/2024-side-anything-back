@@ -1,5 +1,15 @@
 
 
 spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://127.0.0.1:3306/side_anything
+    username: root
+    password: admin
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
   jwt:
-    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbaklwjeiobjvpaaaabbbccd
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbaklwjeiobjvpawkldjwlkcnzxklcjogr
