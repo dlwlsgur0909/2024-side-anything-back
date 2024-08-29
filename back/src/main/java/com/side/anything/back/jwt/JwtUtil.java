@@ -15,22 +15,20 @@ import java.util.Date;
 public class JwtUtil {
 
     private final Key secretKey;
-    @Value("${spring.jwt.access-timeout")
     private final Long accessTimeout;
-    @Value("${spring.jwt.refresh-timeout")
     private final Long refreshTimeout;
 
 
     public JwtUtil(@Value("${spring.jwt.secret}") String secret,
-                   @Value("${spring.jwt.access-timeout") Long accessTimeout,
-                   @Value("${spring.jwt.refresh-timeout") Long refreshTimeout) {
+                   @Value("${spring.jwt.access-timeout}") Long accessTimeout,
+                   @Value("${spring.jwt.refresh-timeout}") Long refreshTimeout) {
 
         secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTimeout = accessTimeout;
         this.refreshTimeout = refreshTimeout;
     }
 
-    public String createJwt(Member member, Long expiration) {
+    private String createJwt(Member member, Long expiration) {
 
         return Jwts.builder()
                 .claim("id", member.getId())
