@@ -4,13 +4,14 @@ import com.side.anything.back.member.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Getter
+@Getter @ToString
 @RequiredArgsConstructor
 @Builder
 public class CustomUserDetails implements UserDetails {

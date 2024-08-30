@@ -1,8 +1,8 @@
 package com.side.anything.back.config;
 
-import com.side.anything.back.security.AuthEntryPoint;
 import com.side.anything.back.jwt.JwtFilter;
 import com.side.anything.back.jwt.JwtUtil;
+import com.side.anything.back.security.AuthEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -35,10 +35,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable) // 세션이 아닌 JWT 사용 -> 세션은 STATELESS -> CSRF disable 처리
+                .formLogin(AbstractHttpConfigurer::disable) // form login 사용 X
+                .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 사용 X
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT를 사용하기 때문에 세션을 STATELESS 하게
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .authorizeHttpRequests(request ->
                     request
