@@ -1,8 +1,13 @@
 
 
 spring:
-  mvc:
-    throw-exception-if-no-handler-found: true
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+#  web:
+#    resources:
+#      add-mappings: false
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://127.0.0.1:3306/side_anything
@@ -24,8 +29,8 @@ spring:
     access-timeout: 30
     refresh-timeout: 60
 
-server:
-  error:
-    whitelabel:
-      enabled: false  # ?? ?? ? Spring ?? ?? ??? ?? ??
+#server:
+#  error:
+#    whitelabel:
+#      enabled: false  # ?? ?? ? Spring ?? ?? ??? ?? ??
 

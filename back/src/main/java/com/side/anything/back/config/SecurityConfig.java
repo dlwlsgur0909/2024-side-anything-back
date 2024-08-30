@@ -1,6 +1,7 @@
 package com.side.anything.back.config;
 
-import com.side.anything.back.filter.JwtFilter;
+import com.side.anything.back.security.AuthEntryPoint;
+import com.side.anything.back.jwt.JwtFilter;
 import com.side.anything.back.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

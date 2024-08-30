@@ -1,9 +1,7 @@
-package com.side.anything.back.filter;
+package com.side.anything.back.jwt;
 
-import com.side.anything.back.jwt.JwtUtil;
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.domain.Role;
-import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
