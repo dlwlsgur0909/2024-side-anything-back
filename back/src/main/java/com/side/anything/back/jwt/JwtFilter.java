@@ -28,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if(authorization == null || !authorization.startsWith("Bearer")) {
+        if(authorization == null || !authorization.startsWith("Bearer") || authorization.split(" ").length != 2) {
             log.error("Invalid Token");
             filterChain.doFilter(request, response);
 
@@ -37,10 +37,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = authorization.split(" ")[1];
 
-        if (jwtUtil.isExpired(token)) {
-            log.error("Expired Token");
+        if (jwtUtil.isInvalid(token)) {
             filterChain.doFilter(request, response);
-
             return;
         }
 
