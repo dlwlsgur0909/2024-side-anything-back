@@ -1,4 +1,4 @@
-package com.side.anything.back;
+package com.side.anything.back.auth;
 
 import com.side.anything.back.member.dto.request.MemberJoinRequest;
 import com.side.anything.back.member.dto.request.MemberLoginRequest;
