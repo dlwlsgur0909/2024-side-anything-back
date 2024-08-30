@@ -1,6 +1,6 @@
 package com.side.anything.back.jwt;
 
-import com.side.anything.back.member.domain.Member;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -14,6 +14,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 @Slf4j
 @Component
@@ -33,60 +34,24 @@ public class JwtUtil {
         this.refreshTimeout = refreshTimeout;
     }
 
-    private String createJwt(Member member, Long expiration) {
+    private String createJwt(TokenInfo tokenInfo, Long expiration) {
 
         return Jwts.builder()
-                .claim("id", member.getId())
-                .claim("username", member.getUsername())
-                .claim("role", member.getRole())
+                .claim("token", tokenInfo)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(secretKey)
                 .compact();
     }
 
-    public String createAccessToken(Member member) {
+    public String createAccessToken(TokenInfo tokenInfo) {
 
-        return createJwt(member, accessTimeout * 60 * 1000L);
+        return createJwt(tokenInfo, accessTimeout * 60 * 1000L);
     }
 
-    public String createRefreshToken(Member member) {
+    public String createRefreshToken(TokenInfo tokenInfo) {
 
-        return createJwt(member, refreshTimeout * 60 * 1000L);
-    }
-
-
-    public Long getId(String token) {
-
-        return Jwts
-                .parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("id", Long.class);
-    }
-
-    public String getUsername(String token) {
-
-        return Jwts
-                .parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("username", String.class);
-    }
-
-    public String getRole(String token) {
-
-        return Jwts
-                .parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("role", String.class);
+        return createJwt(tokenInfo, refreshTimeout * 60 * 1000L);
     }
 
     // 토큰 검증
@@ -108,5 +73,19 @@ public class JwtUtil {
         return true;
     }
 
+    // 토큰 정보 추출
+    public TokenInfo parseToken(String token) {
+
+        LinkedHashMap tokenInfo = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("token", LinkedHashMap.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return objectMapper.convertValue(tokenInfo, TokenInfo.class);
+    }
 
 }

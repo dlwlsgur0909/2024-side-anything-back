@@ -1,13 +1,13 @@
 package com.side.anything.back.member.service;
 
 import com.side.anything.back.jwt.JwtUtil;
+import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.dto.request.MemberJoinRequest;
 import com.side.anything.back.member.dto.request.MemberLoginRequest;
 import com.side.anything.back.member.dto.response.MemberLoginResponse;
 import com.side.anything.back.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,8 +48,8 @@ public class MemberService {
             throw new NoSuchElementException("ID/Password Does Not Match");
         }
 
-        String accessToken = jwtUtil.createAccessToken(findMember);
-        String refreshToken = jwtUtil.createRefreshToken(findMember);
+        String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
+        String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember));
 
         return MemberLoginResponse.builder()
                 .username(findMember.getUsername())

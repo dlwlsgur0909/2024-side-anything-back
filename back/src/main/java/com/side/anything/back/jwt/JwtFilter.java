@@ -1,8 +1,5 @@
 package com.side.anything.back.jwt;
 
-import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.domain.Role;
-import com.side.anything.back.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,10 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,20 +41,11 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = jwtUtil.getUsername(token);
-        String role = jwtUtil.getRole(token);
-        Long id = jwtUtil.getId(token);
+        TokenInfo tokenInfo = jwtUtil.parseToken(token);
 
-        Member member = Member.builder()
-                .id(id)
-                .username(username)
-                .password("")
-                .role(Role.valueOf(role))
-                .build();
-
-        CustomUserDetails customUserDetails = new CustomUserDetails(member);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                tokenInfo, null, List.of(new SimpleGrantedAuthority(tokenInfo.getRole().name()))
+        );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
