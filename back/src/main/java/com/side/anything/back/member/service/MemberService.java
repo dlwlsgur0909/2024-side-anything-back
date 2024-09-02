@@ -60,7 +60,19 @@ public class MemberService {
     }
 
     @Transactional
-    public void verify(MemberVerifyRequest request) {
+    public void resendEmail(final MemberDuplicateCheckRequest request) {
+
+        String username = request.getUsernameOrEmail();
+
+        Member findMember = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "회원 정보를 찾을 수 없습니다"));
+
+        String authentication = emailService.sendMail(findMember.getEmail());
+        findMember.updateAuthentication(authentication);
+    }
+
+    @Transactional
+    public void verify(final MemberVerifyRequest request) {
 
         String username = request.getUsername();
         Member findMember = memberRepository.findByUsername(username)

@@ -38,4 +38,8 @@ public class Member extends BaseTimeEntity {
     public void verify() {
         this.verified = true;
     }
+
+    public void updateAuthentication(String authentication) {
+        this.authentication = authentication;
+    }
 }

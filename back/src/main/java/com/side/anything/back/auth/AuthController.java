@@ -52,6 +52,16 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/resend")
+    public ResponseEntity<?> resendEmail(@RequestBody MemberDuplicateCheckRequest request) {
+
+        memberService.resendEmail(request);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
     @PostMapping("/verify")
     public ResponseEntity<?> verify(@RequestBody MemberVerifyRequest request) {
 
