@@ -16,8 +16,6 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<?> exceptionHandler(Exception e) {
 
-        e.printStackTrace();
-
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .build();
