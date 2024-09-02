@@ -1,6 +1,7 @@
 package com.side.anything.back.auth;
 
 import com.side.anything.back.jwt.TokenInfo;
+import com.side.anything.back.member.dto.request.MemberDuplicateCheckRequest;
 import com.side.anything.back.member.dto.request.MemberJoinRequest;
 import com.side.anything.back.member.dto.request.MemberLoginRequest;
 import com.side.anything.back.member.service.MemberService;
@@ -22,6 +23,14 @@ public class AuthController {
         return ResponseEntity
                 .ok()
                 .build();
+    }
+
+    @PostMapping("/duplicate")
+    public ResponseEntity<?> isUnique(@RequestBody MemberDuplicateCheckRequest request) {
+
+        return ResponseEntity
+                .ok()
+                .body(memberService.isUnique(request));
     }
 
     @PostMapping("/join")

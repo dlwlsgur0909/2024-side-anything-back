@@ -3,6 +3,7 @@ package com.side.anything.back.member.service;
 import com.side.anything.back.jwt.JwtUtil;
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
+import com.side.anything.back.member.dto.request.MemberDuplicateCheckRequest;
 import com.side.anything.back.member.dto.request.MemberJoinRequest;
 import com.side.anything.back.member.dto.request.MemberLoginRequest;
 import com.side.anything.back.member.dto.response.MemberLoginResponse;
@@ -21,6 +22,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+
+
+    public Boolean isUnique(final MemberDuplicateCheckRequest request) {
+
+        return !memberRepository.existsByUsername(request.getUsername());
+    }
 
     @Transactional
     public Member join(final MemberJoinRequest request) {
