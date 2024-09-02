@@ -25,12 +25,20 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/duplicate")
-    public ResponseEntity<?> isUnique(@RequestBody MemberDuplicateCheckRequest request) {
+    @PostMapping("/duplicate/username")
+    public ResponseEntity<?> isUniqueUsername(@RequestBody MemberDuplicateCheckRequest request) {
 
         return ResponseEntity
                 .ok()
-                .body(memberService.isUnique(request));
+                .body(memberService.isUniqueUsername(request));
+    }
+
+    @PostMapping("/duplicate/email")
+    public ResponseEntity<?> isUniqueEmail(@RequestBody MemberDuplicateCheckRequest request) {
+
+        return ResponseEntity
+                .ok()
+                .body(memberService.isUniqueEmail(request));
     }
 
     @PostMapping("/join")

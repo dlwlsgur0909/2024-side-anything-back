@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 public class MemberDuplicateCheckRequest {
 
-    private String username;
+    private String usernameOrEmail;
 }
 
 

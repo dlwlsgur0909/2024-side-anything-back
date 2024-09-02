@@ -24,9 +24,14 @@ public class MemberService {
     private final JwtUtil jwtUtil;
 
 
-    public Boolean isUnique(final MemberDuplicateCheckRequest request) {
+    public Boolean isUniqueUsername(final MemberDuplicateCheckRequest request) {
 
-        return !memberRepository.existsByUsername(request.getUsername());
+        return !memberRepository.existsByUsername(request.getUsernameOrEmail());
+    }
+
+    public Boolean isUniqueEmail(final MemberDuplicateCheckRequest request) {
+
+        return !memberRepository.existsByEmail(request.getUsernameOrEmail());
     }
 
     @Transactional
