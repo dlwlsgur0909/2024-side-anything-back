@@ -28,7 +28,18 @@ spring:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbaklwjeiobjvpawkldjwlkcnzxklcjogr
     access-timeout: 30
     refresh-timeout: 60
-
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    username: dlwlsgur0927@gmail.com
+    password: ivur zple agxa hmjg
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+    protocol: smtps
 #server:
 #  error:
 #    whitelabel:

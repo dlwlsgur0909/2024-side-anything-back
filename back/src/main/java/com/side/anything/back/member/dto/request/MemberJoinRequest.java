@@ -14,15 +14,15 @@ public class MemberJoinRequest {
     private String password;
     private String email;
 
-    public Member toEntity(String encodedPassword) {
+    public Member toEntity(String encodedPassword, String authentication) {
 
         return Member.builder()
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
                 .role(Role.ROLE_USER)
-                .verified(Boolean.FALSE)
-                .authentication("123456")
+                .verified(false)
+                .authentication(authentication)
                 .build();
     }
 

@@ -14,11 +14,25 @@ public class GlobalExceptionHandler {
             NoHandlerFoundException.class,
             NoResourceFoundException.class,
     })
-    public ResponseEntity<?> exceptionHandler(Exception e) {
+    public ResponseEntity<?> notFoundExceptionHandler(Exception e) {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .build();
+    }
+
+    @ExceptionHandler({
+            BasicCustomException.class
+    })
+    public ResponseEntity<?> customExceptionHandler(BasicCustomException e) {
+
+        return ResponseEntity
+                .status(e.getErrorStatus())
+                .body(BasicExceptionEntity.builder()
+                        .errorCode(e.getErrorCode())
+                        .errorMessage(e.getErrorMessage())
+                        .build()
+                );
     }
 
 }

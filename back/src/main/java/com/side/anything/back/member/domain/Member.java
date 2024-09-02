@@ -34,4 +34,8 @@ public class Member extends BaseTimeEntity {
 
     @Column(name = "member_authentication")
     private String authentication;
+
+    public void verify() {
+        this.verified = true;
+    }
 }

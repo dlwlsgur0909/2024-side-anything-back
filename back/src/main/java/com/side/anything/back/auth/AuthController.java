@@ -4,6 +4,7 @@ import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.dto.request.MemberDuplicateCheckRequest;
 import com.side.anything.back.member.dto.request.MemberJoinRequest;
 import com.side.anything.back.member.dto.request.MemberLoginRequest;
+import com.side.anything.back.member.dto.request.MemberVerifyRequest;
 import com.side.anything.back.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +45,21 @@ public class AuthController {
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody MemberJoinRequest request) {
 
+        memberService.join(request);
+
         return ResponseEntity
                 .ok()
-                .body(memberService.join(request));
+                .build();
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verify(@RequestBody MemberVerifyRequest request) {
+
+        memberService.verify(request);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
     @PostMapping("/login")
