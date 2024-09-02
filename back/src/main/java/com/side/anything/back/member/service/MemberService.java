@@ -41,6 +41,10 @@ public class MemberService {
             throw new NoSuchElementException();
         }
 
+        if (memberRepository.existsByEmail(request.getEmail())) {
+            throw new NoSuchElementException();
+        }
+
         String rawPassword = request.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 

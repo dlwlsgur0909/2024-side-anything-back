@@ -28,4 +28,10 @@ public class Member extends BaseTimeEntity {
 
     @Column(name = "member_email")
     private String email;
+
+    @Column(name = "member_verified")
+    private Boolean verified;
+
+    @Column(name = "member_authentication")
+    private String authentication;
 }

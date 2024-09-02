@@ -21,6 +21,8 @@ public class MemberJoinRequest {
                 .password(encodedPassword)
                 .email(email)
                 .role(Role.ROLE_USER)
+                .verified(Boolean.FALSE)
+                .authentication("123456")
                 .build();
     }
 
