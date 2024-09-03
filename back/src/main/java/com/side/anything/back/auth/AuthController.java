@@ -52,10 +52,10 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/resend")
-    public ResponseEntity<?> resendEmail(@RequestBody MemberDuplicateCheckRequest request) {
+    @PostMapping("/send")
+    public ResponseEntity<?> sendEmail(@RequestBody MemberDuplicateCheckRequest request) {
 
-        memberService.resendEmail(request);
+        memberService.sendEmail(request);
 
         return ResponseEntity
                 .ok()

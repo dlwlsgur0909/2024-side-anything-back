@@ -60,7 +60,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void resendEmail(final MemberDuplicateCheckRequest request) {
+    public void sendEmail(final MemberDuplicateCheckRequest request) {
 
         String username = request.getUsernameOrEmail();
 
@@ -92,12 +92,16 @@ public class MemberService {
     public MemberLoginResponse login(final MemberLoginRequest request) {
 
         Member findMember = memberRepository.findByUsername(request.getUsername())
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "가입되지 않은 회원입니다"));
 
         boolean isMatch = passwordEncoder.matches(request.getPassword(), findMember.getPassword());
 
         if(!isMatch) {
-            throw new NoSuchElementException("ID/Password Does Not Match");
+            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "아이디/비밀번호를 확인해주세요");
+        }
+
+        if(!findMember.getVerified()) {
+            throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "미인증 회원입니다. 인증 후 로그인해주세요");
         }
 
         String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
