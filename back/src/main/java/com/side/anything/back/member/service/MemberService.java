@@ -1,14 +1,10 @@
 package com.side.anything.back.member.service;
 
 import com.side.anything.back.exception.BasicCustomException;
-import com.side.anything.back.exception.BasicExceptionEntity;
 import com.side.anything.back.jwt.JwtUtil;
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.dto.request.MemberDuplicateCheckRequest;
-import com.side.anything.back.member.dto.request.MemberJoinRequest;
-import com.side.anything.back.member.dto.request.MemberLoginRequest;
-import com.side.anything.back.member.dto.request.MemberVerifyRequest;
+import com.side.anything.back.member.dto.request.*;
 import com.side.anything.back.member.dto.response.MemberLoginResponse;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.util.EmailService;
@@ -17,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +47,7 @@ public class MemberService {
         String rawPassword = request.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        String authentication = emailService.sendMail(request.getEmail());
+        String authentication = emailService.sendJoinMail(request.getEmail());
 
         Member member = request.toEntity(encodedPassword, authentication);
         memberRepository.save(member);
@@ -67,7 +61,7 @@ public class MemberService {
         Member findMember = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "회원 정보를 찾을 수 없습니다"));
 
-        String authentication = emailService.sendMail(findMember.getEmail());
+        String authentication = emailService.sendJoinMail(findMember.getEmail());
         findMember.updateAuthentication(authentication);
     }
 
@@ -112,6 +106,28 @@ public class MemberService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public String findUsername(final MemberFindUsernameRequest request) {
+
+        String email = request.getEmail();
+        Member findMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "미가입 회원입니다"));
+
+        return findMember.getUsername();
+    }
+
+    @Transactional
+    public void findPassword(final MemberFindPasswordRequest request) {
+
+        String username = request.getUsername();
+        String email = request.getEmail();
+
+        Member findMember = memberRepository.findByUsernameAndEmail(username, email)
+                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "일치하는 회원을 찾을 수 없습니다"));
+
+        String randomNumber = emailService.sendResetPasswordMail(email);
+        findMember.updatePassword(passwordEncoder.encode(randomNumber));
     }
 
 }

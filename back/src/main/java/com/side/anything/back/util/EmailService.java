@@ -27,7 +27,7 @@ public class EmailService {
         return sb.toString();
     }
 
-    public String sendMail(final String recipient) {
+    public String sendJoinMail(final String recipient) {
 
         String randomNumber = generateRandomNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -54,6 +54,36 @@ public class EmailService {
         }
 
         return randomNumber;
+    }
+
+    public String sendResetPasswordMail(String recipient) {
+
+        String randomNumber = generateRandomNumber();
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        try {
+            message.setFrom(SENDER_EMAIL);
+            message.setRecipients(MimeMessage.RecipientType.TO, recipient);
+            message.setSubject("Side Anything 비밀번호 초기화 메일입니다");
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("<h1>안녕하세요.</h1>");
+            sb.append("<h3>비밀번호가 초기화 되었습니다.</h3><br>");
+            sb.append("<h2>아래 번호로 로그인 후 비밀번호를 변경해주세요</h2>");
+            sb.append("<div align='center' style='border:1px solid black; font-family:verdana;'>");
+            sb.append("<h1 style='color:blue'>").append(randomNumber).append("</h1>");
+            sb.append("</div>");
+
+            message.setText(sb.toString(), "UTF-8", "html");
+
+            javaMailSender.send(message);
+        }catch(MessagingException e) {
+            e.printStackTrace();
+        }
+
+        return randomNumber;
+
     }
 
 }

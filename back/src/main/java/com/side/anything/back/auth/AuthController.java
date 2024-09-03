@@ -1,10 +1,7 @@
 package com.side.anything.back.auth;
 
 import com.side.anything.back.jwt.TokenInfo;
-import com.side.anything.back.member.dto.request.MemberDuplicateCheckRequest;
-import com.side.anything.back.member.dto.request.MemberJoinRequest;
-import com.side.anything.back.member.dto.request.MemberLoginRequest;
-import com.side.anything.back.member.dto.request.MemberVerifyRequest;
+import com.side.anything.back.member.dto.request.*;
 import com.side.anything.back.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -78,6 +75,24 @@ public class AuthController {
         return ResponseEntity
                 .ok()
                 .body(memberService.login(request));
+    }
+
+    @PostMapping("/find/username")
+    public ResponseEntity<?> findUsername(@RequestBody MemberFindUsernameRequest request) {
+
+        return ResponseEntity
+                .ok()
+                .body(memberService.findUsername(request));
+    }
+
+    @PostMapping("/find/password")
+    public ResponseEntity<?> findPassword(@RequestBody MemberFindPasswordRequest request) {
+
+        memberService.findPassword(request);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
 }
