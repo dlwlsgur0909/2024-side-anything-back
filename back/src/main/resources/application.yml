@@ -10,9 +10,9 @@ spring:
 #      add-mappings: false
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://127.0.0.1:3306/side_anything
-    username: root
-    password: admin
+    url: ENC(ODID0iGF4zFRZZQWeVvVR23yREpNeyASaineqkE/ZKDMFC6KdoOcEE7leXBYcb8EvOjJHgIOlXiH/RqrFNKKDjlDEE514IDK2iMEXMNYmVQ=)
+    username: ENC(nP2RJiOCNvsBOFUY7RCf75IsQt+cY8RPQ21yhs+Cj28R6w3u+j8+dbt77LTuPfOb)
+    password: ENC(VrxASLM90/dPpu+HnwcfLploD/YDqzY1/jx79b/Ua/Hu+Pj65nQP8v5+7jlGn+na)
 
   jpa:
     hibernate:
@@ -25,14 +25,14 @@ spring:
       org.hibernate.SQL: debug
       org.hibernate.orm.jdbc.bind: trace
   jwt:
-    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbaklwjeiobjvpawkldjwlkcnzxklcjogr
+    secret: ENC(jMiFO/13IhP75q42bQc5+ZOXjW9WntB7t9zxJbJu5wwRYYQyREfUV5AVUNRJksynM1tT8dJTXJjGbNZ1z4OVOUjYbch0U9SrXssTCgYy6YgVdJido/SeZYDnk1f/Bts2vPP18M2vu+dZ2HPhyqESSQ==)
     access-timeout: 30
     refresh-timeout: 60
   mail:
     host: smtp.gmail.com
     port: 465
-    username: dlwlsgur0927@gmail.com
-    password: ivur zple agxa hmjg
+    username: ENC(MgH4/vWwpi4JuijbFa/CybfAWiObYAezjPio/P0AP77CFWaNibtk/Hyy7yRyJGgHgBDFGkE8QMPFF8+FJSXjHw==)
+    password: ENC(asSDHG8snHlNweGYafNee/WhubYfoUvNBV2LLLybMX6iQP9VtQOXfrH4PUH71+ca1+KkCj0aE3WCZVNS2XqYYQ==)
     properties:
       mail:
         smtp:
@@ -40,6 +40,10 @@ spring:
             enable: true
           auth: true
     protocol: smtps
+
+jasypt:
+  encryptor:
+    password: side-anything
 #server:
 #  error:
 #    whitelabel:
