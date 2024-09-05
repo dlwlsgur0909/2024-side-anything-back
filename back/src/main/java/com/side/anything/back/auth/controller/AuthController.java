@@ -1,8 +1,8 @@
-package com.side.anything.back.auth;
+package com.side.anything.back.auth.controller;
 
+import com.side.anything.back.auth.dto.request.*;
+import com.side.anything.back.auth.service.AuthService;
 import com.side.anything.back.jwt.TokenInfo;
-import com.side.anything.back.member.dto.request.*;
-import com.side.anything.back.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
     @GetMapping
     public ResponseEntity<?> home(@AuthenticationPrincipal TokenInfo tokenInfo) {
@@ -28,7 +28,7 @@ public class AuthController {
 
         return ResponseEntity
                 .ok()
-                .body(memberService.isUniqueUsername(request));
+                .body(authService.isUniqueUsername(request));
     }
 
     @PostMapping("/duplicate/email")
@@ -36,13 +36,13 @@ public class AuthController {
 
         return ResponseEntity
                 .ok()
-                .body(memberService.isUniqueEmail(request));
+                .body(authService.isUniqueEmail(request));
     }
 
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody MemberJoinRequest request) {
 
-        memberService.join(request);
+        authService.join(request);
 
         return ResponseEntity
                 .ok()
@@ -52,7 +52,7 @@ public class AuthController {
     @PostMapping("/send")
     public ResponseEntity<?> sendEmail(@RequestBody MemberDuplicateCheckRequest request) {
 
-        memberService.sendEmail(request);
+        authService.sendEmail(request);
 
         return ResponseEntity
                 .ok()
@@ -62,7 +62,7 @@ public class AuthController {
     @PostMapping("/verify")
     public ResponseEntity<?> verify(@RequestBody MemberVerifyRequest request) {
 
-        memberService.verify(request);
+        authService.verify(request);
 
         return ResponseEntity
                 .ok()
@@ -74,7 +74,7 @@ public class AuthController {
 
         return ResponseEntity
                 .ok()
-                .body(memberService.login(request));
+                .body(authService.login(request));
     }
 
     @PostMapping("/find/username")
@@ -82,17 +82,25 @@ public class AuthController {
 
         return ResponseEntity
                 .ok()
-                .body(memberService.findUsername(request));
+                .body(authService.findUsername(request));
     }
 
     @PostMapping("/find/password")
     public ResponseEntity<?> findPassword(@RequestBody MemberFindPasswordRequest request) {
 
-        memberService.findPassword(request);
+        authService.findPassword(request);
 
         return ResponseEntity
                 .ok()
                 .build();
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(@RequestBody ReissueRequest request) {
+
+        return ResponseEntity
+                .ok()
+                .body(authService.reissue(request));
     }
 
 }

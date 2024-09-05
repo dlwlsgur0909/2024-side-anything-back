@@ -1,4 +1,4 @@
-package com.side.anything.back.member.dto.response;
+package com.side.anything.back.auth.dto.response;
 
 import lombok.*;
 
