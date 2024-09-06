@@ -1,6 +1,7 @@
 package com.side.anything.back.member.controller;
 
 import com.side.anything.back.jwt.TokenInfo;
+import com.side.anything.back.member.dto.request.MemberChangePasswordRequest;
 import com.side.anything.back.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,17 @@ public class MemberController {
         return ResponseEntity
                 .ok()
                 .body(memberService.memberDetail(tokenInfo, username));
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                            @RequestBody MemberChangePasswordRequest request) {
+
+        memberService.changePassword(tokenInfo, request);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
 
