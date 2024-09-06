@@ -45,7 +45,8 @@ spring:
 jasypt:
   encryptor:
     password: side-anything
-#server:
+server:
+  port: 8090
 #  error:
 #    whitelabel:
 #      enabled: false  # ?? ?? ? Spring ?? ?? ??? ?? ??
