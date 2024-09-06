@@ -134,7 +134,7 @@ public class AuthService {
         String refreshToken = request.getRefreshToken();
 
         if(jwtUtil.isInvalid(refreshToken)) {
-            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "REFRESH TOKEN INVALID");
+            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
         }
 
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
