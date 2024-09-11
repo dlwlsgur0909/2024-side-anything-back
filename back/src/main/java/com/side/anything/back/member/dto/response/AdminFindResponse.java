@@ -1,12 +1,17 @@
-package com.side.anything.back.member.dto.request;
+package com.side.anything.back.member.dto.response;
 
+import com.side.anything.back.member.domain.Member;
 import lombok.*;
 
 @Getter @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdminFindRequest {
+public class AdminFindResponse {
 
-    private String
+    private String username;
+
+    public AdminFindResponse(Member entity) {
+        this.username = entity.getUsername();
+    }
 }
