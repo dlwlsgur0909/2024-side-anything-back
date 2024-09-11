@@ -2,10 +2,10 @@ package com.side.anything.back.config;
 
 import com.side.anything.back.jwt.JwtFilter;
 import com.side.anything.back.jwt.JwtUtil;
-import com.side.anything.back.security.AuthEntryPoint;
+import com.side.anything.back.security.CustomAccessDeniedHandler;
+import com.side.anything.back.security.CustomAuthEntryPoint;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,8 +29,8 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
 
-    @Autowired
-    private AuthEntryPoint authEntryPoint;
+    private final CustomAuthEntryPoint customAuthEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -60,10 +60,12 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // form login 사용 X
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 사용 X
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT를 사용하기 때문에 세션을 STATELESS 하게
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthEntryPoint))
+                .exceptionHandling(exception -> exception.accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(request ->
                     request
                             .requestMatchers("/auth/**").permitAll()
+                            .requestMatchers("/admin/**").hasRole("ADMIN")
                             .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
