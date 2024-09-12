@@ -1,9 +1,10 @@
 package com.side.anything.back.exception;
 
-import jakarta.mail.SendFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSendException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -33,6 +34,21 @@ public class GlobalExceptionHandler {
                 .body(BasicExceptionEntity.builder()
                         .errorCode("500")
                         .errorMessage("메일이 정상적으로 발송되지 않았습니다.")
+                        .build()
+                );
+    }
+
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<?> badRequestHandler(Exception e) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(BasicExceptionEntity.builder()
+                        .errorCode("400")
+                        .errorMessage("잘못된 요청입니다.")
                         .build()
                 );
     }

@@ -28,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if(authorization == null || !authorization.startsWith("Bearer") || authorization.split(" ").length != 2) {
-            log.error("Invalid Token");
+            log.error("Invalid Authorization");
             filterChain.doFilter(request, response);
 
             return;
@@ -37,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authorization.split(" ")[1];
 
         if (jwtUtil.isInvalid(token)) {
+            log.error("Invalid Token");
             filterChain.doFilter(request, response);
             return;
         }

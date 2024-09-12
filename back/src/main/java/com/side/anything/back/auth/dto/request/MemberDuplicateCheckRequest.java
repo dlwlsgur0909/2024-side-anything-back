@@ -1,4 +1,4 @@
-package com.side.anything.back.member.dto.request;
+package com.side.anything.back.auth.dto.request;
 
 import lombok.*;
 

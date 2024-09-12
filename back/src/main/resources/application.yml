@@ -13,17 +13,18 @@ spring:
     url: ENC(ODID0iGF4zFRZZQWeVvVR23yREpNeyASaineqkE/ZKDMFC6KdoOcEE7leXBYcb8EvOjJHgIOlXiH/RqrFNKKDjlDEE514IDK2iMEXMNYmVQ=)
     username: ENC(nP2RJiOCNvsBOFUY7RCf75IsQt+cY8RPQ21yhs+Cj28R6w3u+j8+dbt77LTuPfOb)
     password: ENC(VrxASLM90/dPpu+HnwcfLploD/YDqzY1/jx79b/Ua/Hu+Pj65nQP8v5+7jlGn+na)
-
   jpa:
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate:
-        format_sql: true
-  logging:
-    level:
-      org.hibernate.SQL: debug
-      org.hibernate.orm.jdbc.bind: trace
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
+#        highlight_sql: true
+#  logging:
+#    level:
+#      org.hibernate.SQL: debug
+#      org.hibernate.orm.jdbc.bind: trace
   jwt:
     secret: ENC(jMiFO/13IhP75q42bQc5+ZOXjW9WntB7t9zxJbJu5wwRYYQyREfUV5AVUNRJksynM1tT8dJTXJjGbNZ1z4OVOUjYbch0U9SrXssTCgYy6YgVdJido/SeZYDnk1f/Bts2vPP18M2vu+dZ2HPhyqESSQ==)
     access-timeout: 30
@@ -44,7 +45,8 @@ spring:
 jasypt:
   encryptor:
     password: side-anything
-#server:
+server:
+  port: 8090
 #  error:
 #    whitelabel:
 #      enabled: false  # ?? ?? ? Spring ?? ?? ??? ?? ??
