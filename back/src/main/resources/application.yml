@@ -41,7 +41,15 @@ spring:
             enable: true
           auth: true
     protocol: smtps
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            redirect-uri: http://localhost:8090/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope: profile, email
 jasypt:
   encryptor:
     password: side-anything
