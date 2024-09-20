@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
 
@@ -26,11 +26,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
 
-        String username = principal.getName();
+        String username = principal.getUsername();
+        String name = principal.getName();
         String role = principal.getAuthorities().iterator().next().getAuthority();
 
         TokenInfo tokenInfo = TokenInfo.builder()
                 .username(username)
+                .name(name)
                 .role(Role.valueOf(role))
                 .build();
 
