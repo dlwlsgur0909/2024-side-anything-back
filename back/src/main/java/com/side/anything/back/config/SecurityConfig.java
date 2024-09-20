@@ -2,8 +2,7 @@ package com.side.anything.back.config;
 
 import com.side.anything.back.jwt.JwtFilter;
 import com.side.anything.back.jwt.JwtUtil;
-import com.side.anything.back.security.CustomAccessDeniedHandler;
-import com.side.anything.back.security.CustomAuthEntryPoint;
+import com.side.anything.back.security.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +31,10 @@ public class SecurityConfig {
     private final CustomAuthEntryPoint customAuthEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -53,12 +56,23 @@ public class SecurityConfig {
                                 corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
                                 corsConfiguration.setMaxAge(Duration.ofHours(1));
 
+//                                corsConfiguration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+//                                corsConfiguration.setExposedHeaders(Collections.singletonList("Access"));
+//                                corsConfiguration.setExposedHeaders(Collections.singletonList("Refresh"));
+                                corsConfiguration.setAllowCredentials(true);
+
                                 return corsConfiguration;
                             }
                         }))
                 .csrf(AbstractHttpConfigurer::disable) // 세션이 아닌 JWT 사용 -> 세션은 STATELESS -> CSRF disable 처리
                 .formLogin(AbstractHttpConfigurer::disable) // form login 사용 X
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 사용 X
+                .oauth2Login(oauth2 ->
+                        oauth2
+                                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
+                                .successHandler(customOAuth2SuccessHandler)
+                                .failureHandler(customOAuth2FailureHandler)
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT를 사용하기 때문에 세션을 STATELESS 하게
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthEntryPoint))
                 .exceptionHandling(exception -> exception.accessDeniedHandler(customAccessDeniedHandler))
