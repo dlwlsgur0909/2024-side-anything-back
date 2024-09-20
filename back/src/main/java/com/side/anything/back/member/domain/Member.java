@@ -22,6 +22,9 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_password")
     private String password;
 
+    @Column(name = "member_name")
+    private String name;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "member_role")
     private Role role;
