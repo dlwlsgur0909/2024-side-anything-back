@@ -1,6 +1,7 @@
 package com.side.anything.back.member.domain;
 
 import com.side.anything.back.base.BaseTimeEntity;
+import com.side.anything.back.security.dto.response.CustomUserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,5 +49,10 @@ public class Member extends BaseTimeEntity {
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    // 추후 비즈니스 로직에 따라 수정 필요
+    public void updateOAuth2(CustomUserDTO userDTO) {
+        this.email = userDTO.getEmail();
     }
 }

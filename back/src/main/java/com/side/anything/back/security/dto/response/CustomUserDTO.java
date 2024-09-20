@@ -9,9 +9,14 @@ import lombok.*;
 @Builder
 public class CustomUserDTO {
 
+    private Long id;
     private String username;
     private String name;
     private String email;
     private Role role;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 }

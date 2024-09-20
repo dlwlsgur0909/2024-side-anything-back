@@ -66,9 +66,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .verified(true)
                     .build();
 
-            memberRepository.save(member);
+            Member savedMember = memberRepository.save(member);
+            userDTO.setId(savedMember.getId());
         }else {
             findMember.updateOAuth2(userDTO);
+            userDTO.setId(findMember.getId());
         }
 
         return new CustomOAuth2User(userDTO);
