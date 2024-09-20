@@ -1,13 +1,15 @@
 package com.side.anything.back.auth.service;
 
 import com.side.anything.back.auth.dto.request.*;
+import com.side.anything.back.auth.dto.response.MemberLoginResponse;
 import com.side.anything.back.exception.BasicCustomException;
 import com.side.anything.back.jwt.JwtUtil;
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.auth.dto.response.MemberLoginResponse;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.util.EmailService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -101,7 +103,7 @@ public class AuthService {
         String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember));
 
         return MemberLoginResponse.builder()
-                .username(findMember.getUsername())
+                .name(findMember.getName())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -138,14 +140,38 @@ public class AuthService {
         }
 
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
-        String username = tokenInfo.getUsername();
+        String name = tokenInfo.getName();
         String newAccessToken = jwtUtil.createAccessToken(tokenInfo);
         String newRefreshToken = jwtUtil.createRefreshToken(tokenInfo);
 
         return MemberLoginResponse.builder()
-                .username(username)
+                .name(name)
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
+                .build();
+    }
+
+    public MemberLoginResponse socialLoginSuccess(final HttpServletRequest request) {
+
+        Cookie[] cookies = request.getCookies();
+
+        String accessToken = "";
+        String refreshToken = "";
+
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("Access")) {
+                accessToken = cookie.getValue();
+            } else if (cookie.getName().equals("Refresh")) {
+                refreshToken = cookie.getValue();
+            }
+        }
+
+        String name = jwtUtil.parseToken(accessToken).getName();
+
+        return MemberLoginResponse.builder()
+                .name(name)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
