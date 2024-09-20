@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -115,6 +117,12 @@ public class AuthService {
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "미가입 회원입니다"));
 
+        String authentication = findMember.getAuthentication();
+
+        if(Arrays.asList("NAVER", "GOOGLE").contains(authentication)) {
+            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", authentication + "로 가입된 회원입니다");
+        }
+
         return findMember.getUsername();
     }
 
@@ -126,6 +134,12 @@ public class AuthService {
 
         Member findMember = memberRepository.findByUsernameAndEmail(username, email)
                 .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "일치하는 회원을 찾을 수 없습니다"));
+
+        String authentication = findMember.getAuthentication();
+
+        if(Arrays.asList("NAVER", "GOOGLE").contains(authentication)) {
+            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", authentication + "로 가입된 회원입니다");
+        }
 
         String randomNumber = emailService.sendResetPasswordMail(email);
         findMember.updatePassword(passwordEncoder.encode(randomNumber));
