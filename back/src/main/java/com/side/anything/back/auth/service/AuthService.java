@@ -105,6 +105,7 @@ public class AuthService {
         String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember));
 
         return MemberLoginResponse.builder()
+                .username(findMember.getUsername())
                 .name(findMember.getName())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -155,10 +156,12 @@ public class AuthService {
 
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
         String name = tokenInfo.getName();
+        String username = tokenInfo.getUsername();
         String newAccessToken = jwtUtil.createAccessToken(tokenInfo);
         String newRefreshToken = jwtUtil.createRefreshToken(tokenInfo);
 
         return MemberLoginResponse.builder()
+                .username(username)
                 .name(name)
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
@@ -180,9 +183,11 @@ public class AuthService {
             }
         }
 
+        String username = jwtUtil.parseToken(accessToken).getUsername();
         String name = jwtUtil.parseToken(accessToken).getName();
 
         return MemberLoginResponse.builder()
+                .username(username)
                 .name(name)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

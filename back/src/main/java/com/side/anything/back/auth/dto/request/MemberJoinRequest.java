@@ -11,6 +11,7 @@ import lombok.*;
 public class MemberJoinRequest {
 
     private String username;
+    private String name;
     private String password;
     private String email;
 
@@ -19,6 +20,7 @@ public class MemberJoinRequest {
         return Member.builder()
                 .username(username)
                 .password(encodedPassword)
+                .name(name)
                 .email(email)
                 .role(Role.ROLE_USER)
                 .verified(false)
