@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Test Java ###
+/src/test/java/com/side/anything/back/config/**
