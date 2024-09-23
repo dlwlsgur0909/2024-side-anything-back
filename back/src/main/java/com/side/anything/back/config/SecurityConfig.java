@@ -34,6 +34,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
+    private final CustomClientRegistrationRepository customClientRegistrationRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -69,6 +70,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 사용 X
                 .oauth2Login(oauth2 ->
                         oauth2
+                                .clientRegistrationRepository(customClientRegistrationRepository.clientRegistrationRepository())
                                 .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
                                 .successHandler(customOAuth2SuccessHandler)
                                 .failureHandler(customOAuth2FailureHandler)
