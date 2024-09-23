@@ -52,7 +52,7 @@ public class SocialClientRegistration {
                 .tokenUri("https://www.googleapis.com/oauth2/v4/token")
                 .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
                 .issuerUri("https://accounts.google.com")
-                .userInfoUri("https://www.googleapis.com/oauth/v3/userinfo")
+                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
                 .userNameAttributeName(IdTokenClaimNames.SUB)
                 .build();
     }
