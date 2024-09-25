@@ -2,11 +2,10 @@ package com.side.anything.back.auth.controller;
 
 import com.side.anything.back.auth.dto.request.*;
 import com.side.anything.back.auth.service.AuthService;
-import com.side.anything.back.jwt.TokenInfo;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,16 +15,8 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping
-    public ResponseEntity<?> home(@AuthenticationPrincipal TokenInfo tokenInfo) {
-
-        return ResponseEntity
-                .ok()
-                .build();
-    }
-
     @PostMapping("/duplicate/username")
-    public ResponseEntity<?> isUniqueUsername(@RequestBody MemberDuplicateCheckRequest request) {
+    public ResponseEntity<?> isUniqueUsername(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
         return ResponseEntity
                 .ok()
@@ -33,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/duplicate/email")
-    public ResponseEntity<?> isUniqueEmail(@RequestBody MemberDuplicateCheckRequest request) {
+    public ResponseEntity<?> isUniqueEmail(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
         return ResponseEntity
                 .ok()
@@ -41,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody MemberJoinRequest request) {
+    public ResponseEntity<?> join(@RequestBody @Valid MemberJoinRequest request) {
 
         authService.join(request);
 
@@ -51,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<?> sendEmail(@RequestBody MemberDuplicateCheckRequest request) {
+    public ResponseEntity<?> sendEmail(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
         authService.sendEmail(request);
 
@@ -61,7 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verify(@RequestBody MemberVerifyRequest request) {
+    public ResponseEntity<?> verify(@RequestBody @Valid MemberVerifyRequest request) {
 
         authService.verify(request);
 
@@ -71,7 +62,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberLoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody @Valid MemberLoginRequest request) {
 
         return ResponseEntity
                 .ok()
@@ -79,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/find/username")
-    public ResponseEntity<?> findUsername(@RequestBody MemberFindUsernameRequest request) {
+    public ResponseEntity<?> findUsername(@RequestBody @Valid MemberFindUsernameRequest request) {
 
         return ResponseEntity
                 .ok()
@@ -87,7 +78,7 @@ public class AuthController {
     }
 
     @PostMapping("/find/password")
-    public ResponseEntity<?> findPassword(@RequestBody MemberFindPasswordRequest request) {
+    public ResponseEntity<?> findPassword(@RequestBody @Valid MemberFindPasswordRequest request) {
 
         authService.findPassword(request);
 
@@ -97,7 +88,7 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody ReissueRequest request) {
+    public ResponseEntity<?> reissue(@RequestBody @Valid ReissueRequest request) {
 
         return ResponseEntity
                 .ok()
