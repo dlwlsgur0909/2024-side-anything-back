@@ -29,6 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if(authorization == null || !authorization.startsWith("Bearer") || authorization.split(" ").length != 2) {
             log.error("Invalid Authorization");
+            log.error("Request URL - {}", request.getRequestURL());
             filterChain.doFilter(request, response);
 
             return;
@@ -38,6 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (jwtUtil.isInvalid(token)) {
             log.error("Invalid Token");
+            log.error("Request URL = {}", request.getRequestURL());
             filterChain.doFilter(request, response);
             return;
         }

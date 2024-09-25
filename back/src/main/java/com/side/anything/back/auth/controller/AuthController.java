@@ -3,6 +3,7 @@ package com.side.anything.back.auth.controller;
 import com.side.anything.back.auth.dto.request.*;
 import com.side.anything.back.auth.service.AuthService;
 import com.side.anything.back.jwt.TokenInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -101,6 +102,14 @@ public class AuthController {
         return ResponseEntity
                 .ok()
                 .body(authService.reissue(request));
+    }
+
+    @GetMapping("/login-success")
+    public ResponseEntity<?> socialLoginSuccess(HttpServletRequest request) {
+
+        return ResponseEntity
+                .ok()
+                .body(authService.socialLoginSuccess(request));
     }
 
 }
