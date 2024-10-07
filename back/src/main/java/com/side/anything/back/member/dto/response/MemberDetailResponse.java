@@ -12,14 +12,19 @@ import java.time.LocalDateTime;
 @Builder
 public class MemberDetailResponse {
 
-    private String username;
+    private String name;
     private String email;
+    private Boolean isSnsMember;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
     public MemberDetailResponse(Member entity) {
-        this.username = entity.getUsername();
+        this.name = entity.getName();
         this.email = entity.getEmail();
         this.createdAt = entity.getCreatedAt();
+    }
+
+    public void setIsSnsMember(boolean isSnsMember) {
+        this.isSnsMember = isSnsMember;
     }
 }
