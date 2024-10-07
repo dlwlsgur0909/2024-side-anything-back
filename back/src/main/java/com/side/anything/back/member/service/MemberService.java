@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -28,7 +31,13 @@ public class MemberService {
         Member findMember = memberRepository.findByUsername(tokenInfo.getUsername())
                 .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "회원 정보를 찾을 수 없습니다"));
 
-        return new MemberDetailResponse(findMember);
+        List<String> snsList = Arrays.asList("NAVER", "GOOGLE");
+        boolean isSnsMember =  snsList.contains(findMember.getAuthentication());
+
+        MemberDetailResponse memberDetailResponse = new MemberDetailResponse(findMember);
+        memberDetailResponse.setIsSnsMember(isSnsMember);
+
+        return memberDetailResponse;
     }
 
     @Transactional
