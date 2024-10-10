@@ -89,11 +89,11 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(HttpServletRequest request) {
+    public ResponseEntity<?> reissue(HttpServletResponse response, HttpServletRequest request) {
 
         return ResponseEntity
                 .ok()
-                .body(authService.reissue(request));
+                .body(authService.reissue(response, request));
     }
 
     @GetMapping("/login-success")

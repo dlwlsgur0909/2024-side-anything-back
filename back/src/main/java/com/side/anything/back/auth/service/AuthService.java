@@ -105,11 +105,7 @@ public class AuthService {
         String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
         String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember));
 
-        Cookie cookie = new Cookie("refresh", refreshToken);
-        cookie.setMaxAge(60*60);
-        cookie.setHttpOnly(true);
-
-        response.addCookie(cookie);
+        response.addCookie(createCookie("refresh", refreshToken));
 
         return MemberLoginResponse.builder()
                 .username(findMember.getUsername())
@@ -152,7 +148,7 @@ public class AuthService {
         findMember.updatePassword(passwordEncoder.encode(randomNumber));
     }
 
-    public MemberLoginResponse reissue(final HttpServletRequest request) {
+    public MemberLoginResponse reissue(final HttpServletResponse response, final HttpServletRequest request) {
 
         String refreshToken = null;
 
@@ -177,6 +173,9 @@ public class AuthService {
         String name = tokenInfo.getName();
         String username = tokenInfo.getUsername();
         String newAccessToken = jwtUtil.createAccessToken(tokenInfo);
+        String newRefreshToken = jwtUtil.createRefreshToken(tokenInfo);
+
+        response.addCookie(createCookie("refresh", newRefreshToken));
 
         return MemberLoginResponse.builder()
                 .username(username)
@@ -212,5 +211,13 @@ public class AuthService {
                 .build();
     }
 
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(5);
+        cookie.setHttpOnly(true);
+
+        return cookie;
+    }
 
 }
