@@ -11,6 +11,5 @@ public class MemberLoginResponse {
     private String username;
     private String name;
     private String accessToken;
-    private String refreshToken;
 
 }

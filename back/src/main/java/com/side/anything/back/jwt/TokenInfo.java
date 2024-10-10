@@ -14,12 +14,14 @@ public class TokenInfo {
     private Role role;
     private String name;
     private String username;
+    private String type;
 
-    public TokenInfo(Member member) {
+    public TokenInfo(Member member, String type) {
         this.id = member.getId();
         this.role = member.getRole();
         this.name = member.getName();
         this.username = member.getUsername();
+        this.type = type;
     }
 
 }

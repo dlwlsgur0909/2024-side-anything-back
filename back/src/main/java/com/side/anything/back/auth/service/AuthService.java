@@ -10,6 +10,7 @@ import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.util.EmailService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -86,7 +87,7 @@ public class AuthService {
         findMember.verify();
     }
 
-    public MemberLoginResponse login(final MemberLoginRequest request) {
+    public MemberLoginResponse login(final HttpServletResponse response, final MemberLoginRequest request) {
 
         Member findMember = memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "가입되지 않은 회원입니다"));
@@ -101,14 +102,19 @@ public class AuthService {
             throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "미인증 회원입니다. 인증 후 로그인해주세요");
         }
 
-        String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
-        String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember));
+        String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember, "ACCESS"));
+        String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember, "REFRESH"));
+
+        Cookie cookie = new Cookie("refresh", refreshToken);
+        cookie.setMaxAge(60 * 60);
+        cookie.setHttpOnly(true);
+
+        response.addCookie(cookie);
 
         return MemberLoginResponse.builder()
                 .username(findMember.getUsername())
                 .name(findMember.getName())
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -164,7 +170,7 @@ public class AuthService {
                 .username(username)
                 .name(name)
                 .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
+//                .refreshToken(newRefreshToken)
                 .build();
     }
 
@@ -190,7 +196,7 @@ public class AuthService {
                 .username(username)
                 .name(name)
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
+//                .refreshToken(refreshToken)
                 .build();
     }
 
