@@ -102,11 +102,11 @@ public class AuthService {
             throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "미인증 회원입니다. 인증 후 로그인해주세요");
         }
 
-        String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember, "ACCESS"));
-        String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember, "REFRESH"));
+        String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
+        String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember));
 
         Cookie cookie = new Cookie("refresh", refreshToken);
-        cookie.setMaxAge(60 * 60);
+        cookie.setMaxAge(60*60);
         cookie.setHttpOnly(true);
 
         response.addCookie(cookie);
@@ -152,19 +152,31 @@ public class AuthService {
         findMember.updatePassword(passwordEncoder.encode(randomNumber));
     }
 
-    public MemberLoginResponse reissue(final ReissueRequest request) {
+    public MemberLoginResponse reissue(final HttpServletRequest request) {
 
-        String refreshToken = request.getRefreshToken();
+        String refreshToken = null;
 
-        if(jwtUtil.isInvalid(refreshToken)) {
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies == null) {
+            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+        }
+
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("refresh")) {
+                refreshToken = cookie.getValue();
+            }
+        }
+
+        if(refreshToken == null || jwtUtil.isInvalid(refreshToken)) {
             throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
         }
 
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
+
         String name = tokenInfo.getName();
         String username = tokenInfo.getUsername();
         String newAccessToken = jwtUtil.createAccessToken(tokenInfo);
-        String newRefreshToken = jwtUtil.createRefreshToken(tokenInfo);
 
         return MemberLoginResponse.builder()
                 .username(username)

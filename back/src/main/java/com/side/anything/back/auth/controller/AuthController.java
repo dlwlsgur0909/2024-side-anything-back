@@ -89,7 +89,7 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody @Valid ReissueRequest request) {
+    public ResponseEntity<?> reissue(HttpServletRequest request) {
 
         return ResponseEntity
                 .ok()
