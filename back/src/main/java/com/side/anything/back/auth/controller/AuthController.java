@@ -3,6 +3,7 @@ package com.side.anything.back.auth.controller;
 import com.side.anything.back.auth.dto.request.*;
 import com.side.anything.back.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -62,11 +63,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid MemberLoginRequest request) {
+    public ResponseEntity<?> login(HttpServletResponse response, @RequestBody @Valid MemberLoginRequest request) {
 
         return ResponseEntity
                 .ok()
-                .body(authService.login(request));
+                .body(authService.login(response, request));
     }
 
     @PostMapping("/find/username")
@@ -88,19 +89,19 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody @Valid ReissueRequest request) {
+    public ResponseEntity<?> reissue(HttpServletResponse response, HttpServletRequest request) {
 
         return ResponseEntity
                 .ok()
-                .body(authService.reissue(request));
+                .body(authService.reissue(response, request));
     }
 
     @GetMapping("/login-success")
-    public ResponseEntity<?> socialLoginSuccess(HttpServletRequest request) {
+    public ResponseEntity<?> socialLoginSuccess(HttpServletResponse response, HttpServletRequest request) {
 
         return ResponseEntity
                 .ok()
-                .body(authService.socialLoginSuccess(request));
+                .body(authService.socialLoginSuccess(response, request));
     }
 
 }

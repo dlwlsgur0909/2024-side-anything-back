@@ -1,6 +1,7 @@
 package com.side.anything.back.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.side.anything.back.util.RedisService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -13,8 +14,10 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -23,15 +26,18 @@ public class JwtUtil {
     private final SecretKey secretKey;
     private final Long accessTimeout;
     private final Long refreshTimeout;
+    private final RedisService redisService;
 
 
     public JwtUtil(@Value("${spring.jwt.secret}") String secret,
                    @Value("${spring.jwt.access-timeout}") Long accessTimeout,
-                   @Value("${spring.jwt.refresh-timeout}") Long refreshTimeout) {
+                   @Value("${spring.jwt.refresh-timeout}") Long refreshTimeout,
+                   RedisService redisService) {
 
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         this.accessTimeout = accessTimeout;
         this.refreshTimeout = refreshTimeout;
+        this.redisService = redisService;
     }
 
     private String createJwt(TokenInfo tokenInfo, Long expiration) {
@@ -51,7 +57,9 @@ public class JwtUtil {
 
     public String createRefreshToken(TokenInfo tokenInfo) {
 
-        return createJwt(tokenInfo, refreshTimeout * 60 * 1000L);
+        String refreshToken = createJwt(tokenInfo, refreshTimeout * 60 * 1000L);
+        redisService.setValue(refreshToken, refreshToken, Duration.ofMinutes(refreshTimeout));
+        return refreshToken;
     }
 
     // 토큰 검증
@@ -86,6 +94,14 @@ public class JwtUtil {
         ObjectMapper objectMapper = new ObjectMapper();
 
         return objectMapper.convertValue(tokenInfo, TokenInfo.class);
+    }
+
+    public Boolean checkRefreshToken(String key) {
+        return Objects.nonNull(redisService.getValue(key));
+    }
+
+    public void deleteRefreshToken(String key) {
+        redisService.deleteValue(key);
     }
 
 }

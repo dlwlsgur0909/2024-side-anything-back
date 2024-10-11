@@ -41,6 +41,10 @@ spring:
             enable: true
           auth: true
     protocol: smtps
+  data:
+    redis:
+      host: localhost
+      port: 6379
 #  security:
 #    oauth2:
 #      client:

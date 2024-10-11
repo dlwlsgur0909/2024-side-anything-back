@@ -63,7 +63,7 @@ public class SecurityConfig {
 //                                corsConfiguration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
 //                                corsConfiguration.setExposedHeaders(Collections.singletonList("Access"));
 //                                corsConfiguration.setExposedHeaders(Collections.singletonList("Refresh"));
-                                corsConfiguration.setAllowCredentials(true);
+//                                corsConfiguration.setAllowCredentials(true);
 
                                 return corsConfiguration;
                             }

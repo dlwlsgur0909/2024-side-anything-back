@@ -39,20 +39,18 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .build();
 
         String accessToken = jwtUtil.createAccessToken(tokenInfo);
-        String refreshToken = jwtUtil.createRefreshToken(tokenInfo);
 
         response.addCookie(createCookie("Access", accessToken));
-        response.addCookie(createCookie("Refresh", refreshToken));
         response.sendRedirect("http://localhost:5173/login-success");
     }
 
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*60*24);
+        cookie.setMaxAge(60);
         // HTTPS에서만 동작하도록 하는 설정
 //        cookie.setSecure(true);
-        cookie.setPath("/");
+        cookie.setPath("/auth");
         cookie.setHttpOnly(true);
 
         return cookie;

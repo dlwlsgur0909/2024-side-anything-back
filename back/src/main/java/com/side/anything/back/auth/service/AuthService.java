@@ -10,14 +10,18 @@ import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.util.EmailService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -86,7 +90,7 @@ public class AuthService {
         findMember.verify();
     }
 
-    public MemberLoginResponse login(final MemberLoginRequest request) {
+    public MemberLoginResponse login(final HttpServletResponse response, final MemberLoginRequest request) {
 
         Member findMember = memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "가입되지 않은 회원입니다"));
@@ -104,11 +108,12 @@ public class AuthService {
         String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
         String refreshToken = jwtUtil.createRefreshToken(new TokenInfo(findMember));
 
+        response.addCookie(createCookie("Refresh", refreshToken));
+
         return MemberLoginResponse.builder()
                 .username(findMember.getUsername())
                 .name(findMember.getName())
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -146,53 +151,96 @@ public class AuthService {
         findMember.updatePassword(passwordEncoder.encode(randomNumber));
     }
 
-    public MemberLoginResponse reissue(final ReissueRequest request) {
+    public MemberLoginResponse reissue(final HttpServletResponse response, final HttpServletRequest request) {
 
-        String refreshToken = request.getRefreshToken();
+        String refreshToken = null;
 
-        if(jwtUtil.isInvalid(refreshToken)) {
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies == null) {
+            log.error("Reissue Error - Empty Cookie");
             throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
         }
 
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("Refresh")) {
+                refreshToken = cookie.getValue();
+            }
+        }
+
+        if(refreshToken == null || jwtUtil.isInvalid(refreshToken)) {
+            log.error("Reissue Error - Invalid Refresh Token");
+            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+        }
+
+        if(!jwtUtil.checkRefreshToken(refreshToken)) {
+            log.error("Reissue Error - Refresh Token Not Exist in Redis");
+            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+        }
+
+        jwtUtil.deleteRefreshToken(refreshToken);
+
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
+
         String name = tokenInfo.getName();
         String username = tokenInfo.getUsername();
         String newAccessToken = jwtUtil.createAccessToken(tokenInfo);
         String newRefreshToken = jwtUtil.createRefreshToken(tokenInfo);
+        response.addCookie(createCookie("Refresh", newRefreshToken));
 
         return MemberLoginResponse.builder()
                 .username(username)
                 .name(name)
                 .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
                 .build();
     }
 
-    public MemberLoginResponse socialLoginSuccess(final HttpServletRequest request) {
+    public MemberLoginResponse socialLoginSuccess(final HttpServletResponse response, final HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
 
-        String accessToken = "";
-        String refreshToken = "";
+        if(cookies == null) {
+            log.error("Social Login Failed - Cookie is Empty");
+            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+        }
+
+        String accessToken = null;
 
         for (Cookie cookie : cookies) {
             if(cookie.getName().equals("Access")) {
                 accessToken = cookie.getValue();
-            } else if (cookie.getName().equals("Refresh")) {
-                refreshToken = cookie.getValue();
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
             }
         }
 
-        String username = jwtUtil.parseToken(accessToken).getUsername();
-        String name = jwtUtil.parseToken(accessToken).getName();
+        if(Objects.isNull(accessToken)) {
+            log.error("Social Login Failed: Invalid Access Token - {}", accessToken);
+            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+        }
+
+        TokenInfo tokenInfo = jwtUtil.parseToken(accessToken);
+
+        String username = tokenInfo.getUsername();
+        String name = tokenInfo.getName();
+
+        String refreshToken = jwtUtil.createRefreshToken(tokenInfo);
+        response.addCookie(createCookie("Refresh", refreshToken));
 
         return MemberLoginResponse.builder()
                 .username(username)
                 .name(name)
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(60 * 60);
+        cookie.setHttpOnly(true);
+
+        return cookie;
+    }
 
 }
