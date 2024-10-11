@@ -97,11 +97,11 @@ public class AuthController {
     }
 
     @GetMapping("/login-success")
-    public ResponseEntity<?> socialLoginSuccess(HttpServletRequest request) {
+    public ResponseEntity<?> socialLoginSuccess(HttpServletResponse response, HttpServletRequest request) {
 
         return ResponseEntity
                 .ok()
-                .body(authService.socialLoginSuccess(request));
+                .body(authService.socialLoginSuccess(response, request));
     }
 
 }
