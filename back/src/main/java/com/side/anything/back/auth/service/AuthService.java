@@ -234,10 +234,38 @@ public class AuthService {
                 .build();
     }
 
+    public void logout(final HttpServletRequest request, final HttpServletResponse response) {
+
+        String refresh = null;
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies == null) {
+            log.error("Logout Failed: Cookie is Empty");
+            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", "잘못된 요청입니다");
+        }
+
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("Refresh")) {
+                refresh = cookie.getValue();
+            }
+        }
+
+        if(refresh == null || !jwtUtil.checkRefreshToken(refresh)) {
+            log.error("Logout Failed: Refresh Token is Invalid - {}", refresh);
+            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", "잘못된 요청입니다");
+        }
+
+        jwtUtil.deleteRefreshToken(refresh);
+        Cookie cookie = new Cookie("Refresh", null);
+        cookie.setMaxAge(0);
+
+        response.addCookie(cookie);
+    }
+
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60);
+        cookie.setMaxAge(60*60);
         cookie.setHttpOnly(true);
 
         return cookie;
