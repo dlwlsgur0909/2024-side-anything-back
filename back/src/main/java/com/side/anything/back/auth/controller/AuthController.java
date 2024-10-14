@@ -104,4 +104,14 @@ public class AuthController {
                 .body(authService.socialLoginSuccess(response, request));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        authService.logout(request, response);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
 }
