@@ -16,6 +16,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // 아이디 중복 확인 API
     @PostMapping("/duplicate/username")
     public ResponseEntity<?> isUniqueUsername(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
@@ -24,6 +25,7 @@ public class AuthController {
                 .body(authService.isUniqueUsername(request));
     }
 
+    // 이메일 중복 확인 API
     @PostMapping("/duplicate/email")
     public ResponseEntity<?> isUniqueEmail(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
@@ -32,6 +34,7 @@ public class AuthController {
                 .body(authService.isUniqueEmail(request));
     }
 
+    // 회원가입 API
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody @Valid MemberJoinRequest request) {
 
@@ -42,6 +45,7 @@ public class AuthController {
                 .build();
     }
 
+    // 인증 메일 재발송 API
     @PostMapping("/send")
     public ResponseEntity<?> sendEmail(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
@@ -52,6 +56,7 @@ public class AuthController {
                 .build();
     }
 
+    // 인증 API
     @PostMapping("/verify")
     public ResponseEntity<?> verify(@RequestBody @Valid MemberVerifyRequest request) {
 
@@ -62,6 +67,7 @@ public class AuthController {
                 .build();
     }
 
+    // 로그인 API
     @PostMapping("/login")
     public ResponseEntity<?> login(HttpServletResponse response, @RequestBody @Valid MemberLoginRequest request) {
 
@@ -70,6 +76,7 @@ public class AuthController {
                 .body(authService.login(response, request));
     }
 
+    // 아이디 찾기 API
     @PostMapping("/find/username")
     public ResponseEntity<?> findUsername(@RequestBody @Valid MemberFindUsernameRequest request) {
 
@@ -78,6 +85,7 @@ public class AuthController {
                 .body(authService.findUsername(request));
     }
 
+    // 비밀번호 찾기 API
     @PostMapping("/find/password")
     public ResponseEntity<?> findPassword(@RequestBody @Valid MemberFindPasswordRequest request) {
 
@@ -88,6 +96,7 @@ public class AuthController {
                 .build();
     }
 
+    // 토큰 재발급 API
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletResponse response, HttpServletRequest request) {
 
@@ -104,6 +113,7 @@ public class AuthController {
                 .body(authService.socialLoginSuccess(response, request));
     }
 
+    // 로그아웃 API
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
