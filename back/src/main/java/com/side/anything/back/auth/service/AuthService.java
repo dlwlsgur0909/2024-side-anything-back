@@ -31,16 +31,19 @@ public class AuthService {
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
 
+    // 중복 아이디 검증
     public Boolean isUniqueUsername(final MemberDuplicateCheckRequest request) {
 
         return !memberRepository.existsByUsername(request.getUsernameOrEmail());
     }
 
+    // 중복 이메일 검증
     public Boolean isUniqueEmail(final MemberDuplicateCheckRequest request) {
 
         return !memberRepository.existsByEmail(request.getUsernameOrEmail());
     }
 
+    // 회원가입
     @Transactional
     public void join(final MemberJoinRequest request) {
 
@@ -54,24 +57,14 @@ public class AuthService {
         String rawPassword = request.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
+        // 인증번호 메일 발송
         String authentication = emailService.sendJoinMail(request.getEmail());
 
         Member member = request.toEntity(encodedPassword, authentication);
         memberRepository.save(member);
     }
 
-    @Transactional
-    public void sendEmail(final MemberDuplicateCheckRequest request) {
-
-        String username = request.getUsernameOrEmail();
-
-        Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "회원 정보를 찾을 수 없습니다"));
-
-        String authentication = emailService.sendJoinMail(findMember.getEmail());
-        findMember.updateAuthentication(authentication);
-    }
-
+    // 회원가입 인증
     @Transactional
     public void verify(final MemberVerifyRequest request) {
 
@@ -90,6 +83,21 @@ public class AuthService {
         findMember.verify();
     }
 
+    // 인증메일 재전송
+    @Transactional
+    public void sendEmail(final MemberDuplicateCheckRequest request) {
+
+        String username = request.getUsernameOrEmail();
+
+        Member findMember = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "회원 정보를 찾을 수 없습니다"));
+
+        // 인증번호 메일 발송
+        String authentication = emailService.sendJoinMail(findMember.getEmail());
+        findMember.updateAuthentication(authentication);
+    }
+
+    // 로그인
     public MemberLoginResponse login(final HttpServletResponse response, final MemberLoginRequest request) {
 
         Member findMember = memberRepository.findByUsername(request.getUsername())
@@ -117,6 +125,7 @@ public class AuthService {
                 .build();
     }
 
+    // 아이디 찾기
     public String findUsername(final MemberFindUsernameRequest request) {
 
         String email = request.getEmail();
@@ -132,6 +141,7 @@ public class AuthService {
         return findMember.getUsername();
     }
 
+    // 비밀번호 찾기
     @Transactional
     public void findPassword(final MemberFindPasswordRequest request) {
 
@@ -147,10 +157,12 @@ public class AuthService {
             throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", authentication + "로 가입된 회원입니다");
         }
 
+        // 비밀번호 초기화 메일 발송
         String randomNumber = emailService.sendResetPasswordMail(email);
         findMember.updatePassword(passwordEncoder.encode(randomNumber));
     }
 
+    // 토큰 재발급 (새로고침, AccessToken 만료 시)
     public MemberLoginResponse reissue(final HttpServletResponse response, final HttpServletRequest request) {
 
         String refreshToken = null;
@@ -234,6 +246,7 @@ public class AuthService {
                 .build();
     }
 
+    // 로그아웃
     public void logout(final HttpServletRequest request, final HttpServletResponse response) {
 
         String refresh = null;
@@ -262,6 +275,7 @@ public class AuthService {
         response.addCookie(cookie);
     }
 
+    // 쿠키 생성
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
