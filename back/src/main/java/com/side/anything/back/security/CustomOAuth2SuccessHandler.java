@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler { // OAuth2 로그인이 성공하면 실행될 성공 핸들러
 
     private final JwtUtil jwtUtil;
 
@@ -41,7 +41,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String accessToken = jwtUtil.createAccessToken(tokenInfo);
 
         response.addCookie(createCookie("Access", accessToken));
-        response.sendRedirect("http://localhost:5173/login-success");
+        response.sendRedirect("http://localhost:5173/login-success"); // 성공 시 redirect할 프론트 url
     }
 
     private Cookie createCookie(String key, String value) {

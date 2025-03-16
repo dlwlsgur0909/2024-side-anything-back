@@ -75,9 +75,9 @@ public class SecurityConfig {
                         oauth2
                                 .clientRegistrationRepository(customClientRegistrationRepository.clientRegistrationRepository())
                                 .authorizedClientService(customOAuth2AuthorizedClientService.oAuth2AuthorizedClientService(jdbcTemplate, customClientRegistrationRepository.clientRegistrationRepository()))
-                                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService)) // 외부 로그인 성공 시 동작할 CustomOAuth2UserService 등록
-                                .successHandler(customOAuth2SuccessHandler)
-                                .failureHandler(customOAuth2FailureHandler)
+                                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService)) // 외부 로그인 시 동작할 CustomOAuth2UserService 등록
+                                .successHandler(customOAuth2SuccessHandler) // 외부 로그인 성공 시 동작할 CustomOAuth2SuccessHandler 등록
+                                .failureHandler(customOAuth2FailureHandler) // 외부 로그인 실패 시 동작할 CustomOAuth2FailureHandler 등록
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT를 사용하기 때문에 세션을 STATELESS 하게
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthEntryPoint))

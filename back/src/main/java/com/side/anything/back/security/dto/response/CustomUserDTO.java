@@ -15,6 +15,7 @@ public class CustomUserDTO { // CustomOAuth2User에 넘겨줄 DTO
     private String email;
     private Role role;
 
+    // 로그인 성공 시 CustomUserDTO에 있는 정보를 기반으로 토큰을 생성하기 때문에 id 값을 세팅해준다
     public void setId(Long id) {
         this.id = id;
     }
