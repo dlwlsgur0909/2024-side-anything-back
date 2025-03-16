@@ -13,9 +13,9 @@ public class CustomOAuth2User implements OAuth2User {
 
     private final CustomUserDTO userDTO;
 
-    // attribute의 형태가 서비스 마다 (google, naver) 다르기 때문에 사용하지 않음
+
     @Override
-    public Map<String, Object> getAttributes() {
+    public Map<String, Object> getAttributes() { // attribute의 형태가 서비스 마다 (google, naver) 다르기 때문에 사용하지 않음
         return null;
     }
 

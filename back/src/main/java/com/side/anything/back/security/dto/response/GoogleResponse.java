@@ -7,7 +7,7 @@ public class GoogleResponse implements OAuth2Response {
     private final Map<String, Object> attribute;
 
     public GoogleResponse(Map<String, Object> attribute) {
-        this.attribute = attribute;
+        this.attribute = attribute; // 구글은 응답 객체안에 유저 정보가 바로 들어가 있음
     }
 
     @Override

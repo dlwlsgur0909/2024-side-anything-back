@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomUserDTO {
+public class CustomUserDTO { // CustomOAuth2User에 넘겨줄 DTO
 
     private Long id;
     private String username;

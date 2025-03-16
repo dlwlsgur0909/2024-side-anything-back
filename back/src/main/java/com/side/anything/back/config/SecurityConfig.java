@@ -75,7 +75,7 @@ public class SecurityConfig {
                         oauth2
                                 .clientRegistrationRepository(customClientRegistrationRepository.clientRegistrationRepository())
                                 .authorizedClientService(customOAuth2AuthorizedClientService.oAuth2AuthorizedClientService(jdbcTemplate, customClientRegistrationRepository.clientRegistrationRepository()))
-                                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
+                                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService)) // 외부 로그인 성공 시 동작할 CustomOAuth2UserService 등록
                                 .successHandler(customOAuth2SuccessHandler)
                                 .failureHandler(customOAuth2FailureHandler)
                 )
