@@ -1,4 +1,4 @@
-package com.side.anything.back.security;
+package com.side.anything.back.security.oauth2.client;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

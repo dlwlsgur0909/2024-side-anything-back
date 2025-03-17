@@ -1,4 +1,4 @@
-package com.side.anything.back.security;
+package com.side.anything.back.security.oauth2.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

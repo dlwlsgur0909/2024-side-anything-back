@@ -1,7 +1,7 @@
 package com.side.anything.back.member.domain;
 
 import com.side.anything.back.base.BaseTimeEntity;
-import com.side.anything.back.security.dto.response.CustomUserDTO;
+import com.side.anything.back.security.oauth2.dto.response.CustomUserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

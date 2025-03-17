@@ -1,4 +1,4 @@
-package com.side.anything.back.security.dto.response;
+package com.side.anything.back.security.oauth2.dto.response;
 
 import java.util.Map;
 

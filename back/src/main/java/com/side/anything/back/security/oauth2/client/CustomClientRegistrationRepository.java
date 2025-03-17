@@ -1,4 +1,4 @@
-package com.side.anything.back.security;
+package com.side.anything.back.security.oauth2.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
