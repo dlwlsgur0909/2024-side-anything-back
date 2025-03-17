@@ -1,9 +1,9 @@
-package com.side.anything.back.security;
+package com.side.anything.back.security.oauth2.handler;
 
 import com.side.anything.back.jwt.JwtUtil;
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Role;
-import com.side.anything.back.security.dto.response.CustomOAuth2User;
+import com.side.anything.back.security.oauth2.dto.response.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,9 +1,9 @@
-package com.side.anything.back.security;
+package com.side.anything.back.security.oauth2;
 
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.domain.Role;
 import com.side.anything.back.member.repository.MemberRepository;
-import com.side.anything.back.security.dto.response.*;
+import com.side.anything.back.security.oauth2.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
