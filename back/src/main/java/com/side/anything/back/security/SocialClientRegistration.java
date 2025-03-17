@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SocialClientRegistration {
+public class SocialClientRegistration { // yml 파일에 외부 서버에 대한 정보를 설정하지 않고 각 서비스에 맞는 ClientRegistration을 등록
     private final String naverClientId;
     private final String naverClientSecret;
     private final String googleClientId;

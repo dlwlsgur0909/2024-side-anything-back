@@ -73,7 +73,9 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 사용 X
                 .oauth2Login(oauth2 ->
                         oauth2
+                                // 외부 서버 설정 정보를 yml이 아닌 SocialClientRegistration을 사용하기 위해 CustomClientRegistrationRepository 등록
                                 .clientRegistrationRepository(customClientRegistrationRepository.clientRegistrationRepository())
+                                // 인증 서버에서 발급 받은 Access 토큰과 같은 정보를 인메모리가 아닌 DB 방식으로 저장하기 위해 CustomOAuth2AuthorizedClientService를 등록
                                 .authorizedClientService(customOAuth2AuthorizedClientService.oAuth2AuthorizedClientService(jdbcTemplate, customClientRegistrationRepository.clientRegistrationRepository()))
                                 .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService)) // 외부 로그인 시 동작할 CustomOAuth2UserService 등록
                                 .successHandler(customOAuth2SuccessHandler) // 외부 로그인 성공 시 동작할 CustomOAuth2SuccessHandler 등록
