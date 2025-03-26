@@ -10,9 +10,9 @@ spring:
 #      add-mappings: false
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ENC(ODID0iGF4zFRZZQWeVvVR23yREpNeyASaineqkE/ZKDMFC6KdoOcEE7leXBYcb8EvOjJHgIOlXiH/RqrFNKKDjlDEE514IDK2iMEXMNYmVQ=)
-    username: ENC(nP2RJiOCNvsBOFUY7RCf75IsQt+cY8RPQ21yhs+Cj28R6w3u+j8+dbt77LTuPfOb)
-    password: ENC(VrxASLM90/dPpu+HnwcfLploD/YDqzY1/jx79b/Ua/Hu+Pj65nQP8v5+7jlGn+na)
+    url: ENC(Au3SL+m/4RSF2Min2FbtgL1AXmtaTNCTyx8JqB7VYRhJS0J6AYmmMuHuQGdHDNmDReH4OGtaPAEdIldFVWE8WXwpemieKqg/WY/Q5rlhI4Y=)
+    username: ENC(IqYxVsUYmtyLlBQyq7SsTke2+sUA+XLOvM2GlDue1+xqWcDxBNlLs9XpFkoXZa5C)
+    password: ENC(GAZhFF/NgFXPGyAGPVnB4o7b05K7YRRff+WtNzTAbiH5Q/+Eb/LOWsEkMh2c/x3a)
   jpa:
     hibernate:
       ddl-auto: none
