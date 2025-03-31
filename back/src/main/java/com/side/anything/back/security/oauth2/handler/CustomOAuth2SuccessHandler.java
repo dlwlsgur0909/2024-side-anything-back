@@ -50,7 +50,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         cookie.setMaxAge(60);
         // HTTPS에서만 동작하도록 하는 설정
 //        cookie.setSecure(true);
-        cookie.setPath("/auth");
+        // /auth/login-success 경로에 대해서만 Access 쿠키 허용
+        cookie.setPath("/auth/login-success");
         cookie.setHttpOnly(true);
 
         return cookie;
