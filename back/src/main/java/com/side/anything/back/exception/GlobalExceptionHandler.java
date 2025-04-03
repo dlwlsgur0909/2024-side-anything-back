@@ -31,8 +31,8 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(BasicExceptionEntity.builder()
-                        .errorCode("500")
+                .body(BasicExceptionResponse.builder()
+                        .errorCode(500)
                         .errorMessage("메일이 정상적으로 발송되지 않았습니다.")
                         .build()
                 );
@@ -46,21 +46,21 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(BasicExceptionEntity.builder()
-                        .errorCode("400")
+                .body(BasicExceptionResponse.builder()
+                        .errorCode(400)
                         .errorMessage("잘못된 요청입니다.")
                         .build()
                 );
     }
 
     @ExceptionHandler({
-            BasicCustomException.class
+            CustomException.class
     })
-    public ResponseEntity<?> customExceptionHandler(BasicCustomException e) {
+    public ResponseEntity<?> customExceptionHandler(CustomException e) {
 
         return ResponseEntity
-                .status(e.getErrorStatus())
-                .body(BasicExceptionEntity.builder()
+                .status(e.getStatus())
+                .body(BasicExceptionResponse.builder()
                         .errorCode(e.getErrorCode())
                         .errorMessage(e.getErrorMessage())
                         .build()

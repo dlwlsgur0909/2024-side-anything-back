@@ -2,7 +2,7 @@ package com.side.anything.back.auth.service;
 
 import com.side.anything.back.auth.dto.request.*;
 import com.side.anything.back.auth.dto.response.MemberLoginResponse;
-import com.side.anything.back.exception.BasicCustomException;
+import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.jwt.JwtUtil;
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
@@ -13,13 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Objects;
+
+import static com.side.anything.back.exception.BasicExceptionEnum.*;
 
 @Slf4j
 @Service
@@ -48,11 +49,11 @@ public class AuthService {
     public void join(final MemberJoinRequest request) {
 
         if (memberRepository.existsByUsername(request.getUsername())) {
-            throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "이미 사용중인 아이디 입니다");
+            throw new CustomException(CONFLICT, "이미 사용중인 아이디 입니다");
         }
 
         if (memberRepository.existsByEmail(request.getEmail())) {
-            throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "이미 사용중인 이메일 입니다");
+            throw new CustomException(CONFLICT, "이미 사용중인 이메일 입니다");
         }
         String rawPassword = request.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
@@ -70,14 +71,14 @@ public class AuthService {
 
         String username = request.getUsername();
         Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "회원 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
 
         if(findMember.getVerified()) {
-            throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "이미 인증된 회원입니다");
+            throw new CustomException(CONFLICT, "이미 인증된 회원입니다");
         }
 
         if(!findMember.getAuthentication().equals(request.getAuthentication())) {
-            throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "인증번호가 일치하지 않습니다");
+            throw new CustomException(UNAUTHORIZED, "인증번호가 일치하지 않습니다");
         }
 
         findMember.verify();
@@ -90,7 +91,7 @@ public class AuthService {
         String username = request.getUsernameOrEmail();
 
         Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "회원 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
 
         // 인증번호 메일 발송
         String authentication = emailService.sendJoinMail(findMember.getEmail());
@@ -101,16 +102,16 @@ public class AuthService {
     public MemberLoginResponse login(final HttpServletResponse response, final MemberLoginRequest request) {
 
         Member findMember = memberRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "가입되지 않은 회원입니다"));
+                .orElseThrow(() -> new CustomException(UNAUTHORIZED, "가입되지 않은 회원입니다"));
 
         boolean isMatch = passwordEncoder.matches(request.getPassword(), findMember.getPassword());
 
         if(!isMatch) {
-            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "아이디/비밀번호를 확인해주세요");
+            throw new CustomException(UNAUTHORIZED, "아이디/비밀번호를 확인해주세요");
         }
 
         if(!findMember.getVerified()) {
-            throw new BasicCustomException(HttpStatus.FORBIDDEN, "403", "미인증 회원입니다. 인증 후 로그인해주세요");
+            throw new CustomException(UNAUTHORIZED, "미인증 회원입니다. 인증 후 로그인해주세요");
         }
 
         String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
@@ -130,12 +131,12 @@ public class AuthService {
 
         String email = request.getEmail();
         Member findMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "미가입 회원입니다"));
+                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "미가입 회원입니다"));
 
         String authentication = findMember.getAuthentication();
 
         if(Arrays.asList("NAVER", "GOOGLE").contains(authentication)) {
-            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", authentication + "로 가입된 회원입니다");
+            throw new CustomException(FORBIDDEN, authentication + "로 가입된 회원입니다");
         }
 
         return findMember.getUsername();
@@ -149,12 +150,12 @@ public class AuthService {
         String email = request.getEmail();
 
         Member findMember = memberRepository.findByUsernameAndEmail(username, email)
-                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "일치하는 회원을 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "일치하는 회원을 찾을 수 없습니다"));
 
         String authentication = findMember.getAuthentication();
 
         if(Arrays.asList("NAVER", "GOOGLE").contains(authentication)) {
-            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", authentication + "로 가입된 회원입니다");
+            throw new CustomException(FORBIDDEN, authentication + "로 가입된 회원입니다");
         }
 
         // 비밀번호 초기화 메일 발송
@@ -169,9 +170,13 @@ public class AuthService {
 
         Cookie[] cookies = request.getCookies();
 
+        Cookie tempCookie = new Cookie("Refresh", null);
+        tempCookie.setMaxAge(0);
+        response.addCookie(tempCookie);
+
         if(cookies == null) {
             log.error("Reissue Error - Empty Cookie");
-            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
         }
 
         for (Cookie cookie : cookies) {
@@ -181,13 +186,13 @@ public class AuthService {
         }
 
         if(refreshToken == null || jwtUtil.isInvalid(refreshToken)) {
-            log.error("Reissue Error - Invalid Refresh Token");
-            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+            log.error("Reissue Error - Invalid Refresh Token -> {}", refreshToken);
+            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
         }
 
         if(!jwtUtil.checkRefreshToken(refreshToken)) {
-            log.error("Reissue Error - Refresh Token Not Exist in Redis");
-            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+            log.error("Reissue Error - Refresh Token Does Not Exist in Redis");
+            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
         }
 
         jwtUtil.deleteRefreshToken(refreshToken);
@@ -207,13 +212,14 @@ public class AuthService {
                 .build();
     }
 
+    // 소셜 로그인
     public MemberLoginResponse socialLoginSuccess(final HttpServletResponse response, final HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
 
         if(cookies == null) {
             log.error("Social Login Failed - Cookie is Empty");
-            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
         }
 
         String accessToken = null;
@@ -230,7 +236,7 @@ public class AuthService {
 
         if(Objects.isNull(accessToken)) {
             log.error("Social Login Failed: Invalid Access Token - {}", accessToken);
-            throw new BasicCustomException(HttpStatus.UNAUTHORIZED, "401", "로그인이 만료되었습니다");
+            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
         }
 
         TokenInfo tokenInfo = jwtUtil.parseToken(accessToken);
@@ -254,23 +260,19 @@ public class AuthService {
         String refresh = null;
         Cookie[] cookies = request.getCookies();
 
-        if(cookies == null) {
-            log.error("Logout Failed: Cookie is Empty");
-            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", "잘못된 요청입니다");
-        }
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if(cookie.getName().equals("Refresh")) {
+                    refresh = cookie.getValue();
+                    System.out.println("@@ refresh = " + refresh);
+                }
+            }
 
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("Refresh")) {
-                refresh = cookie.getValue();
+            if(refresh != null) {
+                jwtUtil.deleteRefreshToken(refresh);
             }
         }
 
-        if(refresh == null || !jwtUtil.checkRefreshToken(refresh)) {
-            log.error("Logout Failed: Refresh Token is Invalid - {}", refresh);
-            throw new BasicCustomException(HttpStatus.BAD_REQUEST, "400", "잘못된 요청입니다");
-        }
-
-        jwtUtil.deleteRefreshToken(refresh);
         Cookie cookie = new Cookie("Refresh", null);
         cookie.setMaxAge(0);
 
