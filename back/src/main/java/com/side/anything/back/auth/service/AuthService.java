@@ -219,8 +219,10 @@ public class AuthService {
         String accessToken = null;
 
         for (Cookie cookie : cookies) {
+            // Access 쿠키 삭제
             if(cookie.getName().equals("Access")) {
                 accessToken = cookie.getValue();
+                cookie.setPath("/auth/login-success");
                 cookie.setMaxAge(0);
                 response.addCookie(cookie);
             }
@@ -280,6 +282,7 @@ public class AuthService {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60);
+        cookie.setPath("/auth");
         cookie.setHttpOnly(true);
 
         return cookie;

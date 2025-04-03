@@ -105,7 +105,7 @@ public class AuthController {
                 .body(authService.reissue(response, request));
     }
 
-    @GetMapping("/login-success")
+    @PostMapping("/login-success")
     public ResponseEntity<?> socialLoginSuccess(HttpServletResponse response, HttpServletRequest request) {
 
         return ResponseEntity
