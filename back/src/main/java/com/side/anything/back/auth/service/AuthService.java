@@ -264,7 +264,6 @@ public class AuthService {
             for (Cookie cookie : cookies) {
                 if(cookie.getName().equals("Refresh")) {
                     refresh = cookie.getValue();
-                    System.out.println("@@ refresh = " + refresh);
                 }
             }
 
@@ -274,6 +273,7 @@ public class AuthService {
         }
 
         Cookie cookie = new Cookie("Refresh", null);
+        cookie.setPath("/auth/reissue");
         cookie.setMaxAge(0);
 
         response.addCookie(cookie);
@@ -284,7 +284,7 @@ public class AuthService {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60);
-        cookie.setPath("/auth");
+        cookie.setPath("/auth/reissue");
         cookie.setHttpOnly(true);
 
         return cookie;
