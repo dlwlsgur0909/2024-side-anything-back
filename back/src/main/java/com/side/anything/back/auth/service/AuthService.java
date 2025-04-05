@@ -6,6 +6,7 @@ import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.jwt.JwtUtil;
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
+import com.side.anything.back.member.domain.Role;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.util.EmailService;
 import jakarta.servlet.http.Cookie;
@@ -122,6 +123,7 @@ public class AuthService {
         return MemberLoginResponse.builder()
                 .username(findMember.getUsername())
                 .name(findMember.getName())
+                .role(findMember.getRole())
                 .accessToken(accessToken)
                 .build();
     }
@@ -201,6 +203,8 @@ public class AuthService {
 
         String name = tokenInfo.getName();
         String username = tokenInfo.getUsername();
+        Role role = tokenInfo.getRole();
+
         String newAccessToken = jwtUtil.createAccessToken(tokenInfo);
         String newRefreshToken = jwtUtil.createRefreshToken(tokenInfo);
         response.addCookie(createCookie("Refresh", newRefreshToken));
@@ -208,6 +212,7 @@ public class AuthService {
         return MemberLoginResponse.builder()
                 .username(username)
                 .name(name)
+                .role(role)
                 .accessToken(newAccessToken)
                 .build();
     }
@@ -243,6 +248,7 @@ public class AuthService {
 
         String username = tokenInfo.getUsername();
         String name = tokenInfo.getName();
+        Role role = tokenInfo.getRole();
 
         String refreshToken = jwtUtil.createRefreshToken(tokenInfo);
         response.addCookie(createCookie("Refresh", refreshToken));
@@ -250,6 +256,7 @@ public class AuthService {
         return MemberLoginResponse.builder()
                 .username(username)
                 .name(name)
+                .role(role)
                 .accessToken(accessToken)
                 .build();
     }
