@@ -1,14 +1,20 @@
 package com.side.anything.back.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mail.MailSendException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.security.InvalidParameterException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,8 +45,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            MethodArgumentNotValidException.class,
-            MissingServletRequestParameterException.class
+            MethodArgumentNotValidException.class, // @Valid, @Validated 유효성 검사 실패 시
+            MethodArgumentTypeMismatchException.class, // @RequestParam, @PathVariable에 잘못된 값 전달 시
+            MissingServletRequestParameterException.class, // @RequestParam 미전달 시
+            MissingPathVariableException.class, // @PathVariable 미전달 시
+            HttpMessageNotReadableException.class, // Request Body의 JSON 데이터를 파싱하지 못하는 경우
+            ConstraintViolationException.class, // 엔티티 제약 조건 예외 발생 시
+            InvalidParameterException.class,
+            IllegalArgumentException.class
     })
     public ResponseEntity<?> badRequestHandler(Exception e) {
 
