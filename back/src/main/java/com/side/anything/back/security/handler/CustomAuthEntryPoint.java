@@ -26,10 +26,7 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        BasicExceptionResponse exception = BasicExceptionResponse.builder()
-                .errorCode(BasicExceptionEnum.UNAUTHORIZED.getErrorCode())
-                .errorMessage(BasicExceptionEnum.UNAUTHORIZED.getErrorMessage())
-                .build();
+        BasicExceptionResponse exception = new BasicExceptionResponse(BasicExceptionEnum.UNAUTHORIZED);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(exception);

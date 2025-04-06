@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.side.anything.back.exception.BasicExceptionEnum.RESOURCE_NOT_FOUND;
+import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 
 @Slf4j
 @Service
@@ -26,7 +26,7 @@ public class AdminService {
     public AdminFindResponse findAdmin(final TokenInfo tokenInfo) {
 
         Member findAdmin = adminRepository.findById(tokenInfo.getId())
-                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "관리자 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "관리자 정보를 찾을 수 없습니다"));
 
 
         return new AdminFindResponse(findAdmin);

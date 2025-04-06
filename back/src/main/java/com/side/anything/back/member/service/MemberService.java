@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.side.anything.back.exception.BasicExceptionEnum.FORBIDDEN;
-import static com.side.anything.back.exception.BasicExceptionEnum.RESOURCE_NOT_FOUND;
+import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class MemberService {
         }
 
         Member findMember = memberRepository.findByUsername(tokenInfo.getUsername())
-                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
 
         List<String> snsList = Arrays.asList("NAVER", "GOOGLE");
         boolean isSnsMember =  snsList.contains(findMember.getAuthentication());
@@ -47,7 +47,7 @@ public class MemberService {
 
         String username = tokenInfo.getUsername();
         Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
 
         if(!passwordEncoder.matches(request.getOriginalPassword(), findMember.getPassword())) {
             throw new CustomException(FORBIDDEN, "기존 비밀번호가 일치하지 않습니다");

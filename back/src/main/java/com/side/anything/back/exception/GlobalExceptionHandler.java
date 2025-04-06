@@ -11,38 +11,16 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.security.InvalidParameterException;
 
+import static com.side.anything.back.exception.BasicExceptionEnum.*;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler({
-            NoHandlerFoundException.class,
-            NoResourceFoundException.class,
-    })
-    public ResponseEntity<?> notFoundExceptionHandler(Exception e) {
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .build();
-    }
-
-    @ExceptionHandler({
-            MailSendException.class
-    })
-    public ResponseEntity<?> mailExceptionHandler(Exception e) {
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(BasicExceptionResponse.builder()
-                        .errorCode(500)
-                        .errorMessage("메일이 정상적으로 발송되지 않았습니다.")
-                        .build()
-                );
-    }
 
     @ExceptionHandler({
             MethodArgumentNotValidException.class, // @Valid, @Validated 유효성 검사 실패 시
@@ -54,29 +32,62 @@ public class GlobalExceptionHandler {
             InvalidParameterException.class,
             IllegalArgumentException.class
     })
-    public ResponseEntity<?> badRequestHandler(Exception e) {
+    public ResponseEntity<?> handleBadRequest(Exception e) {
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(BasicExceptionResponse.builder()
-                        .errorCode(400)
-                        .errorMessage("잘못된 요청입니다.")
-                        .build()
-                );
+                .status(BAD_REQUEST.getStatus())
+                .body(new BasicExceptionResponse(BAD_REQUEST));
+    }
+
+    @ExceptionHandler({
+            NoHandlerFoundException.class,
+            NoResourceFoundException.class,
+    })
+    public ResponseEntity<?> handleNotFound(Exception e) {
+
+        return ResponseEntity
+                .status(NOT_FOUND.getStatus())
+                .body(new BasicExceptionResponse(NOT_FOUND));
+    }
+
+    @ExceptionHandler({
+            MethodNotAllowedException.class
+    })
+    public ResponseEntity<?> handleMethodNotAllowed(Exception e) {
+
+        return ResponseEntity
+                .status(METHOD_NOT_ALLOWED.getStatus())
+                .body(new BasicExceptionResponse(METHOD_NOT_ALLOWED));
+    }
+
+    @ExceptionHandler({
+            MailSendException.class
+    })
+    public ResponseEntity<?> handleMailException(Exception e) {
+
+        return ResponseEntity
+                .status(MAIL_SEND_FAILED.getStatus())
+                .body(new BasicExceptionResponse(MAIL_SEND_FAILED));
+    }
+
+    @ExceptionHandler({
+            Exception.class
+    })
+    public ResponseEntity<?> handleInternalServerError(Exception e) {
+
+        return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR.getStatus())
+                .body(new BasicExceptionResponse(INTERNAL_SERVER_ERROR));
     }
 
     @ExceptionHandler({
             CustomException.class
     })
-    public ResponseEntity<?> customExceptionHandler(CustomException e) {
+    public ResponseEntity<?> handleCustomException(CustomException ce) {
 
         return ResponseEntity
-                .status(e.getStatus())
-                .body(BasicExceptionResponse.builder()
-                        .errorCode(e.getErrorCode())
-                        .errorMessage(e.getErrorMessage())
-                        .build()
-                );
+                .status(ce.getStatus())
+                .body(new BasicExceptionResponse(ce));
     }
 
 }

@@ -72,7 +72,7 @@ public class AuthService {
 
         String username = request.getUsername();
         Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
 
         if(findMember.getVerified()) {
             throw new CustomException(CONFLICT, "이미 인증된 회원입니다");
@@ -92,7 +92,7 @@ public class AuthService {
         String username = request.getUsernameOrEmail();
 
         Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
 
         // 인증번호 메일 발송
         String authentication = emailService.sendJoinMail(findMember.getEmail());
@@ -133,7 +133,7 @@ public class AuthService {
 
         String email = request.getEmail();
         Member findMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "미가입 회원입니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "미가입 회원입니다"));
 
         String authentication = findMember.getAuthentication();
 
@@ -152,7 +152,7 @@ public class AuthService {
         String email = request.getEmail();
 
         Member findMember = memberRepository.findByUsernameAndEmail(username, email)
-                .orElseThrow(() -> new CustomException(RESOURCE_NOT_FOUND, "일치하는 회원을 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "일치하는 회원을 찾을 수 없습니다"));
 
         String authentication = findMember.getAuthentication();
 

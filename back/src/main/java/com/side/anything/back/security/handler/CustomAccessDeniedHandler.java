@@ -25,10 +25,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        BasicExceptionResponse exception = BasicExceptionResponse.builder()
-                .errorCode(BasicExceptionEnum.FORBIDDEN.getErrorCode())
-                .errorMessage(BasicExceptionEnum.FORBIDDEN.getErrorMessage())
-                .build();
+        BasicExceptionResponse exception = new BasicExceptionResponse(BasicExceptionEnum.FORBIDDEN);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(exception);
