@@ -1,7 +1,8 @@
 package com.side.anything.back.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mail.MailSendException;
@@ -19,6 +20,7 @@ import java.security.InvalidParameterException;
 
 import static com.side.anything.back.exception.BasicExceptionEnum.*;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -32,7 +34,10 @@ public class GlobalExceptionHandler {
             InvalidParameterException.class,
             IllegalArgumentException.class
     })
-    public ResponseEntity<?> handleBadRequest(Exception e) {
+    public ResponseEntity<?> handleBadRequest(Exception e, HttpServletRequest request) {
+
+        log.error("Bad Request for - {}", createRequestInfo(request));
+        log.error("Error Message - {}", e.getMessage(), e);
 
         return ResponseEntity
                 .status(BAD_REQUEST.getStatus())
@@ -43,7 +48,10 @@ public class GlobalExceptionHandler {
             NoHandlerFoundException.class,
             NoResourceFoundException.class,
     })
-    public ResponseEntity<?> handleNotFound(Exception e) {
+    public ResponseEntity<?> handleNotFound(Exception e, HttpServletRequest request) {
+
+        log.error("Not Found for - {}", createRequestInfo(request));
+        log.error("Error Message - {}", e.getMessage(), e);
 
         return ResponseEntity
                 .status(NOT_FOUND.getStatus())
@@ -53,7 +61,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             MethodNotAllowedException.class
     })
-    public ResponseEntity<?> handleMethodNotAllowed(Exception e) {
+    public ResponseEntity<?> handleMethodNotAllowed(Exception e, HttpServletRequest request) {
+
+        log.error("Method Not Allowed for - {}", createRequestInfo(request));
+        log.error("Error Message - {}", e.getMessage(), e);
 
         return ResponseEntity
                 .status(METHOD_NOT_ALLOWED.getStatus())
@@ -63,17 +74,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             MailSendException.class
     })
-    public ResponseEntity<?> handleMailException(Exception e) {
+    public ResponseEntity<?> handleMailException(Exception e, HttpServletRequest request) {
+
+        log.error("Mail Send Error for - {}", createRequestInfo(request));
+        log.error("Error Message - {}", e.getMessage(), e);
 
         return ResponseEntity
-                .status(MAIL_SEND_FAILED.getStatus())
-                .body(new BasicExceptionResponse(MAIL_SEND_FAILED));
+                .status(MAIL_SEND_ERROR.getStatus())
+                .body(new BasicExceptionResponse(MAIL_SEND_ERROR));
     }
 
     @ExceptionHandler({
             Exception.class
     })
-    public ResponseEntity<?> handleInternalServerError(Exception e) {
+    public ResponseEntity<?> handleInternalServerError(Exception e, HttpServletRequest request) {
+
+        log.error("Internal Server Error for - {}", createRequestInfo(request));
+        log.error("Error Message - {}", e.getMessage(), e);
 
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR.getStatus())
@@ -83,11 +100,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             CustomException.class
     })
-    public ResponseEntity<?> handleCustomException(CustomException ce) {
+    public ResponseEntity<?> handleCustomException(CustomException ce, HttpServletRequest request) {
+
+        log.error("Custom Exception for - {}", createRequestInfo(request));
+        log.error("Error Message - {}", ce.getErrorMessage(), ce);
 
         return ResponseEntity
                 .status(ce.getStatus())
                 .body(new BasicExceptionResponse(ce));
+    }
+
+    private String createRequestInfo(HttpServletRequest request) {
+
+        return request.getMethod() + ": " + request.getRequestURL();
     }
 
 }
