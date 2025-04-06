@@ -2,6 +2,7 @@ package com.side.anything.back.config;
 
 import com.side.anything.back.jwt.JwtFilter;
 import com.side.anything.back.jwt.JwtUtil;
+import com.side.anything.back.member.domain.Role;
 import com.side.anything.back.security.handler.CustomAccessDeniedHandler;
 import com.side.anything.back.security.handler.CustomAuthEntryPoint;
 import com.side.anything.back.security.oauth2.handler.CustomOAuth2FailureHandler;
@@ -93,7 +94,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                     request
                             .requestMatchers("/auth/**").permitAll()
-                            .requestMatchers("/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                             .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)

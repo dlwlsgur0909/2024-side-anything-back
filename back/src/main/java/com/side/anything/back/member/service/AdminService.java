@@ -34,7 +34,7 @@ public class AdminService {
 
     public AdminMemberListResponse findMemberList() {
 
-        List<Member> findMemberList = adminRepository.findMemberList(Role.ROLE_USER);
+        List<Member> findMemberList = adminRepository.findMemberList(Role.USER);
 
         List<MemberDetailResponse> memberDetailList = findMemberList.stream()
                 .map(MemberDetailResponse::new)

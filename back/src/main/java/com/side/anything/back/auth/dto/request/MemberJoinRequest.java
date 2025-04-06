@@ -27,7 +27,7 @@ public class MemberJoinRequest {
                 .password(encodedPassword)
                 .name(name)
                 .email(email)
-                .role(Role.ROLE_USER)
+                .role(Role.USER)
                 .verified(false)
                 .authentication(authentication)
                 .build();
