@@ -9,13 +9,13 @@ import com.side.anything.back.portfolio.dto.response.PortfolioDetailResponse;
 import com.side.anything.back.portfolio.repository.PortfolioRepository;
 import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.side.anything.back.exception.BasicExceptionEnum.*;
+import static com.side.anything.back.exception.BasicExceptionEnum.FORBIDDEN;
+import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -58,11 +58,41 @@ public class PortfolioService {
                 .toList();
     }
 
+    // 포트폴리오 수정
+    public PortfolioDetailResponse updatePortfolio(final TokenInfo tokenInfo, final Long portfolioId, final PortfolioSaveRequest request) {
+
+        Portfolio findPortfolio = findPortfolioById(portfolioId);
+
+        if(!findPortfolio.getMember().getId().equals(tokenInfo.getId())) {
+            throw new CustomException(FORBIDDEN, "포트폴리오 수정은 작성자만 가능합니다");
+        }
+
+        findPortfolio.update(request);
+
+        return new PortfolioDetailResponse(findPortfolio);
+    }
+
+    // 포트폴리오 삭제
+    public void deletePortfolio(final TokenInfo tokenInfo, final Long portfolioId) {
+
+        Portfolio findPortfolio = findPortfolioById(portfolioId);
+
+        if(!findPortfolio.getMember().getId().equals(tokenInfo.getId())) {
+            throw new CustomException(FORBIDDEN, "포트폴리오 삭제는 작성자만 가능합니다");
+        }
+
+        portfolioRepository.deleteById(portfolioId);
+    }
+
+    /* private methods */
+
+    // 포트폴리오 id로 조회
     private Portfolio findPortfolioById(Long id) {
         return portfolioRepository.findById(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "포트폴리오를 찾을 수 없습니다"));
     }
 
+    // 인증된 회원 id로 조회
     private Member findMemberById(Long id) {
         return memberRepository.findByIdAndVerifiedTrue(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
