@@ -24,6 +24,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 회원 정보 상세 조회
     public MemberDetailResponse memberDetail(final TokenInfo tokenInfo, final String username) {
 
         if(!tokenInfo.getUsername().equals(username)) {

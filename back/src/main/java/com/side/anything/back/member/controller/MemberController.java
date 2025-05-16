@@ -2,6 +2,7 @@ package com.side.anything.back.member.controller;
 
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.dto.request.MemberChangePasswordRequest;
+import com.side.anything.back.member.dto.response.MemberDetailResponse;
 import com.side.anything.back.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,11 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/{username}")
-    public ResponseEntity<?> memberDetail(@AuthenticationPrincipal TokenInfo tokenInfo,
-                                          @PathVariable String username) {
+    public ResponseEntity<MemberDetailResponse> memberDetail(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                             @PathVariable String username) {
 
         return ResponseEntity
-                .ok()
-                .body(memberService.memberDetail(tokenInfo, username));
+                .ok(memberService.memberDetail(tokenInfo, username));
     }
 
     @PatchMapping("/password")

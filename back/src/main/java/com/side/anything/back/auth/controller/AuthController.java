@@ -1,6 +1,7 @@
 package com.side.anything.back.auth.controller;
 
 import com.side.anything.back.auth.dto.request.*;
+import com.side.anything.back.auth.dto.response.MemberLoginResponse;
 import com.side.anything.back.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,20 +19,18 @@ public class AuthController {
 
     // 아이디 중복 확인 API
     @PostMapping("/duplicate/username")
-    public ResponseEntity<?> isUniqueUsername(@RequestBody @Valid MemberDuplicateCheckRequest request) {
+    public ResponseEntity<Boolean> isUniqueUsername(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
         return ResponseEntity
-                .ok()
-                .body(authService.isUniqueUsername(request));
+                .ok(authService.isUniqueUsername(request));
     }
 
     // 이메일 중복 확인 API
     @PostMapping("/duplicate/email")
-    public ResponseEntity<?> isUniqueEmail(@RequestBody @Valid MemberDuplicateCheckRequest request) {
+    public ResponseEntity<Boolean> isUniqueEmail(@RequestBody @Valid MemberDuplicateCheckRequest request) {
 
         return ResponseEntity
-                .ok()
-                .body(authService.isUniqueEmail(request));
+                .ok(authService.isUniqueEmail(request));
     }
 
     // 회원가입 API
@@ -69,20 +68,18 @@ public class AuthController {
 
     // 로그인 API
     @PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletResponse response, @RequestBody @Valid MemberLoginRequest request) {
+    public ResponseEntity<MemberLoginResponse> login(HttpServletResponse response, @RequestBody @Valid MemberLoginRequest request) {
 
         return ResponseEntity
-                .ok()
-                .body(authService.login(response, request));
+                .ok(authService.login(response, request));
     }
 
     // 아이디 찾기 API
     @PostMapping("/find/username")
-    public ResponseEntity<?> findUsername(@RequestBody @Valid MemberFindUsernameRequest request) {
+    public ResponseEntity<String> findUsername(@RequestBody @Valid MemberFindUsernameRequest request) {
 
         return ResponseEntity
-                .ok()
-                .body(authService.findUsername(request));
+                .ok(authService.findUsername(request));
     }
 
     // 비밀번호 찾기 API
@@ -98,11 +95,10 @@ public class AuthController {
 
     // 토큰 재발급 API
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<MemberLoginResponse> reissue(HttpServletResponse response, HttpServletRequest request) {
 
         return ResponseEntity
-                .ok()
-                .body(authService.reissue(response, request));
+                .ok(authService.reissue(response, request));
     }
 
     @PostMapping("/login-success")

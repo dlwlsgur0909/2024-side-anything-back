@@ -71,8 +71,7 @@ public class AuthService {
     public void verify(final MemberVerifyRequest request) {
 
         String username = request.getUsername();
-        Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+        Member findMember = findMemberByUsername(username);
 
         if(findMember.getVerified()) {
             throw new CustomException(CONFLICT, "이미 인증된 회원입니다");
@@ -90,9 +89,7 @@ public class AuthService {
     public void sendEmail(final MemberDuplicateCheckRequest request) {
 
         String username = request.getUsernameOrEmail();
-
-        Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+        Member findMember = findMemberByUsername(username);
 
         // 인증번호 메일 발송
         String authentication = emailService.sendJoinMail(findMember.getEmail());
@@ -102,8 +99,7 @@ public class AuthService {
     // 로그인
     public MemberLoginResponse login(final HttpServletResponse response, final MemberLoginRequest request) {
 
-        Member findMember = memberRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new CustomException(UNAUTHORIZED, "가입되지 않은 회원입니다"));
+        Member findMember = findMemberByUsername(request.getUsername());
 
         boolean isMatch = passwordEncoder.matches(request.getPassword(), findMember.getPassword());
 
@@ -173,6 +169,7 @@ public class AuthService {
         Cookie[] cookies = request.getCookies();
 
         Cookie tempCookie = new Cookie("Refresh", null);
+        tempCookie.setPath("/auth/reissue");
         tempCookie.setMaxAge(0);
         response.addCookie(tempCookie);
 
@@ -271,6 +268,7 @@ public class AuthService {
             for (Cookie cookie : cookies) {
                 if(cookie.getName().equals("Refresh")) {
                     refresh = cookie.getValue();
+                    break;
                 }
             }
 
@@ -282,8 +280,13 @@ public class AuthService {
         Cookie cookie = new Cookie("Refresh", null);
         cookie.setPath("/auth/reissue");
         cookie.setMaxAge(0);
-
         response.addCookie(cookie);
+    }
+
+    // 회원 조회
+    private Member findMemberByUsername(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "가입되지 않은 회원입니다"));
     }
 
     // 쿠키 생성
