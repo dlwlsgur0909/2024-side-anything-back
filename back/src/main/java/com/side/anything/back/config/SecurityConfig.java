@@ -1,15 +1,15 @@
 package com.side.anything.back.config;
 
-import com.side.anything.back.jwt.JwtFilter;
-import com.side.anything.back.jwt.JwtUtil;
+import com.side.anything.back.security.jwt.JwtFilter;
+import com.side.anything.back.security.jwt.JwtUtil;
 import com.side.anything.back.member.domain.Role;
 import com.side.anything.back.security.handler.CustomAccessDeniedHandler;
 import com.side.anything.back.security.handler.CustomAuthEntryPoint;
-import com.side.anything.back.security.oauth2.handler.CustomOAuth2FailureHandler;
-import com.side.anything.back.security.oauth2.handler.CustomOAuth2SuccessHandler;
-import com.side.anything.back.security.oauth2.CustomOAuth2UserService;
-import com.side.anything.back.security.oauth2.client.CustomClientRegistrationRepository;
-import com.side.anything.back.security.oauth2.client.CustomOAuth2AuthorizedClientService;
+import com.side.anything.back.oauth2.handler.CustomOAuth2FailureHandler;
+import com.side.anything.back.oauth2.handler.CustomOAuth2SuccessHandler;
+import com.side.anything.back.oauth2.CustomOAuth2UserService;
+import com.side.anything.back.oauth2.client.CustomClientRegistrationRepository;
+import com.side.anything.back.oauth2.client.CustomOAuth2AuthorizedClientService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MemberLoginResponse {
+public class LoginResponse {
 
     private String username;
     private String name;

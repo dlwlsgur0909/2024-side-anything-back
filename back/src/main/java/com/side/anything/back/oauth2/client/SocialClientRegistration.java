@@ -1,4 +1,4 @@
-package com.side.anything.back.security.oauth2.client;
+package com.side.anything.back.oauth2.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

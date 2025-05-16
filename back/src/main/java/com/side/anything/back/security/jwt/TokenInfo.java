@@ -1,4 +1,4 @@
-package com.side.anything.back.jwt;
+package com.side.anything.back.security.jwt;
 
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.domain.Role;

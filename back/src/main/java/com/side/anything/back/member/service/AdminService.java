@@ -1,7 +1,7 @@
 package com.side.anything.back.member.service;
 
 import com.side.anything.back.exception.CustomException;
-import com.side.anything.back.jwt.TokenInfo;
+import com.side.anything.back.security.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.domain.Role;
 import com.side.anything.back.member.dto.response.AdminFindResponse;

@@ -1,4 +1,4 @@
-package com.side.anything.back.jwt;
+package com.side.anything.back.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

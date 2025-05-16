@@ -1,4 +1,4 @@
-package com.side.anything.back.security.oauth2.dto.response;
+package com.side.anything.back.oauth2.dto.response;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

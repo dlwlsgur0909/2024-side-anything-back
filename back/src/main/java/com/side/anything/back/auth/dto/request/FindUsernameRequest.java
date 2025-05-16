@@ -7,10 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MemberVerifyRequest {
+public class FindUsernameRequest {
 
     @NotBlank
-    private String username;
-    @NotBlank
-    private String authentication;
+    private String email;
 }

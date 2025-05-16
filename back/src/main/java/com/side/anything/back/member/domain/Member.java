@@ -1,7 +1,7 @@
 package com.side.anything.back.member.domain;
 
 import com.side.anything.back.base.BaseTimeEntity;
-import com.side.anything.back.security.oauth2.dto.response.CustomUserDTO;
+import com.side.anything.back.oauth2.dto.response.CustomUserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -53,4 +53,18 @@ public class Member extends BaseTimeEntity {
     public void updateOAuth2(CustomUserDTO userDTO) {
         this.email = userDTO.getEmail();
     }
+
+    public static Member of(CustomUserDTO userDTO, String registrationId) {
+        Member member = new Member();
+        member.username = userDTO.getUsername();
+        member.password = "";
+        member.name = userDTO.getName();
+        member.email = userDTO.getEmail();
+        member.role = userDTO.getRole();
+        member.authentication = registrationId;
+        member.verified = true;
+
+        return member;
+    }
+
 }

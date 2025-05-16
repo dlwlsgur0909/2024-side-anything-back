@@ -7,10 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MemberFindPasswordRequest {
+public class DuplicateCheckRequest {
 
     @NotBlank
-    private String email;
-    @NotBlank
-    private String username;
+    private String usernameOrEmail;
 }
+
+

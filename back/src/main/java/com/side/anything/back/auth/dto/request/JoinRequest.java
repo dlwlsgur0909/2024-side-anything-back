@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MemberJoinRequest {
+public class JoinRequest {
 
     @NotBlank
     private String username;
