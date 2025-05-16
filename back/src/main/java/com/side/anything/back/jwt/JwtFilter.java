@@ -25,6 +25,12 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        // /auth 하위 경로는 검증 하지 않음
+        if(request.getRequestURI().startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if(authorization == null || !authorization.startsWith("Bearer") || authorization.split(" ").length != 2) {
