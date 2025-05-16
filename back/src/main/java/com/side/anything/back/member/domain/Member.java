@@ -5,11 +5,9 @@ import com.side.anything.back.security.oauth2.dto.response.CustomUserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Getter @ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
     @Id
