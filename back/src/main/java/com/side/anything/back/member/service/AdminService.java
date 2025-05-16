@@ -1,6 +1,6 @@
 package com.side.anything.back.member.service;
 
-import com.side.anything.back.exception.BasicCustomException;
+import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.domain.Role;
@@ -10,10 +10,11 @@ import com.side.anything.back.member.dto.response.MemberDetailResponse;
 import com.side.anything.back.member.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 
 @Slf4j
 @Service
@@ -25,7 +26,7 @@ public class AdminService {
     public AdminFindResponse findAdmin(final TokenInfo tokenInfo) {
 
         Member findAdmin = adminRepository.findById(tokenInfo.getId())
-                .orElseThrow(() -> new BasicCustomException(HttpStatus.NOT_FOUND, "404", "관리자 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "관리자 정보를 찾을 수 없습니다"));
 
 
         return new AdminFindResponse(findAdmin);
@@ -33,7 +34,7 @@ public class AdminService {
 
     public AdminMemberListResponse findMemberList() {
 
-        List<Member> findMemberList = adminRepository.findMemberList(Role.ROLE_USER);
+        List<Member> findMemberList = adminRepository.findMemberList(Role.USER);
 
         List<MemberDetailResponse> memberDetailList = findMemberList.stream()
                 .map(MemberDetailResponse::new)

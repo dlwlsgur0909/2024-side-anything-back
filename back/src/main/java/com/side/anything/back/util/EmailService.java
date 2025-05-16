@@ -15,19 +15,6 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final static String SENDER_EMAIL = "dlwlsgur0927@gmail.com";
 
-    // 인증번호 6자리 숫자 난수 생성
-    private String generateRandomNumber() {
-
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-
-        for(int i=0; i<6; i++) {
-            sb.append(random.nextInt(10));
-        }
-
-        return sb.toString();
-    }
-
     // 회원가입 인증 메일 발송
     public String sendJoinMail(final String recipient) {
 
@@ -87,6 +74,20 @@ public class EmailService {
 
         return randomNumber;
 
+    }
+
+
+    // 인증번호 6자리 숫자 난수 생성
+    private String generateRandomNumber() {
+
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+
+        for(int i=0; i<6; i++) {
+            sb.append(random.nextInt(10));
+        }
+
+        return sb.toString();
     }
 
 }

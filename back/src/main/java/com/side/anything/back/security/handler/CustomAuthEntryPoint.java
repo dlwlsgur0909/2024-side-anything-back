@@ -1,7 +1,8 @@
 package com.side.anything.back.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.side.anything.back.exception.BasicExceptionEntity;
+import com.side.anything.back.exception.BasicExceptionEnum;
+import com.side.anything.back.exception.BasicExceptionResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +26,8 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        BasicExceptionEntity exception = new BasicExceptionEntity("401", "UNAUTHORIZED");
+        BasicExceptionResponse exception = new BasicExceptionResponse(BasicExceptionEnum.UNAUTHORIZED);
+
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(exception);
         response.getWriter().write(body);

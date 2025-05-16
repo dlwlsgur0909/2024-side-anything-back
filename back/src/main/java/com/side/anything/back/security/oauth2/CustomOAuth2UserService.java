@@ -47,7 +47,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .username(username)
                 .name(oAuth2Response.getName())
                 .email(oAuth2Response.getEmail())
-                .role(Role.ROLE_USER)
+                .role(Role.USER)
                 .build();
 
         // username을 기준으로 회원 데이터 조회

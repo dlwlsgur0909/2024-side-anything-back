@@ -84,7 +84,7 @@ public class JwtUtil {
     // 토큰 정보 추출
     public TokenInfo parseToken(String token) {
 
-        LinkedHashMap tokenInfo = Jwts.parser()
+        LinkedHashMap<?, ?> tokenInfo = Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
