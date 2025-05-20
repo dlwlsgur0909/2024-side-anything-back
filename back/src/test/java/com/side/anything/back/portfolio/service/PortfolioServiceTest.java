@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -83,6 +84,46 @@ class PortfolioServiceTest {
         assertThat(findPortfolio.getPortfolioName()).isEqualTo(portfolioName);
         assertThat(findPortfolio.getPortfolioContent()).isEqualTo(portfolioContent);
         assertThat(findPortfolio.getPortfolioUrl()).isEqualTo(portfolioUrl);
+    }
+
+    @Test
+    @DisplayName("포트폴리오 수정 테스트")
+    void updatePortfolioTest() {
+
+        // given
+        Member findMember = memberRepository.findByUsername("test").orElse(null);
+        if(findMember == null) {
+            throw new RuntimeException();
+        }
+        TokenInfo tokenInfo = new TokenInfo(findMember);
+
+        // when
+        // 최초 데이터 저장
+        String portfolioName = "테스트 포트폴리오";
+        String portfolioContent = "테스트 포트폴리오 내용입니다";
+        String portfolioUrl = "https://github.com/dlwlsgur0909";
+        Boolean isPublic = true;
+
+        PortfolioSaveRequest request = new PortfolioSaveRequest(portfolioName, portfolioContent, portfolioUrl, isPublic);
+        PortfolioDetailResponse savedPortfolio = portfolioService.savePortfolio(tokenInfo, request);
+
+        em.flush();
+        em.clear();
+
+        // 수정
+        String updatePortfolioName = "테스트 포트폴리오 수정";
+        String updatePortfolioContent = "테스트 포트폴리오 수정 내용";
+        Boolean updateIsPublic = false;
+
+        PortfolioSaveRequest updateRequest = new PortfolioSaveRequest(updatePortfolioName, updatePortfolioContent, portfolioUrl, updateIsPublic);
+        PortfolioDetailResponse updatedPortfolio = portfolioService.updatePortfolio(tokenInfo, savedPortfolio.getPortfolioId(), updateRequest);
+
+
+        // then
+        assertThat(updatedPortfolio.getPortfolioName()).isEqualTo(updatePortfolioName);
+        assertThat(updatedPortfolio.getPortfolioContent()).isEqualTo(updatePortfolioContent);
+        assertThat(updatedPortfolio.getIsPublic()).isEqualTo(false);
+
     }
 
 }

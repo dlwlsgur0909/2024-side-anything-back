@@ -28,6 +28,7 @@ public class PortfolioController {
                 .ok(portfolioService.savePortfolio(tokenInfo, request));
     }
 
+    // 포트폴리오 목록 조회 API
     @GetMapping
     public ResponseEntity<List<PortfolioDetailResponse>> findPortfolioList(@AuthenticationPrincipal TokenInfo tokenInfo) {
 
@@ -35,6 +36,7 @@ public class PortfolioController {
                 .ok(portfolioService.findPortfolioList(tokenInfo));
     }
 
+    // 포트폴리오 단건 조회 API
     @GetMapping("/{portfolioId}")
     public ResponseEntity<PortfolioDetailResponse> findPortfolioDetail(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                                        @PathVariable Long portfolioId) {
@@ -43,6 +45,7 @@ public class PortfolioController {
                 .ok(portfolioService.findPortfolioDetail(tokenInfo, portfolioId));
     }
 
+    // 포트폴리오 수정 API
     @PatchMapping("/{portfolioId}")
     public ResponseEntity<PortfolioDetailResponse> updatePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                                    @PathVariable Long portfolioId,
@@ -50,6 +53,18 @@ public class PortfolioController {
 
         return ResponseEntity
                 .ok(portfolioService.updatePortfolio(tokenInfo, portfolioId, request));
+    }
+
+    // 포트폴리오 삭제 API
+    @DeleteMapping("/{portfolioId}")
+    public ResponseEntity<Void> deletePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                @PathVariable Long portfolioId) {
+
+        portfolioService.deletePortfolio(tokenInfo, portfolioId);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
 }
