@@ -19,11 +19,10 @@ public class AuditorConfig {
         return () -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            if(authentication == null || !authentication.isAuthenticated()) {
+            if(authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof TokenInfo tokenInfo)) {
                 return Optional.empty();
             }
 
-            TokenInfo tokenInfo = (TokenInfo) authentication.getPrincipal();
             return Optional.of(tokenInfo.getId());
         };
     }
