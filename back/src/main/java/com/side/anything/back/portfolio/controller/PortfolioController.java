@@ -21,7 +21,7 @@ public class PortfolioController {
 
     // 포트폴리오 저장 API
     @PostMapping
-    public ResponseEntity<PortfolioDetailResponse> savePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
+    public ResponseEntity<Long> savePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                                  @RequestBody @Valid PortfolioSaveRequest request) {
 
         return ResponseEntity
@@ -47,12 +47,15 @@ public class PortfolioController {
 
     // 포트폴리오 수정 API
     @PatchMapping("/{portfolioId}")
-    public ResponseEntity<PortfolioDetailResponse> updatePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
+    public ResponseEntity<Void> updatePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                                    @PathVariable Long portfolioId,
                                                                    @RequestBody @Valid PortfolioSaveRequest request) {
 
+        portfolioService.updatePortfolio(tokenInfo, portfolioId, request);
+
         return ResponseEntity
-                .ok(portfolioService.updatePortfolio(tokenInfo, portfolioId, request));
+                .ok()
+                .build();
     }
 
     // 포트폴리오 삭제 API

@@ -27,12 +27,12 @@ public class PortfolioService {
 
     // 포트폴리오 저장
     @Transactional
-    public PortfolioDetailResponse savePortfolio(final TokenInfo tokenInfo, final PortfolioSaveRequest portfolioSaveRequest) {
+    public Long savePortfolio(final TokenInfo tokenInfo, final PortfolioSaveRequest portfolioSaveRequest) {
 
         Member findMember = findMemberById(tokenInfo.getId());
         Portfolio savedPortfolio = portfolioRepository.save(Portfolio.of(portfolioSaveRequest, findMember));
 
-        return new PortfolioDetailResponse(savedPortfolio);
+        return savedPortfolio.getId();
     }
 
     // 포트폴리오 상세 조회
@@ -59,7 +59,8 @@ public class PortfolioService {
     }
 
     // 포트폴리오 수정
-    public PortfolioDetailResponse updatePortfolio(final TokenInfo tokenInfo, final Long portfolioId, final PortfolioSaveRequest request) {
+    @Transactional
+    public void updatePortfolio(final TokenInfo tokenInfo, final Long portfolioId, final PortfolioSaveRequest request) {
 
         Portfolio findPortfolio = findPortfolioById(portfolioId);
 
@@ -68,11 +69,10 @@ public class PortfolioService {
         }
 
         findPortfolio.update(request);
-
-        return new PortfolioDetailResponse(findPortfolio);
     }
 
     // 포트폴리오 삭제
+    @Transactional
     public void deletePortfolio(final TokenInfo tokenInfo, final Long portfolioId) {
 
         Portfolio findPortfolio = findPortfolioById(portfolioId);
