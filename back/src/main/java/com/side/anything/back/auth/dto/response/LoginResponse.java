@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class LoginResponse {
 
+    private Long id;
     private String username;
     private String name;
     private Role role;

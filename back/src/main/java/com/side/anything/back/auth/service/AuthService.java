@@ -117,6 +117,7 @@ public class AuthService {
         response.addCookie(createCookie("Refresh", refreshToken));
 
         return LoginResponse.builder()
+                .id(findMember.getId())
                 .username(findMember.getUsername())
                 .name(findMember.getName())
                 .role(findMember.getRole())
@@ -198,6 +199,7 @@ public class AuthService {
 
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
 
+        Long id = tokenInfo.getId();
         String name = tokenInfo.getName();
         String username = tokenInfo.getUsername();
         Role role = tokenInfo.getRole();
@@ -207,6 +209,7 @@ public class AuthService {
         response.addCookie(createCookie("Refresh", newRefreshToken));
 
         return LoginResponse.builder()
+                .id(id)
                 .username(username)
                 .name(name)
                 .role(role)
@@ -243,6 +246,7 @@ public class AuthService {
 
         TokenInfo tokenInfo = jwtUtil.parseToken(accessToken);
 
+        Long id = tokenInfo.getId();
         String username = tokenInfo.getUsername();
         String name = tokenInfo.getName();
         Role role = tokenInfo.getRole();
@@ -251,6 +255,7 @@ public class AuthService {
         response.addCookie(createCookie("Refresh", refreshToken));
 
         return LoginResponse.builder()
+                .id(id)
                 .username(username)
                 .name(name)
                 .role(role)
