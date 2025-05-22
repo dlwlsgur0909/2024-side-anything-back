@@ -6,9 +6,14 @@ import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.portfolio.domain.Portfolio;
 import com.side.anything.back.portfolio.dto.request.PortfolioSaveRequest;
 import com.side.anything.back.portfolio.dto.response.PortfolioDetailResponse;
+import com.side.anything.back.portfolio.dto.response.PortfolioListResponse;
+import com.side.anything.back.portfolio.dto.response.PortfolioResponse;
 import com.side.anything.back.portfolio.repository.PortfolioRepository;
 import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +26,8 @@ import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PortfolioService {
+
+    private static final int SIZE = 1;
 
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
@@ -49,13 +56,22 @@ public class PortfolioService {
         return new PortfolioDetailResponse(findPortfolio);
     }
 
-    // 회원의 포트폴리오 목록 조회
-    public List<PortfolioDetailResponse> findPortfolioList(final TokenInfo tokenInfo) {
+    // 내 포트폴리오 목록 조회
+    public PortfolioListResponse findPortfolioList(final TokenInfo tokenInfo, final int page) {
 
-        return portfolioRepository.findAllByMemberId(tokenInfo.getId())
-                .stream()
-                .map(PortfolioDetailResponse::new)
+        PageRequest pageRequest = PageRequest.of(page - 1, SIZE, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Portfolio> pagedPortfolio = portfolioRepository.findAllByMemberId(tokenInfo.getId(), pageRequest);
+
+        List<PortfolioResponse> portfolioList = pagedPortfolio.getContent().stream()
+                .map(PortfolioResponse::new)
                 .toList();
+
+        return PortfolioListResponse.builder()
+                .portfolioList(portfolioList)
+                .totalElements(pagedPortfolio.getTotalElements())
+                .totalPages(pagedPortfolio.getTotalPages())
+                .build();
     }
 
     // 포트폴리오 수정

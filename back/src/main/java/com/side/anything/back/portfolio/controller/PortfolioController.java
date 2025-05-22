@@ -2,15 +2,15 @@ package com.side.anything.back.portfolio.controller;
 
 import com.side.anything.back.portfolio.dto.request.PortfolioSaveRequest;
 import com.side.anything.back.portfolio.dto.response.PortfolioDetailResponse;
+import com.side.anything.back.portfolio.dto.response.PortfolioListResponse;
 import com.side.anything.back.portfolio.service.PortfolioService;
 import com.side.anything.back.security.jwt.TokenInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,12 +28,13 @@ public class PortfolioController {
                 .ok(portfolioService.savePortfolio(tokenInfo, request));
     }
 
-    // 포트폴리오 목록 조회 API
+    // 내 포트폴리오 목록 조회 API
     @GetMapping
-    public ResponseEntity<List<PortfolioDetailResponse>> findPortfolioList(@AuthenticationPrincipal TokenInfo tokenInfo) {
+    public ResponseEntity<PortfolioListResponse> findPortfolioList(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                   @RequestParam(name = "page", defaultValue = "1") int page) {
 
         return ResponseEntity
-                .ok(portfolioService.findPortfolioList(tokenInfo));
+                .ok(portfolioService.findPortfolioList(tokenInfo, page));
     }
 
     // 포트폴리오 단건 조회 API
