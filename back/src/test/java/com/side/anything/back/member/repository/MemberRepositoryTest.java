@@ -1,15 +1,19 @@
 package com.side.anything.back.member.repository;
 
 import com.side.anything.back.member.domain.Member;
+import com.side.anything.back.member.domain.Role;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
 @SpringBootTest
+@Transactional
 class MemberRepositoryTest {
 
     @Autowired
@@ -18,13 +22,28 @@ class MemberRepositoryTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @BeforeEach
+    void saveMember() {
+        Member member = Member.builder()
+                .username("myTest")
+                .password("testPassword")
+                .name("테스트 회원")
+                .role(Role.USER)
+                .email("myTest@test.com")
+                .authentication("TEST")
+                .isVerified(true)
+                .build();
+
+        memberRepository.save(member);
+    }
+
     @Test
     void changePasswordTest() {
 
         // given
-        String username = "member";
+        String username = "myTest";
 
-        Member member = memberRepository.findByUsername(username)
+        Member member = memberRepository.findByUsernameAndIsVerifiedTrue(username)
                 .orElseThrow(NoSuchElementException::new);
 
         String resetPassword = "1234";
@@ -33,7 +52,7 @@ class MemberRepositoryTest {
         memberRepository.save(member);
         // when
 
-        Member findMember = memberRepository.findByUsername(username)
+        Member findMember = memberRepository.findByUsernameAndIsVerifiedTrue(username)
                 .orElseThrow(NoSuchElementException::new);
 
         // then

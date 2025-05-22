@@ -9,6 +9,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUsername(String username);
 
+    Optional<Member> findByUsernameAndIsVerifiedTrue(String username);
+
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
@@ -17,5 +19,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUsernameAndEmail(String username, String email);
 
-    Optional<Member> findByIdAndVerifiedTrue(Long memberId);
+    Optional<Member> findByIdAndIsVerifiedTrue(Long memberId);
 }

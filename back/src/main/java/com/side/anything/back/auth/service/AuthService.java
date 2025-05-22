@@ -73,7 +73,7 @@ public class AuthService {
         String username = request.getUsername();
         Member findMember = findMemberByUsername(username);
 
-        if(findMember.getVerified()) {
+        if(findMember.getIsVerified()) {
             throw new CustomException(CONFLICT, "이미 인증된 회원입니다");
         }
 
@@ -107,8 +107,8 @@ public class AuthService {
             throw new CustomException(UNAUTHORIZED, "아이디/비밀번호를 확인해주세요");
         }
 
-        if(!findMember.getVerified()) {
-            throw new CustomException(UNAUTHORIZED, "미인증 회원입니다. 인증 후 로그인해주세요");
+        if(!findMember.getIsVerified()) {
+            throw new CustomException(FORBIDDEN, "미인증 회원입니다. 인증 후 로그인해주세요");
         }
 
         String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
@@ -288,7 +288,7 @@ public class AuthService {
         response.addCookie(cookie);
     }
 
-    // 회원 조회
+    // 미인증 회원 조회
     private Member findMemberByUsername(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "가입되지 않은 회원입니다"));

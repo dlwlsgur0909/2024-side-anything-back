@@ -1,11 +1,11 @@
 package com.side.anything.back.member.service;
 
 import com.side.anything.back.exception.CustomException;
-import com.side.anything.back.security.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.dto.request.MemberChangePasswordRequest;
 import com.side.anything.back.member.dto.response.MemberDetailResponse;
 import com.side.anything.back.member.repository.MemberRepository;
+import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,8 +31,7 @@ public class MemberService {
             throw new CustomException(FORBIDDEN);
         }
 
-        Member findMember = memberRepository.findByUsername(tokenInfo.getUsername())
-                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+        Member findMember = findVerifiedMemberByUsername(username);
 
         List<String> snsList = Arrays.asList("NAVER", "GOOGLE");
         boolean isSnsMember =  snsList.contains(findMember.getAuthentication());
@@ -46,15 +45,19 @@ public class MemberService {
     @Transactional
     public void changePassword(final TokenInfo tokenInfo, final MemberChangePasswordRequest request) {
 
-        String username = tokenInfo.getUsername();
-        Member findMember = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+        Member findMember = findVerifiedMemberByUsername(tokenInfo.getUsername());
 
         if(!passwordEncoder.matches(request.getOriginalPassword(), findMember.getPassword())) {
             throw new CustomException(FORBIDDEN, "기존 비밀번호가 일치하지 않습니다");
         }
 
         findMember.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    // 인증 회원 조회
+    private Member findVerifiedMemberByUsername(String username) {
+        return memberRepository.findByUsernameAndIsVerifiedTrue(username)
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
     }
 
 }

@@ -12,12 +12,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -40,13 +38,13 @@ class PortfolioServiceTest {
     @BeforeEach
     void saveTestMember() {
         Member member = Member.builder()
-                .username("test")
+                .username("myTest")
                 .password("testPassword")
                 .name("테스트 회원")
                 .role(Role.USER)
-                .email("test@test.com")
+                .email("myTest@test.com")
                 .authentication("TEST")
-                .verified(true)
+                .isVerified(true)
                 .build();
         memberRepository.save(member);
 
@@ -61,7 +59,7 @@ class PortfolioServiceTest {
     void saveAndFindPortfolioTest() {
 
         // given
-        Member findMember = memberRepository.findByUsername("test").orElse(null);
+        Member findMember = memberRepository.findByUsernameAndIsVerifiedTrue("myTest").orElse(null);
         if(findMember == null) {
             throw new RuntimeException();
         }
@@ -73,12 +71,12 @@ class PortfolioServiceTest {
         String portfolioUrl = "https://github.com/dlwlsgur0909";
         Boolean isPublic = true;
         PortfolioSaveRequest request = new PortfolioSaveRequest(portfolioName, portfolioContent, portfolioUrl, isPublic);
-        PortfolioDetailResponse savedPortfolio = portfolioService.savePortfolio(tokenInfo, request);
+        Long savedPortfolioId = portfolioService.savePortfolio(tokenInfo, request);
 
         em.flush();
         em.clear();
 
-        PortfolioDetailResponse findPortfolio = portfolioService.findPortfolioDetail(tokenInfo, savedPortfolio.getPortfolioId());
+        PortfolioDetailResponse findPortfolio = portfolioService.findPortfolioDetail(tokenInfo, savedPortfolioId);
 
         // then
         assertThat(findPortfolio.getPortfolioName()).isEqualTo(portfolioName);
@@ -91,13 +89,12 @@ class PortfolioServiceTest {
     void updatePortfolioTest() {
 
         // given
-        Member findMember = memberRepository.findByUsername("test").orElse(null);
+        Member findMember = memberRepository.findByUsernameAndIsVerifiedTrue("myTest").orElse(null);
         if(findMember == null) {
             throw new RuntimeException();
         }
         TokenInfo tokenInfo = new TokenInfo(findMember);
 
-        // when
         // 최초 데이터 저장
         String portfolioName = "테스트 포트폴리오";
         String portfolioContent = "테스트 포트폴리오 내용입니다";
@@ -105,19 +102,23 @@ class PortfolioServiceTest {
         Boolean isPublic = true;
 
         PortfolioSaveRequest request = new PortfolioSaveRequest(portfolioName, portfolioContent, portfolioUrl, isPublic);
-        PortfolioDetailResponse savedPortfolio = portfolioService.savePortfolio(tokenInfo, request);
+        Long savedPortfolioId = portfolioService.savePortfolio(tokenInfo, request);
 
         em.flush();
         em.clear();
 
-        // 수정
+        // when
         String updatePortfolioName = "테스트 포트폴리오 수정";
         String updatePortfolioContent = "테스트 포트폴리오 수정 내용";
         Boolean updateIsPublic = false;
 
         PortfolioSaveRequest updateRequest = new PortfolioSaveRequest(updatePortfolioName, updatePortfolioContent, portfolioUrl, updateIsPublic);
-        PortfolioDetailResponse updatedPortfolio = portfolioService.updatePortfolio(tokenInfo, savedPortfolio.getPortfolioId(), updateRequest);
+        portfolioService.updatePortfolio(tokenInfo, savedPortfolioId, updateRequest);
 
+        em.flush();
+        em.clear();
+
+        PortfolioDetailResponse updatedPortfolio = portfolioService.findPortfolioDetail(tokenInfo, savedPortfolioId);
 
         // then
         assertThat(updatedPortfolio.getPortfolioName()).isEqualTo(updatePortfolioName);

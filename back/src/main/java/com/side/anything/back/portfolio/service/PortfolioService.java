@@ -94,7 +94,7 @@ public class PortfolioService {
 
     // 인증된 회원 id로 조회
     private Member findMemberById(Long id) {
-        return memberRepository.findByIdAndVerifiedTrue(id)
+        return memberRepository.findByIdAndIsVerifiedTrue(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
     }
 

@@ -28,7 +28,7 @@ public class JoinRequest {
                 .name(name)
                 .email(email)
                 .role(Role.USER)
-                .verified(false)
+                .isVerified(false)
                 .authentication(authentication)
                 .build();
     }

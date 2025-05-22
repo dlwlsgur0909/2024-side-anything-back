@@ -33,14 +33,14 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_email")
     private String email;
 
-    @Column(name = "member_verified")
-    private Boolean verified;
+    @Column(name = "is_verified")
+    private Boolean isVerified;
 
     @Column(name = "member_authentication")
     private String authentication;
 
     public void verify() {
-        this.verified = true;
+        this.isVerified = true;
     }
 
     public void updateAuthentication(String authentication) {
@@ -64,7 +64,7 @@ public class Member extends BaseTimeEntity {
         member.email = userDTO.getEmail();
         member.role = userDTO.getRole();
         member.authentication = registrationId;
-        member.verified = true;
+        member.isVerified = true;
 
         return member;
     }
