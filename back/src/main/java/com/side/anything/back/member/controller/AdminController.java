@@ -1,6 +1,6 @@
 package com.side.anything.back.member.controller;
 
-import com.side.anything.back.jwt.TokenInfo;
+import com.side.anything.back.security.jwt.TokenInfo;
 import com.side.anything.back.member.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

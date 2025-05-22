@@ -1,11 +1,11 @@
 package com.side.anything.back.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum BasicExceptionEnum {
 
     BAD_REQUEST(HttpStatus.BAD_REQUEST, 400, "잘못된 요청입니다"),

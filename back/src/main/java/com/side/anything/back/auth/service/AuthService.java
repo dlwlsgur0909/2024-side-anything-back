@@ -1,10 +1,10 @@
 package com.side.anything.back.auth.service;
 
 import com.side.anything.back.auth.dto.request.*;
-import com.side.anything.back.auth.dto.response.MemberLoginResponse;
+import com.side.anything.back.auth.dto.response.LoginResponse;
 import com.side.anything.back.exception.CustomException;
-import com.side.anything.back.jwt.JwtUtil;
-import com.side.anything.back.jwt.TokenInfo;
+import com.side.anything.back.security.jwt.JwtUtil;
+import com.side.anything.back.security.jwt.TokenInfo;
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.domain.Role;
 import com.side.anything.back.member.repository.MemberRepository;
@@ -34,20 +34,20 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     // 중복 아이디 검증
-    public Boolean isUniqueUsername(final MemberDuplicateCheckRequest request) {
+    public Boolean isUniqueUsername(final DuplicateCheckRequest request) {
 
         return !memberRepository.existsByUsername(request.getUsernameOrEmail());
     }
 
     // 중복 이메일 검증
-    public Boolean isUniqueEmail(final MemberDuplicateCheckRequest request) {
+    public Boolean isUniqueEmail(final DuplicateCheckRequest request) {
 
         return !memberRepository.existsByEmail(request.getUsernameOrEmail());
     }
 
     // 회원가입
     @Transactional
-    public void join(final MemberJoinRequest request) {
+    public void join(final JoinRequest request) {
 
         if (memberRepository.existsByUsername(request.getUsername())) {
             throw new CustomException(CONFLICT, "이미 사용중인 아이디 입니다");
@@ -68,12 +68,12 @@ public class AuthService {
 
     // 회원가입 인증
     @Transactional
-    public void verify(final MemberVerifyRequest request) {
+    public void verify(final VerifyRequest request) {
 
         String username = request.getUsername();
         Member findMember = findMemberByUsername(username);
 
-        if(findMember.getVerified()) {
+        if(findMember.getIsVerified()) {
             throw new CustomException(CONFLICT, "이미 인증된 회원입니다");
         }
 
@@ -86,7 +86,7 @@ public class AuthService {
 
     // 인증메일 재전송
     @Transactional
-    public void sendEmail(final MemberDuplicateCheckRequest request) {
+    public void sendEmail(final DuplicateCheckRequest request) {
 
         String username = request.getUsernameOrEmail();
         Member findMember = findMemberByUsername(username);
@@ -97,7 +97,7 @@ public class AuthService {
     }
 
     // 로그인
-    public MemberLoginResponse login(final HttpServletResponse response, final MemberLoginRequest request) {
+    public LoginResponse login(final HttpServletResponse response, final LoginRequest request) {
 
         Member findMember = findMemberByUsername(request.getUsername());
 
@@ -107,8 +107,8 @@ public class AuthService {
             throw new CustomException(UNAUTHORIZED, "아이디/비밀번호를 확인해주세요");
         }
 
-        if(!findMember.getVerified()) {
-            throw new CustomException(UNAUTHORIZED, "미인증 회원입니다. 인증 후 로그인해주세요");
+        if(!findMember.getIsVerified()) {
+            throw new CustomException(FORBIDDEN, "미인증 회원입니다. 인증 후 로그인해주세요");
         }
 
         String accessToken = jwtUtil.createAccessToken(new TokenInfo(findMember));
@@ -116,7 +116,8 @@ public class AuthService {
 
         response.addCookie(createCookie("Refresh", refreshToken));
 
-        return MemberLoginResponse.builder()
+        return LoginResponse.builder()
+                .id(findMember.getId())
                 .username(findMember.getUsername())
                 .name(findMember.getName())
                 .role(findMember.getRole())
@@ -125,7 +126,7 @@ public class AuthService {
     }
 
     // 아이디 찾기
-    public String findUsername(final MemberFindUsernameRequest request) {
+    public String findUsername(final FindUsernameRequest request) {
 
         String email = request.getEmail();
         Member findMember = memberRepository.findByEmail(email)
@@ -142,7 +143,7 @@ public class AuthService {
 
     // 비밀번호 찾기
     @Transactional
-    public void findPassword(final MemberFindPasswordRequest request) {
+    public void findPassword(final FindPasswordRequest request) {
 
         String username = request.getUsername();
         String email = request.getEmail();
@@ -162,7 +163,7 @@ public class AuthService {
     }
 
     // 토큰 재발급 (새로고침, AccessToken 만료 시)
-    public MemberLoginResponse reissue(final HttpServletResponse response, final HttpServletRequest request) {
+    public LoginResponse reissue(final HttpServletResponse response, final HttpServletRequest request) {
 
         String refreshToken = null;
 
@@ -198,6 +199,7 @@ public class AuthService {
 
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
 
+        Long id = tokenInfo.getId();
         String name = tokenInfo.getName();
         String username = tokenInfo.getUsername();
         Role role = tokenInfo.getRole();
@@ -206,7 +208,8 @@ public class AuthService {
         String newRefreshToken = jwtUtil.createRefreshToken(tokenInfo);
         response.addCookie(createCookie("Refresh", newRefreshToken));
 
-        return MemberLoginResponse.builder()
+        return LoginResponse.builder()
+                .id(id)
                 .username(username)
                 .name(name)
                 .role(role)
@@ -215,7 +218,7 @@ public class AuthService {
     }
 
     // 소셜 로그인
-    public MemberLoginResponse socialLoginSuccess(final HttpServletResponse response, final HttpServletRequest request) {
+    public LoginResponse socialLoginSuccess(final HttpServletResponse response, final HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
 
@@ -243,6 +246,7 @@ public class AuthService {
 
         TokenInfo tokenInfo = jwtUtil.parseToken(accessToken);
 
+        Long id = tokenInfo.getId();
         String username = tokenInfo.getUsername();
         String name = tokenInfo.getName();
         Role role = tokenInfo.getRole();
@@ -250,7 +254,8 @@ public class AuthService {
         String refreshToken = jwtUtil.createRefreshToken(tokenInfo);
         response.addCookie(createCookie("Refresh", refreshToken));
 
-        return MemberLoginResponse.builder()
+        return LoginResponse.builder()
+                .id(id)
                 .username(username)
                 .name(name)
                 .role(role)
@@ -283,7 +288,7 @@ public class AuthService {
         response.addCookie(cookie);
     }
 
-    // 회원 조회
+    // 미인증 회원 조회
     private Member findMemberByUsername(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "가입되지 않은 회원입니다"));

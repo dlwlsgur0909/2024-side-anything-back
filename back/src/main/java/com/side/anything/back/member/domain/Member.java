@@ -1,15 +1,15 @@
 package com.side.anything.back.member.domain;
 
 import com.side.anything.back.base.BaseTimeEntity;
-import com.side.anything.back.security.oauth2.dto.response.CustomUserDTO;
+import com.side.anything.back.oauth2.dto.response.CustomUserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Getter @ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Getter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
     @Id
@@ -33,14 +33,14 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_email")
     private String email;
 
-    @Column(name = "member_verified")
-    private Boolean verified;
+    @Column(name = "is_verified")
+    private Boolean isVerified;
 
     @Column(name = "member_authentication")
     private String authentication;
 
     public void verify() {
-        this.verified = true;
+        this.isVerified = true;
     }
 
     public void updateAuthentication(String authentication) {
@@ -55,4 +55,18 @@ public class Member extends BaseTimeEntity {
     public void updateOAuth2(CustomUserDTO userDTO) {
         this.email = userDTO.getEmail();
     }
+
+    public static Member of(CustomUserDTO userDTO, String registrationId) {
+        Member member = new Member();
+        member.username = userDTO.getUsername();
+        member.password = "";
+        member.name = userDTO.getName();
+        member.email = userDTO.getEmail();
+        member.role = userDTO.getRole();
+        member.authentication = registrationId;
+        member.isVerified = true;
+
+        return member;
+    }
+
 }
