@@ -18,12 +18,18 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             FROM
                 Portfolio p
             JOIN FETCH
-                p.member
+                p.member m
             WHERE
                 p.id = :id
             """
     )
     Optional<Portfolio> findById(@Param("id") Long id);
 
-    Page<Portfolio> findAllByMemberId(@Param("id") Long id, Pageable pageable);
+    @Query(
+            value = "SELECT p FROM Portfolio p JOIN FETCH p.member m WHERE m.id = :memberId AND p.name LIKE %:keyword%",
+            countQuery = "SELECT COUNT(p) FROM Portfolio p JOIN p.member m WHERE m.id = :memberId AND p.name LIKE %:keyword%"
+    )
+    Page<Portfolio> findAllByMemberId(@Param("memberId") Long memberId,
+                                      @Param("keyword") String keyword,
+                                      Pageable pageable);
 }

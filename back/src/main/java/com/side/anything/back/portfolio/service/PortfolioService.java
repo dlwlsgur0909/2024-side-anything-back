@@ -57,11 +57,11 @@ public class PortfolioService {
     }
 
     // 내 포트폴리오 목록 조회
-    public PortfolioListResponse findPortfolioList(final TokenInfo tokenInfo, final int page) {
+    public PortfolioListResponse findPortfolioList(final TokenInfo tokenInfo, final String keyword, final int page) {
 
         PageRequest pageRequest = PageRequest.of(page - 1, SIZE, Sort.by(Sort.Direction.DESC, "id"));
 
-        Page<Portfolio> pagedPortfolio = portfolioRepository.findAllByMemberId(tokenInfo.getId(), pageRequest);
+        Page<Portfolio> pagedPortfolio = portfolioRepository.findAllByMemberId(tokenInfo.getId(), keyword, pageRequest);
 
         List<PortfolioResponse> portfolioList = pagedPortfolio.getContent().stream()
                 .map(PortfolioResponse::new)

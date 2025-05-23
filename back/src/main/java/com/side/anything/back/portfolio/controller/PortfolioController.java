@@ -31,10 +31,11 @@ public class PortfolioController {
     // 내 포트폴리오 목록 조회 API
     @GetMapping
     public ResponseEntity<PortfolioListResponse> findPortfolioList(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                   @RequestParam(name = "keyword", defaultValue = "") String keyword,
                                                                    @RequestParam(name = "page", defaultValue = "1") int page) {
 
         return ResponseEntity
-                .ok(portfolioService.findPortfolioList(tokenInfo, page));
+                .ok(portfolioService.findPortfolioList(tokenInfo, keyword, page));
     }
 
     // 포트폴리오 단건 조회 API
