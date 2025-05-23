@@ -5,6 +5,7 @@ import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.portfolio.domain.Portfolio;
 import com.side.anything.back.portfolio.dto.request.PortfolioSaveRequest;
+import com.side.anything.back.portfolio.dto.response.MyPortfolioListResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioDetailResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioListResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioResponse;
@@ -27,7 +28,7 @@ import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 @Transactional(readOnly = true)
 public class PortfolioService {
 
-    private static final int SIZE = 1;
+    private static final int SIZE = 5;
 
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
@@ -42,6 +43,33 @@ public class PortfolioService {
         return savedPortfolio.getId();
     }
 
+    // 포트폴리오 목록 조회
+    public PortfolioListResponse findPortfolioList(final TokenInfo tokenInfo, final String keyword, final int page) {
+
+        PageRequest pageRequest = PageRequest.of(page - 1, SIZE, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Portfolio> pagedPortfolio = portfolioRepository.findPortfolioList(tokenInfo.getId(), keyword, pageRequest);
+
+        List<PortfolioResponse> portfolioList = pagedPortfolio.getContent().stream()
+                .map(PortfolioResponse::new)
+                .toList();
+
+        return PortfolioListResponse.builder()
+                .portfolioList(portfolioList)
+                .totalPages(pagedPortfolio.getTotalPages())
+                .build();
+    }
+
+    // 내 포트폴리오 목록 조회
+    public MyPortfolioListResponse findMyPortfolioList(final TokenInfo tokenInfo, final String keyword, final int page) {
+
+        PageRequest pageRequest = PageRequest.of(page - 1, SIZE, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Portfolio> pagedPortfolio = portfolioRepository.findMyPortfolioList(tokenInfo.getId(), keyword, pageRequest);
+
+        return new MyPortfolioListResponse(pagedPortfolio.getContent(), pagedPortfolio.getTotalPages());
+    }
+
     // 포트폴리오 상세 조회
     public PortfolioDetailResponse findPortfolioDetail(final TokenInfo tokenInfo, final Long portfolioId) {
 
@@ -54,24 +82,6 @@ public class PortfolioService {
         }
 
         return new PortfolioDetailResponse(findPortfolio);
-    }
-
-    // 내 포트폴리오 목록 조회
-    public PortfolioListResponse findPortfolioList(final TokenInfo tokenInfo, final String keyword, final int page) {
-
-        PageRequest pageRequest = PageRequest.of(page - 1, SIZE, Sort.by(Sort.Direction.DESC, "id"));
-
-        Page<Portfolio> pagedPortfolio = portfolioRepository.findAllByMemberId(tokenInfo.getId(), keyword, pageRequest);
-
-        List<PortfolioResponse> portfolioList = pagedPortfolio.getContent().stream()
-                .map(PortfolioResponse::new)
-                .toList();
-
-        return PortfolioListResponse.builder()
-                .portfolioList(portfolioList)
-                .totalElements(pagedPortfolio.getTotalElements())
-                .totalPages(pagedPortfolio.getTotalPages())
-                .build();
     }
 
     // 포트폴리오 수정
