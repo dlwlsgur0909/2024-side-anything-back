@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .orElse(null);
 
         // 최초 로그인 시도
-        if(findMember == null) {
+        if(findMember == null || !findMember.getUsername().equals(username)) {
 
             // 이메일 중복 확인
             Boolean isDuplicated = memberRepository.existsByEmail(userDTO.getEmail());

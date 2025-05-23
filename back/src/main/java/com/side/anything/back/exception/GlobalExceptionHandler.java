@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleCustomException(CustomException ce, HttpServletRequest request) {
 
         log.error("Custom Exception for - {}", createRequestInfo(request));
-        log.error("Error Message - {}", ce.getErrorMessage(), ce);
+        log.error("Error Message - {}", ce.getErrorMessage());
 
         return ResponseEntity
                 .status(ce.getStatus())

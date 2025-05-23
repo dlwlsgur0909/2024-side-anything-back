@@ -288,10 +288,17 @@ public class AuthService {
         response.addCookie(cookie);
     }
 
-    // 미인증 회원 조회
+    // 미인증 회원 조회 (아이디 대소문자 구분)
     private Member findMemberByUsername(String username) {
-        return memberRepository.findByUsername(username)
+
+        Member findMember = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "가입되지 않은 회원입니다"));
+
+        if(!findMember.getUsername().equals(username)) {
+            throw new CustomException(NOT_FOUND, "가입되지 않은 회원입니다");
+        }
+
+        return findMember;
     }
 
     // 쿠키 생성
