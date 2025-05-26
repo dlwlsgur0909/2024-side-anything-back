@@ -4,19 +4,23 @@ import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.member.domain.Member;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.portfolio.domain.Portfolio;
+import com.side.anything.back.portfolio.domain.PortfolioFile;
 import com.side.anything.back.portfolio.dto.request.PortfolioSaveRequest;
 import com.side.anything.back.portfolio.dto.response.MyPortfolioListResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioDetailResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioListResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioResponse;
+import com.side.anything.back.portfolio.repository.PortfolioFileRepository;
 import com.side.anything.back.portfolio.repository.PortfolioRepository;
 import com.side.anything.back.security.jwt.TokenInfo;
+import com.side.anything.back.util.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,14 +35,24 @@ public class PortfolioService {
     private static final int SIZE = 5;
 
     private final PortfolioRepository portfolioRepository;
+    private final PortfolioFileRepository portfolioFileRepository;
     private final MemberRepository memberRepository;
+
+    private final FileService fileService;
 
     // 포트폴리오 저장
     @Transactional
-    public Long savePortfolio(final TokenInfo tokenInfo, final PortfolioSaveRequest portfolioSaveRequest) {
+    public Long savePortfolio(final TokenInfo tokenInfo,
+                              final PortfolioSaveRequest portfolioSaveRequest, final MultipartFile file) {
 
         Member findMember = findMemberById(tokenInfo.getId());
         Portfolio savedPortfolio = portfolioRepository.save(Portfolio.of(portfolioSaveRequest, findMember));
+
+        if(file != null) {
+            String storedFilename = fileService.saveFile(file, "PORTFOLIO");
+            PortfolioFile portfolioFile = PortfolioFile.of(file.getOriginalFilename(), storedFilename, savedPortfolio);
+            portfolioFileRepository.save(portfolioFile);
+        }
 
         return savedPortfolio.getId();
     }

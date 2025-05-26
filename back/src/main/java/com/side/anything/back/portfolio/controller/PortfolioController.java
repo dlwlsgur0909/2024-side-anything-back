@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,10 +24,11 @@ public class PortfolioController {
     // 포트폴리오 저장 API
     @PostMapping
     public ResponseEntity<Long> savePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
-                                                                 @RequestBody @Valid PortfolioSaveRequest request) {
+                                              @RequestPart(name = "request") @Valid PortfolioSaveRequest request,
+                                              @RequestPart(name = "file", required = false) MultipartFile file) {
 
         return ResponseEntity
-                .ok(portfolioService.savePortfolio(tokenInfo, request));
+                .ok(portfolioService.savePortfolio(tokenInfo, request, file));
     }
 
     // 포트폴리오 목록 조회 API
