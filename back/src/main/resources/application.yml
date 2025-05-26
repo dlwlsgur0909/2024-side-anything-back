@@ -25,6 +25,9 @@ spring:
 #    level:
 #      org.hibernate.SQL: debug
 #      org.hibernate.orm.jdbc.bind: trace
+  servlet:
+    multipart:
+      location: C:/study/project/side-anything/files
   jwt:
     secret: ENC(jMiFO/13IhP75q42bQc5+ZOXjW9WntB7t9zxJbJu5wwRYYQyREfUV5AVUNRJksynM1tT8dJTXJjGbNZ1z4OVOUjYbch0U9SrXssTCgYy6YgVdJido/SeZYDnk1f/Bts2vPP18M2vu+dZ2HPhyqESSQ==)
     access-timeout: 30
