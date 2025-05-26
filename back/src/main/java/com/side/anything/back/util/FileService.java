@@ -23,7 +23,7 @@ public class FileService {
     private String DEFAULT_PATH;
 
     // 단건 파일 저장
-    public String saveFile(final MultipartFile file, final String category) {
+    public String saveFile(final MultipartFile file, final FileCategory fileCategory) {
 
         if(file == null || file.isEmpty() || file.getOriginalFilename() == null) {
             return null;
@@ -34,7 +34,7 @@ public class FileService {
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
         String storedFilename = UUID.randomUUID() + extension;
 
-        String fullPath = DEFAULT_PATH + "/" + category + "/" + today;
+        String fullPath = DEFAULT_PATH + fileCategory.getPath() + "/" + today;
 
         File directory = new File(fullPath);
 
@@ -45,7 +45,7 @@ public class FileService {
         try {
             file.transferTo(new File(fullPath, storedFilename));
         }catch (IOException e) {
-            throw new CustomException(INTERNAL_SERVER_ERROR, category + " 파일을 업로드할 수 없습니다");
+            throw new CustomException(INTERNAL_SERVER_ERROR, fileCategory.getName() + " 파일을 업로드할 수 없습니다");
         }
 
         return storedFilename;

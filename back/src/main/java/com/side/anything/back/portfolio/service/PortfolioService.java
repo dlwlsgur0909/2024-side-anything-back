@@ -13,6 +13,7 @@ import com.side.anything.back.portfolio.dto.response.PortfolioResponse;
 import com.side.anything.back.portfolio.repository.PortfolioFileRepository;
 import com.side.anything.back.portfolio.repository.PortfolioRepository;
 import com.side.anything.back.security.jwt.TokenInfo;
+import com.side.anything.back.util.FileCategory;
 import com.side.anything.back.util.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -49,7 +50,7 @@ public class PortfolioService {
         Portfolio savedPortfolio = portfolioRepository.save(Portfolio.of(portfolioSaveRequest, findMember));
 
         if(file != null) {
-            String storedFilename = fileService.saveFile(file, "PORTFOLIO");
+            String storedFilename = fileService.saveFile(file, FileCategory.PORTFOLIO);
             PortfolioFile portfolioFile = PortfolioFile.of(file.getOriginalFilename(), storedFilename, savedPortfolio);
             portfolioFileRepository.save(portfolioFile);
         }
