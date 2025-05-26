@@ -1,6 +1,7 @@
 package com.side.anything.back.portfolio.controller;
 
 import com.side.anything.back.portfolio.dto.request.PortfolioSaveRequest;
+import com.side.anything.back.portfolio.dto.response.MyPortfolioListResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioDetailResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioListResponse;
 import com.side.anything.back.portfolio.service.PortfolioService;
@@ -28,13 +29,24 @@ public class PortfolioController {
                 .ok(portfolioService.savePortfolio(tokenInfo, request));
     }
 
-    // 내 포트폴리오 목록 조회 API
+    // 포트폴리오 목록 조회 API
     @GetMapping
     public ResponseEntity<PortfolioListResponse> findPortfolioList(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                   @RequestParam(name = "keyword", defaultValue = "") String keyword,
                                                                    @RequestParam(name = "page", defaultValue = "1") int page) {
 
         return ResponseEntity
-                .ok(portfolioService.findPortfolioList(tokenInfo, page));
+                .ok(portfolioService.findPortfolioList(tokenInfo, keyword, page));
+    }
+
+    // 내 포트폴리오 목록 조회 API
+    @GetMapping("/me")
+    public ResponseEntity<MyPortfolioListResponse> findMyPortfolioList(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                       @RequestParam(name = "keyword", defaultValue = "") String keyword,
+                                                                       @RequestParam(name = "page", defaultValue = "1") int page) {
+
+        return ResponseEntity
+                .ok(portfolioService.findMyPortfolioList(tokenInfo, keyword, page));
     }
 
     // 포트폴리오 단건 조회 API

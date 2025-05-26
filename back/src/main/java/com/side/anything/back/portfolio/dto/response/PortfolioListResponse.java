@@ -11,7 +11,6 @@ import java.util.List;
 public class PortfolioListResponse {
 
     private List<PortfolioResponse> portfolioList = new ArrayList<>();
-    private long totalElements;
     private int totalPages;
 
 }
