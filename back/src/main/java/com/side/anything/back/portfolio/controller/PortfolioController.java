@@ -6,9 +6,12 @@ import com.side.anything.back.portfolio.dto.response.PortfolioDetailResponse;
 import com.side.anything.back.portfolio.dto.response.PortfolioListResponse;
 import com.side.anything.back.portfolio.service.PortfolioService;
 import com.side.anything.back.security.jwt.TokenInfo;
+import com.side.anything.back.util.dto.response.FileResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +61,20 @@ public class PortfolioController {
 
         return ResponseEntity
                 .ok(portfolioService.findPortfolioDetail(tokenInfo, portfolioId));
+    }
+
+    // 포트폴리오 PDF 파일 조회 API
+    @GetMapping("/{portfolioId}/file")
+    public ResponseEntity<?> findPortfolioFile(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                               @PathVariable Long portfolioId) {
+
+        FileResponse fileResponse = portfolioService.findPortfolioFile(tokenInfo, portfolioId);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, fileResponse.getContentDisposition())
+                .body(fileResponse.getResource());
     }
 
     // 포트폴리오 수정 API

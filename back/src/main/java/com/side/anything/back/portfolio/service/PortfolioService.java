@@ -15,6 +15,7 @@ import com.side.anything.back.portfolio.repository.PortfolioRepository;
 import com.side.anything.back.security.jwt.TokenInfo;
 import com.side.anything.back.util.FileCategory;
 import com.side.anything.back.util.FileService;
+import com.side.anything.back.util.dto.response.FileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.side.anything.back.exception.BasicExceptionEnum.FORBIDDEN;
@@ -96,7 +98,30 @@ public class PortfolioService {
             }
         }
 
-        return new PortfolioDetailResponse(findPortfolio);
+        // 첨부파일 여부
+        Boolean hasPortfolioFile = portfolioFileRepository.existsByPortfolioId(portfolioId);
+
+        return new PortfolioDetailResponse(findPortfolio, hasPortfolioFile);
+    }
+
+    // 포트폴리오 PDF 파일 조회
+    public FileResponse findPortfolioFile(final TokenInfo tokenInfo, final Long portfolioId) {
+
+        PortfolioFile findPortfolioFile = findPortfolioFileByPortfolioId(portfolioId);
+
+        if(!findPortfolioFile.getPortfolio().getIsPublic()) {
+            if(!findPortfolioFile.getPortfolio().getMember().getId().equals(tokenInfo.getId())) {
+                throw new CustomException(FORBIDDEN, "해당 포트폴리오 조회 권한이 없습니다");
+            }
+        }
+
+        String storedFilename = findPortfolioFile.getStoredFilename();
+        String originalFilename = findPortfolioFile.getOriginalFilename();
+
+        String uploadDate = findPortfolioFile.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String directory = FileCategory.PORTFOLIO.getPath() + "/" + uploadDate;
+
+        return fileService.loadPdf(directory, storedFilename, originalFilename);
     }
 
     // 포트폴리오 수정
@@ -137,6 +162,12 @@ public class PortfolioService {
     private Member findMemberById(Long id) {
         return memberRepository.findByIdAndIsVerifiedTrue(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+    }
+
+    // 포트폴리오 파일 조회
+    private PortfolioFile findPortfolioFileByPortfolioId(Long portfolioId) {
+        return portfolioFileRepository.findByPortfolioId(portfolioId)
+                .orElse(null);
     }
 
 }
