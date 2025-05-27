@@ -119,9 +119,8 @@ public class PortfolioService {
         String originalFilename = findPortfolioFile.getOriginalFilename();
 
         String uploadDate = findPortfolioFile.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String directory = FileCategory.PORTFOLIO.getPath() + "/" + uploadDate;
 
-        return fileService.loadPdf(directory, storedFilename, originalFilename);
+        return fileService.loadPdf(FileCategory.PORTFOLIO, uploadDate, storedFilename, originalFilename);
     }
 
     // 포트폴리오 수정
@@ -142,9 +141,16 @@ public class PortfolioService {
     public void deletePortfolio(final TokenInfo tokenInfo, final Long portfolioId) {
 
         Portfolio findPortfolio = findPortfolioById(portfolioId);
+        PortfolioFile findPortfolioFile = findPortfolioFileByPortfolioId(portfolioId);
 
         if(!findPortfolio.getMember().getId().equals(tokenInfo.getId())) {
             throw new CustomException(FORBIDDEN, "포트폴리오 삭제는 작성자만 가능합니다");
+        }
+
+        if(findPortfolioFile != null) {
+            portfolioFileRepository.deleteByPortfolioId(portfolioId);
+            String uploadDate = findPortfolioFile.getCreatedAt().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            fileService.deleteFile(FileCategory.PORTFOLIO, uploadDate, findPortfolioFile.getStoredFilename());
         }
 
         portfolioRepository.deleteById(portfolioId);

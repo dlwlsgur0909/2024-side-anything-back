@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum FileCategory {
 
-    PORTFOLIO("/portfolios", "포트폴리오")
+    PORTFOLIO("portfolios", "포트폴리오")
     ;
 
     private final String path;

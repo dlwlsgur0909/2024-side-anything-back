@@ -40,7 +40,7 @@ public class FileService {
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
         String storedFilename = UUID.randomUUID() + extension;
 
-        String fullPath = DEFAULT_PATH + fileCategory.getPath() + "/" + today;
+        String fullPath = DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + today;
 
         File directory = new File(fullPath);
 
@@ -58,9 +58,11 @@ public class FileService {
     }
 
     // PDF 파일 로드
-    public FileResponse loadPdf(final String directory, final String storedFilename, final String originalFilename) {
+    public FileResponse loadPdf(final FileCategory fileCategory, final String directory, final String storedFilename, final String originalFilename) {
 
-        Path filePath = Paths.get(DEFAULT_PATH + "/" + directory).resolve(storedFilename).normalize();
+        Path filePath = Paths.get(DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + directory)
+                .resolve(storedFilename)
+                .normalize();
         Resource resource = null;
 
         try {
@@ -80,4 +82,17 @@ public class FileService {
         return new FileResponse(resource, contentDisposition);
     }
 
+    // 단건 파일 삭제
+    public void deleteFile(FileCategory fileCategory, String directory, String storedFilename) {
+
+        File file = Paths.get(DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + directory)
+                .resolve(storedFilename)
+                .toFile();
+
+        if(!file.exists()) {
+            throw new CustomException(NOT_FOUND, "삭제할 파일이 없습니다");
+        }
+
+        file.delete();
+    }
 }

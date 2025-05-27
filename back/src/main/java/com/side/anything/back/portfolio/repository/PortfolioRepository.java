@@ -4,6 +4,7 @@ import com.side.anything.back.portfolio.domain.Portfolio;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -48,4 +49,9 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     Page<Portfolio> findPortfolioList(@Param("memberId") Long memberId,
                                         @Param("keyword") String keyword,
                                         Pageable pageable);
+
+    @Modifying
+    @Query("DELETE FROM Portfolio p WHERE p.id = :id")
+    void deleteById(@Param("id") Long id);
+
 }
