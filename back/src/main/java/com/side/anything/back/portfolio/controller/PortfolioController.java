@@ -67,10 +67,11 @@ public class PortfolioController {
     // 포트폴리오 수정 API
     @PatchMapping("/{portfolioId}")
     public ResponseEntity<Void> updatePortfolio(@AuthenticationPrincipal TokenInfo tokenInfo,
-                                                                   @PathVariable Long portfolioId,
-                                                                   @RequestBody @Valid PortfolioSaveRequest request) {
+                                                @PathVariable Long portfolioId,
+                                                @RequestPart(name = "request") @Valid PortfolioSaveRequest request,
+                                                @RequestPart(name = "file", required = false) MultipartFile file) {
 
-        portfolioService.updatePortfolio(tokenInfo, portfolioId, request);
+        portfolioService.updatePortfolio(tokenInfo, portfolioId, request, file);
 
         return ResponseEntity
                 .ok()

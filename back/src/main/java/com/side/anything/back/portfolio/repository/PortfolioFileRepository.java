@@ -10,14 +10,8 @@ import java.util.Optional;
 
 public interface PortfolioFileRepository extends JpaRepository<PortfolioFile, Long> {
 
-    @Query(
-            """
-            SELECT pf FROM PortfolioFile pf JOIN FETCH pf.portfolio p
-            WHERE p.id = :portfolioId
-            """
-    )
+    @Query("SELECT pf FROM PortfolioFile pf where pf.portfolio.id = :portfolioId")
     Optional<PortfolioFile> findByPortfolioId(@Param("portfolioId") Long portfolioId);
-
 
     @Modifying
     @Query("DELETE FROM PortfolioFile pf WHERE pf.portfolio.id = :portfolioId")

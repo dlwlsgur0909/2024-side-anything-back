@@ -106,7 +106,8 @@ public class PortfolioService {
 
     // 포트폴리오 수정
     @Transactional
-    public void updatePortfolio(final TokenInfo tokenInfo, final Long portfolioId, final PortfolioSaveRequest request) {
+    public void updatePortfolio(final TokenInfo tokenInfo, final Long portfolioId,
+                                final PortfolioSaveRequest request, final MultipartFile file) {
 
         Portfolio findPortfolio = findPortfolioById(portfolioId);
 
@@ -115,6 +116,12 @@ public class PortfolioService {
         }
 
         findPortfolio.update(request);
+
+        if(file != null) {
+            String storedFilename = fileService.saveFile(file, FileCategory.PORTFOLIO);
+            PortfolioFile portfolioFile = PortfolioFile.of(file.getOriginalFilename(), storedFilename, findPortfolio);
+            portfolioFileRepository.save(portfolioFile);
+        }
     }
 
     // 포트폴리오 삭제
@@ -122,11 +129,12 @@ public class PortfolioService {
     public void deletePortfolio(final TokenInfo tokenInfo, final Long portfolioId) {
 
         Portfolio findPortfolio = findPortfolioById(portfolioId);
-        PortfolioFile findPortfolioFile = findPortfolioFileByPortfolioId(portfolioId);
 
         if(!findPortfolio.getCreatedBy().equals(tokenInfo.getId())) {
             throw new CustomException(FORBIDDEN, "포트폴리오 삭제는 작성자만 가능합니다");
         }
+
+        PortfolioFile findPortfolioFile = findPortfolioFileByPortfolioId(portfolioId);
 
         if(findPortfolioFile != null) {
             portfolioFileRepository.deleteByPortfolioId(portfolioId);
