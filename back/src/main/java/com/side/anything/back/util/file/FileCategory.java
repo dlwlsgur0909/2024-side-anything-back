@@ -1,4 +1,4 @@
-package com.side.anything.back.util;
+package com.side.anything.back.util.file;
 
 import lombok.AccessLevel;
 import lombok.Getter;

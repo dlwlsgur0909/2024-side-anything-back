@@ -1,4 +1,4 @@
-package com.side.anything.back.util;
+package com.side.anything.back.util.file;
 
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.util.dto.response.FileResponse;
