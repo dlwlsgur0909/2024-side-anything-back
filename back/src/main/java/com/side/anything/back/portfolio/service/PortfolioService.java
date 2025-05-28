@@ -163,10 +163,6 @@ public class PortfolioService {
             throw new CustomException(NOT_FOUND, "존재하지 않는 파일입니다");
         }
 
-        if(!findPortfolioFile.getCreatedBy().equals(tokenInfo.getId())) {
-            throw new CustomException(FORBIDDEN, "해당 파일 접근 권한이 없습니다");
-        }
-
         FileInfo fileInfo = new FileInfo(findPortfolioFile);
 
         return fileService.loadPdf(FileCategory.PORTFOLIO, fileInfo);
