@@ -2,7 +2,6 @@ package com.side.anything.back.util.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 import org.springframework.core.io.Resource;
 
 @Getter

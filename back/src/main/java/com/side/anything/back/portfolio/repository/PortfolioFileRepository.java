@@ -18,9 +18,12 @@ public interface PortfolioFileRepository extends JpaRepository<PortfolioFile, Lo
     )
     Optional<PortfolioFile> findByPortfolioId(@Param("portfolioId") Long portfolioId);
 
-    Boolean existsByPortfolioId(Long portfolioId);
 
     @Modifying
     @Query("DELETE FROM PortfolioFile pf WHERE pf.portfolio.id = :portfolioId")
     void deleteByPortfolioId(@Param("portfolioId") Long portfolioId);
+
+    @Modifying
+    @Query("DELETE FROM PortfolioFile pf WHERE pf.id = :portfolioFileId")
+    void deleteById(@Param("portfolioFileId") Long portfolioFileId);
 }

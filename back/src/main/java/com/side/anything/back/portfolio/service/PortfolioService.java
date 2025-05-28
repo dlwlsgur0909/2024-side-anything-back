@@ -93,34 +93,15 @@ public class PortfolioService {
         Portfolio findPortfolio = findPortfolioById(portfolioId);
 
         if(!findPortfolio.getIsPublic()) {
-            if(!findPortfolio.getMember().getId().equals(tokenInfo.getId())) {
+            if(!findPortfolio.getCreatedBy().equals(tokenInfo.getId())) {
                 throw new CustomException(FORBIDDEN, "해당 포트폴리오 조회 권한이 없습니다");
             }
         }
 
-        // 첨부파일 여부
-        Boolean hasPortfolioFile = portfolioFileRepository.existsByPortfolioId(portfolioId);
-
-        return new PortfolioDetailResponse(findPortfolio, hasPortfolioFile);
-    }
-
-    // 포트폴리오 PDF 파일 조회
-    public FileResponse findPortfolioFile(final TokenInfo tokenInfo, final Long portfolioId) {
-
+        // 첨부파일
         PortfolioFile findPortfolioFile = findPortfolioFileByPortfolioId(portfolioId);
 
-        if(!findPortfolioFile.getPortfolio().getIsPublic()) {
-            if(!findPortfolioFile.getPortfolio().getMember().getId().equals(tokenInfo.getId())) {
-                throw new CustomException(FORBIDDEN, "해당 포트폴리오 조회 권한이 없습니다");
-            }
-        }
-
-        String storedFilename = findPortfolioFile.getStoredFilename();
-        String originalFilename = findPortfolioFile.getOriginalFilename();
-
-        String uploadDate = findPortfolioFile.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        return fileService.loadPdf(FileCategory.PORTFOLIO, uploadDate, storedFilename, originalFilename);
+        return new PortfolioDetailResponse(findPortfolio, findPortfolioFile);
     }
 
     // 포트폴리오 수정
@@ -129,7 +110,7 @@ public class PortfolioService {
 
         Portfolio findPortfolio = findPortfolioById(portfolioId);
 
-        if(!findPortfolio.getMember().getId().equals(tokenInfo.getId())) {
+        if(!findPortfolio.getCreatedBy().equals(tokenInfo.getId())) {
             throw new CustomException(FORBIDDEN, "포트폴리오 수정은 작성자만 가능합니다");
         }
 
@@ -143,7 +124,7 @@ public class PortfolioService {
         Portfolio findPortfolio = findPortfolioById(portfolioId);
         PortfolioFile findPortfolioFile = findPortfolioFileByPortfolioId(portfolioId);
 
-        if(!findPortfolio.getMember().getId().equals(tokenInfo.getId())) {
+        if(!findPortfolio.getCreatedBy().equals(tokenInfo.getId())) {
             throw new CustomException(FORBIDDEN, "포트폴리오 삭제는 작성자만 가능합니다");
         }
 
@@ -156,23 +137,85 @@ public class PortfolioService {
         portfolioRepository.deleteById(portfolioId);
     }
 
+    // 포트폴리오 PDF 파일 조회
+    public FileResponse findPortfolioFile(final TokenInfo tokenInfo, final Long portfolioId, final Long portfolioFileId) {
+
+        Portfolio findPortfolio = findPortfolioById(portfolioId);
+
+        if(!findPortfolio.getIsPublic()) {
+            if(!findPortfolio.getCreatedBy().equals(tokenInfo.getId())) {
+                throw new CustomException(FORBIDDEN, "해당 포트폴리오 조회 권한이 없습니다");
+            }
+        }
+
+        PortfolioFile findPortfolioFile = findPortfolioFileById(portfolioFileId);
+
+        if(findPortfolioFile == null) {
+            throw new CustomException(NOT_FOUND, "존재하지 않는 파일입니다");
+        }
+
+        if(!findPortfolioFile.getCreatedBy().equals(tokenInfo.getId())) {
+            throw new CustomException(FORBIDDEN, "해당 파일 접근 권한이 없습니다");
+        }
+
+        String storedFilename = findPortfolioFile.getStoredFilename();
+        String originalFilename = findPortfolioFile.getOriginalFilename();
+
+        String uploadDate = findPortfolioFile.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        return fileService.loadPdf(FileCategory.PORTFOLIO, uploadDate, storedFilename, originalFilename);
+    }
+
+    // 포트폴리오 PDF 파일 삭제
+    @Transactional
+    public void deletePortfolioFile(final TokenInfo tokenInfo, final Long portfolioId, final Long portfolioFileId) {
+
+        Portfolio findPortfolio = findPortfolioById(portfolioId);
+
+        if(!findPortfolio.getIsPublic()) {
+            if(!findPortfolio.getCreatedBy().equals(tokenInfo.getId())) {
+                throw new CustomException(FORBIDDEN, "해당 포트폴리오 조회 권한이 없습니다");
+            }
+        }
+
+        PortfolioFile findPortfolioFile = findPortfolioFileById(portfolioFileId);
+
+        if(findPortfolioFile == null) {
+            throw new CustomException(NOT_FOUND, "존재하지 않는 파일입니다");
+        }
+
+        if(!findPortfolioFile.getCreatedBy().equals(tokenInfo.getId())) {
+            throw new CustomException(FORBIDDEN, "해당 파일 접근 권한이 없습니다");
+        }
+
+        portfolioFileRepository.deleteById(portfolioFileId);
+        String uploadDate = findPortfolioFile.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        fileService.deleteFile(FileCategory.PORTFOLIO, uploadDate, findPortfolioFile.getStoredFilename());
+    }
+
     /* private methods */
 
-    // 포트폴리오 id로 조회
-    private Portfolio findPortfolioById(Long id) {
-        return portfolioRepository.findById(id)
+    // 포트폴리오 id로 포트폴리오 조회
+    private Portfolio findPortfolioById(Long portfolioId) {
+        return portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "포트폴리오를 찾을 수 없습니다"));
     }
 
-    // 인증된 회원 id로 조회
-    private Member findMemberById(Long id) {
-        return memberRepository.findByIdAndIsVerifiedTrue(id)
+    // 인증된 회원 id로 회원 조회
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findByIdAndIsVerifiedTrue(memberId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
     }
 
-    // 포트폴리오 파일 조회
+    // 포트폴리오 id로 포트폴리오 파일 조회
     private PortfolioFile findPortfolioFileByPortfolioId(Long portfolioId) {
         return portfolioFileRepository.findByPortfolioId(portfolioId)
+                .orElse(null);
+    }
+
+    // 포트폴리오 파일 id로 포트폴리오 파일 조회
+    private PortfolioFile findPortfolioFileById(Long portfolioFileId) {
+        return portfolioFileRepository.findById(portfolioFileId)
                 .orElse(null);
     }
 
