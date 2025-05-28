@@ -1,6 +1,7 @@
 package com.side.anything.back.util.file;
 
 import com.side.anything.back.exception.CustomException;
+import com.side.anything.back.util.dto.response.FileInfo;
 import com.side.anything.back.util.dto.response.FileResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -19,8 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static com.side.anything.back.exception.BasicExceptionEnum.INTERNAL_SERVER_ERROR;
-import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
+import static com.side.anything.back.exception.BasicExceptionEnum.*;
 
 @Component
 public class FileService {
@@ -29,18 +29,18 @@ public class FileService {
     private String DEFAULT_PATH;
 
     // 단건 파일 저장
-    public String saveFile(final MultipartFile file, final FileCategory fileCategory) {
+    public FileInfo saveFile(final MultipartFile file, final FileCategory fileCategory) {
 
         if(file == null || file.isEmpty() || file.getOriginalFilename() == null) {
-            return null;
+            throw new CustomException(BAD_REQUEST, "파일이 비어있습니다");
         }
 
         String originalFilename = file.getOriginalFilename();
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
         String storedFilename = UUID.randomUUID() + extension;
+        LocalDate today = LocalDate.now();
 
-        String fullPath = DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + today;
+        String fullPath = DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + formatDate(today);
 
         File directory = new File(fullPath);
 
@@ -54,14 +54,14 @@ public class FileService {
             throw new CustomException(INTERNAL_SERVER_ERROR, fileCategory.getName() + " 파일을 업로드할 수 없습니다");
         }
 
-        return storedFilename;
+        return new FileInfo(originalFilename, storedFilename, today);
     }
 
     // PDF 파일 로드
-    public FileResponse loadPdf(final FileCategory fileCategory, final String directory, final String storedFilename, final String originalFilename) {
+    public FileResponse loadPdf(final FileCategory fileCategory, final FileInfo fileInfo) {
 
-        Path filePath = Paths.get(DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + directory)
-                .resolve(storedFilename)
+        Path filePath = Paths.get(DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + formatDate(fileInfo.getUploadDate()))
+                .resolve(fileInfo.getStoredFilename())
                 .normalize();
         Resource resource = null;
 
@@ -76,17 +76,17 @@ public class FileService {
             throw new CustomException(NOT_FOUND, "파일을 찾을 수 없습니다");
         }
 
-        String encodedFilename = UriUtils.encode(originalFilename, StandardCharsets.UTF_8);
+        String encodedFilename = UriUtils.encode(fileInfo.getOriginalFilename(), StandardCharsets.UTF_8);
         String contentDisposition = "inline; filename=\"" + encodedFilename + "\"";
 
         return new FileResponse(resource, contentDisposition);
     }
 
     // 단건 파일 삭제
-    public void deleteFile(FileCategory fileCategory, String directory, String storedFilename) {
+    public void deleteFile(FileCategory fileCategory, FileInfo fileInfo) {
 
-        File file = Paths.get(DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + directory)
-                .resolve(storedFilename)
+        File file = Paths.get(DEFAULT_PATH + "/" + fileCategory.getPath() + "/" + formatDate(fileInfo.getUploadDate()))
+                .resolve(fileInfo.getStoredFilename())
                 .toFile();
 
         if(!file.exists()) {
@@ -94,5 +94,10 @@ public class FileService {
         }
 
         file.delete();
+    }
+
+    /* private methods */
+    private String formatDate(LocalDate localDate) {
+        return localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

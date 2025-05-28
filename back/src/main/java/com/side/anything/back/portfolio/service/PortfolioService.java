@@ -13,8 +13,9 @@ import com.side.anything.back.portfolio.dto.response.PortfolioResponse;
 import com.side.anything.back.portfolio.repository.PortfolioFileRepository;
 import com.side.anything.back.portfolio.repository.PortfolioRepository;
 import com.side.anything.back.security.jwt.TokenInfo;
-import com.side.anything.back.util.FileCategory;
-import com.side.anything.back.util.FileService;
+import com.side.anything.back.util.dto.response.FileInfo;
+import com.side.anything.back.util.file.FileCategory;
+import com.side.anything.back.util.file.FileService;
 import com.side.anything.back.util.dto.response.FileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,8 +53,8 @@ public class PortfolioService {
         Portfolio savedPortfolio = portfolioRepository.save(Portfolio.of(portfolioSaveRequest, findMember));
 
         if(file != null) {
-            String storedFilename = fileService.saveFile(file, FileCategory.PORTFOLIO);
-            PortfolioFile portfolioFile = PortfolioFile.of(file.getOriginalFilename(), storedFilename, savedPortfolio);
+            FileInfo fileInfo = fileService.saveFile(file, FileCategory.PORTFOLIO);
+            PortfolioFile portfolioFile = PortfolioFile.of(fileInfo, savedPortfolio);
             portfolioFileRepository.save(portfolioFile);
         }
 
@@ -118,8 +119,8 @@ public class PortfolioService {
         findPortfolio.update(request);
 
         if(file != null) {
-            String storedFilename = fileService.saveFile(file, FileCategory.PORTFOLIO);
-            PortfolioFile portfolioFile = PortfolioFile.of(file.getOriginalFilename(), storedFilename, findPortfolio);
+            FileInfo fileInfo = fileService.saveFile(file, FileCategory.PORTFOLIO);
+            PortfolioFile portfolioFile = PortfolioFile.of(fileInfo, findPortfolio);
             portfolioFileRepository.save(portfolioFile);
         }
     }
@@ -137,9 +138,9 @@ public class PortfolioService {
         PortfolioFile findPortfolioFile = findPortfolioFileByPortfolioId(portfolioId);
 
         if(findPortfolioFile != null) {
+            FileInfo fileInfo = new FileInfo(findPortfolioFile);
             portfolioFileRepository.deleteByPortfolioId(portfolioId);
-            String uploadDate = findPortfolioFile.getCreatedAt().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            fileService.deleteFile(FileCategory.PORTFOLIO, uploadDate, findPortfolioFile.getStoredFilename());
+            fileService.deleteFile(FileCategory.PORTFOLIO, fileInfo);
         }
 
         portfolioRepository.deleteById(portfolioId);
@@ -166,12 +167,9 @@ public class PortfolioService {
             throw new CustomException(FORBIDDEN, "해당 파일 접근 권한이 없습니다");
         }
 
-        String storedFilename = findPortfolioFile.getStoredFilename();
-        String originalFilename = findPortfolioFile.getOriginalFilename();
+        FileInfo fileInfo = new FileInfo(findPortfolioFile);
 
-        String uploadDate = findPortfolioFile.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        return fileService.loadPdf(FileCategory.PORTFOLIO, uploadDate, storedFilename, originalFilename);
+        return fileService.loadPdf(FileCategory.PORTFOLIO, fileInfo);
     }
 
     // 포트폴리오 PDF 파일 삭제
@@ -196,9 +194,9 @@ public class PortfolioService {
             throw new CustomException(FORBIDDEN, "해당 파일 접근 권한이 없습니다");
         }
 
+        FileInfo fileInfo = new FileInfo(findPortfolioFile);
         portfolioFileRepository.deleteById(portfolioFileId);
-        String uploadDate = findPortfolioFile.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        fileService.deleteFile(FileCategory.PORTFOLIO, uploadDate, findPortfolioFile.getStoredFilename());
+        fileService.deleteFile(FileCategory.PORTFOLIO, fileInfo);
     }
 
     /* private methods */
