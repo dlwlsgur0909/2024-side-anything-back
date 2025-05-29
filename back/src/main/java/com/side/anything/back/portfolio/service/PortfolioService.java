@@ -28,8 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static com.side.anything.back.exception.BasicExceptionEnum.FORBIDDEN;
-import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
+import static com.side.anything.back.exception.BasicExceptionEnum.*;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +52,7 @@ public class PortfolioService {
         Portfolio savedPortfolio = portfolioRepository.save(Portfolio.of(portfolioSaveRequest, findMember));
 
         if(file != null) {
+            fileService.validatePdfType(file);
             FileInfo fileInfo = fileService.saveFile(file, FileCategory.PORTFOLIO);
             PortfolioFile portfolioFile = PortfolioFile.of(fileInfo, savedPortfolio);
             portfolioFileRepository.save(portfolioFile);
@@ -119,6 +119,7 @@ public class PortfolioService {
         findPortfolio.update(request);
 
         if(file != null) {
+            fileService.validatePdfType(file);
             FileInfo fileInfo = fileService.saveFile(file, FileCategory.PORTFOLIO);
             PortfolioFile portfolioFile = PortfolioFile.of(fileInfo, findPortfolio);
             portfolioFileRepository.save(portfolioFile);

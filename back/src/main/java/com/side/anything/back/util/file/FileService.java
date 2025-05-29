@@ -96,6 +96,13 @@ public class FileService {
         file.delete();
     }
 
+    // PDF 파일 타입 검증
+    public void validatePdfType(MultipartFile file) {
+        if(file.getContentType() == null || !file.getContentType().equals("application/pdf")) {
+            throw new CustomException(BAD_REQUEST, "PDF 형식의 파일만 업로드할 수 있습니다");
+        }
+    }
+
     /* private methods */
     private String formatDate(LocalDate localDate) {
         return localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
