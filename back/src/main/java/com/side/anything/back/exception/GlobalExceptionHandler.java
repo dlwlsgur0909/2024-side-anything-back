@@ -12,6 +12,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -34,7 +35,7 @@ public class GlobalExceptionHandler {
             InvalidParameterException.class,
             IllegalArgumentException.class
     })
-    public ResponseEntity<?> handleBadRequest(Exception e, HttpServletRequest request) {
+    public ResponseEntity<BasicExceptionResponse> handleBadRequest(Exception e, HttpServletRequest request) {
 
         log.error("Bad Request for - {}", createRequestInfo(request));
         log.error("Error Message - {}", e.getMessage(), e);
@@ -48,7 +49,7 @@ public class GlobalExceptionHandler {
             NoHandlerFoundException.class,
             NoResourceFoundException.class,
     })
-    public ResponseEntity<?> handleNotFound(Exception e, HttpServletRequest request) {
+    public ResponseEntity<BasicExceptionResponse> handleNotFound(Exception e, HttpServletRequest request) {
 
         log.error("Not Found for - {}", createRequestInfo(request));
         log.error("Error Message - {}", e.getMessage(), e);
@@ -61,7 +62,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             MethodNotAllowedException.class
     })
-    public ResponseEntity<?> handleMethodNotAllowed(Exception e, HttpServletRequest request) {
+    public ResponseEntity<BasicExceptionResponse> handleMethodNotAllowed(Exception e, HttpServletRequest request) {
 
         log.error("Method Not Allowed for - {}", createRequestInfo(request));
         log.error("Error Message - {}", e.getMessage(), e);
@@ -74,7 +75,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             MailSendException.class
     })
-    public ResponseEntity<?> handleMailException(Exception e, HttpServletRequest request) {
+    public ResponseEntity<BasicExceptionResponse> handleMailException(Exception e, HttpServletRequest request) {
 
         log.error("Mail Send Error for - {}", createRequestInfo(request));
         log.error("Error Message - {}", e.getMessage(), e);
@@ -85,9 +86,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            MaxUploadSizeExceededException.class
+    })
+    public ResponseEntity<?> handleMaxUploadSizeExceededException(Exception e, HttpServletRequest request) {
+
+        log.error("File Size is Too Large for - {}", createRequestInfo(request));
+        log.error("Error Message - {}", e.getMessage(), e);
+
+        return ResponseEntity
+                .status(PAYLOAD_TOO_LARGE.getStatus())
+                .body(new BasicExceptionResponse(PAYLOAD_TOO_LARGE));
+    }
+
+    @ExceptionHandler({
             Exception.class
     })
-    public ResponseEntity<?> handleInternalServerError(Exception e, HttpServletRequest request) {
+    public ResponseEntity<BasicExceptionResponse> handleInternalServerError(Exception e, HttpServletRequest request) {
 
         log.error("Internal Server Error for - {}", createRequestInfo(request));
         log.error("Error Message - {}", e.getMessage(), e);
@@ -100,7 +114,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             CustomException.class
     })
-    public ResponseEntity<?> handleCustomException(CustomException ce, HttpServletRequest request) {
+    public ResponseEntity<BasicExceptionResponse> handleCustomException(CustomException ce, HttpServletRequest request) {
 
         log.error("Custom Exception for - {}", createRequestInfo(request));
         log.error("Error Message - {}", ce.getErrorMessage());
@@ -111,7 +125,6 @@ public class GlobalExceptionHandler {
     }
 
     private String createRequestInfo(HttpServletRequest request) {
-
         return request.getMethod() + ": " + request.getRequestURL();
     }
 
