@@ -14,6 +14,7 @@ public enum BasicExceptionEnum {
     NOT_FOUND(HttpStatus.NOT_FOUND, 404, "요청 정보를 찾을 수 없습니다"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, 405, "허용되지 않은 요청입니다"),
     CONFLICT(HttpStatus.CONFLICT, 409, "중복된 자원입니다"),
+    PAYLOAD_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, 413, "허용된 파일 사이즈를 초과했습니다"),
     MAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "메일 발송에 실패했습니다"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "서버가 원활하지 않습니다 \n 문제가 지속되는 경우 관리자에게 문의해주세요")
     ;

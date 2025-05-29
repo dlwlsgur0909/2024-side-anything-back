@@ -71,7 +71,7 @@ class PortfolioServiceTest {
         String portfolioUrl = "https://github.com/dlwlsgur0909";
         Boolean isPublic = true;
         PortfolioSaveRequest request = new PortfolioSaveRequest(portfolioName, portfolioContent, portfolioUrl, isPublic);
-        Long savedPortfolioId = portfolioService.savePortfolio(tokenInfo, request);
+        Long savedPortfolioId = portfolioService.savePortfolio(tokenInfo, request, null);
 
         em.flush();
         em.clear();
@@ -102,7 +102,7 @@ class PortfolioServiceTest {
         Boolean isPublic = true;
 
         PortfolioSaveRequest request = new PortfolioSaveRequest(portfolioName, portfolioContent, portfolioUrl, isPublic);
-        Long savedPortfolioId = portfolioService.savePortfolio(tokenInfo, request);
+        Long savedPortfolioId = portfolioService.savePortfolio(tokenInfo, request, null);
 
         em.flush();
         em.clear();
@@ -113,7 +113,7 @@ class PortfolioServiceTest {
         Boolean updateIsPublic = false;
 
         PortfolioSaveRequest updateRequest = new PortfolioSaveRequest(updatePortfolioName, updatePortfolioContent, portfolioUrl, updateIsPublic);
-        portfolioService.updatePortfolio(tokenInfo, savedPortfolioId, updateRequest);
+        portfolioService.updatePortfolio(tokenInfo, savedPortfolioId, updateRequest, null);
 
         em.flush();
         em.clear();

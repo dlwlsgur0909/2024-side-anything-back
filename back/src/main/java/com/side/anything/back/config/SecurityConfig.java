@@ -56,25 +56,24 @@ public class SecurityConfig {
 
         return http
                 .cors(cors ->
-                        cors.configurationSource(new CorsConfigurationSource() {
-                            @Override
-                            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        cors.configurationSource(request -> {
 
-                                CorsConfiguration corsConfiguration = new CorsConfiguration();
+                            CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-                                corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-                                corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
-                                corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
-                                corsConfiguration.setMaxAge(Duration.ofHours(1));
+                            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+                            corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
+                            corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+                            corsConfiguration.setExposedHeaders(Collections.singletonList("Content-Disposition"));
+                            corsConfiguration.setMaxAge(Duration.ofHours(1));
 
 //                                corsConfiguration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
 //                                corsConfiguration.setExposedHeaders(Collections.singletonList("Access"));
 //                                corsConfiguration.setExposedHeaders(Collections.singletonList("Refresh"));
 //                                corsConfiguration.setAllowCredentials(true);
 
-                                return corsConfiguration;
-                            }
-                        }))
+                            return corsConfiguration;
+                        })
+                )
                 .csrf(AbstractHttpConfigurer::disable) // 세션이 아닌 JWT 사용 -> 세션은 STATELESS -> CSRF disable 처리
                 .formLogin(AbstractHttpConfigurer::disable) // form login 사용 X
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 사용 X
