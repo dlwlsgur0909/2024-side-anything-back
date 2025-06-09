@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 
 import java.util.Optional;
 
@@ -19,5 +20,5 @@ public interface PortfolioFileRepository extends JpaRepository<PortfolioFile, Lo
 
     @Modifying
     @Query("DELETE FROM PortfolioFile pf WHERE pf.id = :portfolioFileId")
-    void deleteById(@Param("portfolioFileId") Long portfolioFileId);
+    void deleteById(@NonNull @Param("portfolioFileId") Long portfolioFileId);
 }
