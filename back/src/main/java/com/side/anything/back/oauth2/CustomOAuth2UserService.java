@@ -12,6 +12,8 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -46,8 +48,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         CustomUserDTO userDTO = CustomUserDTO.builder()
                 .username(username)
                 .name(oAuth2Response.getName())
+                .dob(null)
+                .gender(null)
+                .nickname(null)
                 .email(oAuth2Response.getEmail())
                 .role(Role.USER)
+                .isProfileCompleted(false)
                 .build();
 
         // username을 기준으로 회원 데이터 조회
@@ -68,11 +74,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Member member = Member.of(userDTO, registrationId);
 
             Member savedMember = memberRepository.save(member);
-            userDTO.setId(savedMember.getId());
+            userDTO.setNewMember(savedMember.getId());
         }else {
             // 이미 가입된 회원인 경우 갱신할 유저 정보 업데이트
             findMember.updateOAuth2(userDTO);
-            userDTO.setId(findMember.getId());
+            userDTO.setExistMember(findMember);
         }
 
         return new CustomOAuth2User(userDTO);

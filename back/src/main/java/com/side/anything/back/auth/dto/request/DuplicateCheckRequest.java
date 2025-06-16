@@ -1,16 +1,17 @@
 package com.side.anything.back.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Getter;
 
-@Getter @ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Getter
 public class DuplicateCheckRequest {
 
     @NotBlank
-    private String usernameOrEmail;
+    private String username;
+    @NotBlank
+    private String nickname;
+    @NotBlank
+    private String email;
 }
 
 

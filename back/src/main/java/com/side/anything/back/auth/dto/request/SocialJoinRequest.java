@@ -4,24 +4,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
-import java.time.LocalDate;
-
 @Getter
-public class JoinRequest {
+public class SocialJoinRequest {
 
-    @NotBlank
-    private String username;
-    @NotBlank
-    private String password;
-    @NotBlank
-    private String name;
     @NotNull
-    private LocalDate dob;
+    private Long id;
+    @NotBlank
+    private String dob;
     @NotBlank
     private String gender;
     @NotBlank
     private String nickname;
-    @NotBlank
-    private String email;
 
 }
