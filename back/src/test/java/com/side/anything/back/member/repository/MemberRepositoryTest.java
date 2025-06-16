@@ -1,7 +1,6 @@
 package com.side.anything.back.member.repository;
 
-import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.domain.Role;
+import com.side.anything.back.member.entity.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,17 +23,17 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void saveMember() {
-        Member member = Member.builder()
-                .username("myTest")
-                .password("testPassword")
-                .name("테스트 회원")
-                .role(Role.USER)
-                .email("myTest@test.com")
-                .authentication("TEST")
-                .isVerified(true)
-                .build();
-
-        memberRepository.save(member);
+//        Member member = Member.builder()
+//                .username("myTest")
+//                .password("testPassword")
+//                .name("테스트 회원")
+//                .role(Role.USER)
+//                .email("myTest@test.com")
+//                .authentication("TEST")
+//                .isVerified(true)
+//                .build();
+//
+//        memberRepository.save(member);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.side.anything.back.oauth2;
 
-import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.domain.Role;
+import com.side.anything.back.member.entity.Member;
+import com.side.anything.back.member.entity.Role;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.oauth2.dto.response.*;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +46,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         CustomUserDTO userDTO = CustomUserDTO.builder()
                 .username(username)
                 .name(oAuth2Response.getName())
+                .dob(null)
+                .gender(null)
+                .nickname(null)
                 .email(oAuth2Response.getEmail())
                 .role(Role.USER)
+                .isProfileCompleted(false)
                 .build();
 
         // username을 기준으로 회원 데이터 조회
@@ -68,11 +72,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Member member = Member.of(userDTO, registrationId);
 
             Member savedMember = memberRepository.save(member);
-            userDTO.setId(savedMember.getId());
+            userDTO.setNewMember(savedMember.getId());
         }else {
             // 이미 가입된 회원인 경우 갱신할 유저 정보 업데이트
             findMember.updateOAuth2(userDTO);
-            userDTO.setId(findMember.getId());
+            userDTO.setExistMember(findMember);
         }
 
         return new CustomOAuth2User(userDTO);

@@ -1,6 +1,6 @@
 package com.side.anything.back.member.dto.response;
 
-import com.side.anything.back.member.domain.Member;
+import com.side.anything.back.member.entity.Member;
 import lombok.*;
 
 @Getter @ToString

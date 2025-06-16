@@ -2,16 +2,14 @@ package com.side.anything.back.auth.controller;
 
 import com.side.anything.back.auth.dto.request.*;
 import com.side.anything.back.auth.dto.response.LoginResponse;
+import com.side.anything.back.auth.dto.response.SocialJoinResponse;
 import com.side.anything.back.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,25 +18,9 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // 아이디 중복 확인 API
-    @PostMapping("/duplicate/username")
-    public ResponseEntity<Boolean> isUniqueUsername(@RequestBody @Valid DuplicateCheckRequest request) {
-
-        return ResponseEntity
-                .ok(authService.isUniqueUsername(request));
-    }
-
-    // 이메일 중복 확인 API
-    @PostMapping("/duplicate/email")
-    public ResponseEntity<Boolean> isUniqueEmail(@RequestBody @Valid DuplicateCheckRequest request) {
-
-        return ResponseEntity
-                .ok(authService.isUniqueEmail(request));
-    }
-
     // 회원가입 API
     @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody @Valid JoinRequest request) {
+    public ResponseEntity<Void> join(@RequestBody @Valid JoinRequest request) {
 
         authService.join(request);
 
@@ -49,7 +31,7 @@ public class AuthController {
 
     // 인증 메일 재발송 API
     @PostMapping("/send")
-    public ResponseEntity<?> sendEmail(@RequestBody @Valid DuplicateCheckRequest request) {
+    public ResponseEntity<Void> sendEmail(@RequestBody @Valid EmailRequest request) {
 
         authService.sendEmail(request);
 
@@ -60,7 +42,7 @@ public class AuthController {
 
     // 인증 API
     @PostMapping("/verify")
-    public ResponseEntity<?> verify(@RequestBody @Valid VerifyRequest request) {
+    public ResponseEntity<Void> verify(@RequestBody @Valid VerifyRequest request) {
 
         authService.verify(request);
 
@@ -104,8 +86,18 @@ public class AuthController {
                 .ok(authService.reissue(response, request));
     }
 
+    // 소셜 로그인 회원가입
+    @PatchMapping("/social-join")
+    public ResponseEntity<LoginResponse> socialJoin(HttpServletResponse response, HttpServletRequest request,
+                                                    @RequestBody @Valid SocialJoinRequest socialJoinRequest) {
+
+        return ResponseEntity
+                .ok(authService.socialJoin(response, request, socialJoinRequest));
+    }
+
+    // 소셜 로그인 성공
     @PostMapping("/login-success")
-    public ResponseEntity<?> socialLoginSuccess(HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<LoginResponse> socialLoginSuccess(HttpServletResponse response, HttpServletRequest request) {
 
         return ResponseEntity
                 .ok()
@@ -114,7 +106,7 @@ public class AuthController {
 
     // 로그아웃 API
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
 
         authService.logout(request, response);
 

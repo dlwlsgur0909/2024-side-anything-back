@@ -1,4 +1,4 @@
-package com.side.anything.back.member.domain;
+package com.side.anything.back.member.entity;
 
 import lombok.RequiredArgsConstructor;
 
