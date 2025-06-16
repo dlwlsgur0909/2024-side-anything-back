@@ -1,7 +1,7 @@
 package com.side.anything.back.member.service;
 
 import com.side.anything.back.exception.CustomException;
-import com.side.anything.back.member.domain.Member;
+import com.side.anything.back.member.entity.Member;
 import com.side.anything.back.member.dto.request.MemberChangePasswordRequest;
 import com.side.anything.back.member.dto.response.MemberDetailResponse;
 import com.side.anything.back.member.repository.MemberRepository;

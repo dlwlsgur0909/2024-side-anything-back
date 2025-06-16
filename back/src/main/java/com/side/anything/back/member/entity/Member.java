@@ -1,4 +1,4 @@
-package com.side.anything.back.member.domain;
+package com.side.anything.back.member.entity;
 
 import com.side.anything.back.auth.dto.request.JoinRequest;
 import com.side.anything.back.auth.dto.request.SocialJoinRequest;

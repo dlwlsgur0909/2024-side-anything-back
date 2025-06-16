@@ -1,7 +1,7 @@
 package com.side.anything.back.security.jwt;
 
-import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.domain.Role;
+import com.side.anything.back.member.entity.Member;
+import com.side.anything.back.member.entity.Role;
 import com.side.anything.back.oauth2.dto.response.CustomOAuth2User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

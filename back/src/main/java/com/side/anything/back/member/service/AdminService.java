@@ -2,8 +2,8 @@ package com.side.anything.back.member.service;
 
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.TokenInfo;
-import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.domain.Role;
+import com.side.anything.back.member.entity.Member;
+import com.side.anything.back.member.entity.Role;
 import com.side.anything.back.member.dto.response.AdminFindResponse;
 import com.side.anything.back.member.dto.response.AdminMemberListResponse;
 import com.side.anything.back.member.dto.response.MemberDetailResponse;

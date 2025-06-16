@@ -2,12 +2,11 @@ package com.side.anything.back.auth.service;
 
 import com.side.anything.back.auth.dto.request.*;
 import com.side.anything.back.auth.dto.response.LoginResponse;
-import com.side.anything.back.auth.dto.response.SocialJoinResponse;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.JwtUtil;
 import com.side.anything.back.security.jwt.TokenInfo;
-import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.domain.Role;
+import com.side.anything.back.member.entity.Member;
+import com.side.anything.back.member.entity.Role;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.util.EmailService;
 import jakarta.servlet.http.Cookie;

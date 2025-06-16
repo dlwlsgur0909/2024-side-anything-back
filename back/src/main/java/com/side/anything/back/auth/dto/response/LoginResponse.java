@@ -1,6 +1,6 @@
 package com.side.anything.back.auth.dto.response;
 
-import com.side.anything.back.member.domain.Role;
+import com.side.anything.back.member.entity.Role;
 import lombok.*;
 
 @Getter @ToString

@@ -1,7 +1,7 @@
 package com.side.anything.back.oauth2;
 
-import com.side.anything.back.member.domain.Member;
-import com.side.anything.back.member.domain.Role;
+import com.side.anything.back.member.entity.Member;
+import com.side.anything.back.member.entity.Role;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.oauth2.dto.response.*;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor

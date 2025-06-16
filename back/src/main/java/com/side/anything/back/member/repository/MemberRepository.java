@@ -1,6 +1,6 @@
 package com.side.anything.back.member.repository;
 
-import com.side.anything.back.member.domain.Member;
+import com.side.anything.back.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
