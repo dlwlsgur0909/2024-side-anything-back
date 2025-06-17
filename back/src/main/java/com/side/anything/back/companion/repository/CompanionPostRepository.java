@@ -17,15 +17,15 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
             value = """
                     SELECT cp FROM CompanionPost cp
                     WHERE
-                        cp.title
+                        cp.title LIKE %:keyword%
                         OR cp.location LIKE  %:keyword%
                     ORDER BY
                         cp.id DESC
                     """,
             countQuery = """
-                        SELECT COUNT(cp) FROM CompanionPost
+                        SELECT COUNT(cp) FROM CompanionPost cp
                         WHERE
-                            cp.title
+                            cp.title LIKE %:keyword%
                             OR cp.location LIKE %:keyword%
                         """
     )

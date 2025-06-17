@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 public class CompanionPostListResponse {
 
+    @Builder.Default
     private List<CompanionPostResponse> companionPostList = new ArrayList<>();
     private Integer totalPages;
 
