@@ -1,6 +1,8 @@
 package com.side.anything.back.companion.service;
 
 import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
+import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse;
+import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
 import com.side.anything.back.companion.entity.CompanionPost;
 import com.side.anything.back.companion.repository.CompanionPostRepository;
 import com.side.anything.back.exception.CustomException;
@@ -8,6 +10,8 @@ import com.side.anything.back.member.entity.Member;
 import com.side.anything.back.member.repository.MemberRepository;
 import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,20 +23,35 @@ import static com.side.anything.back.exception.BasicExceptionEnum.*;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CompanionPostService {
+public class CompanionService {
+
+    private static final int SIZE = 5;
 
     private final CompanionPostRepository companionPostRepository;
     private final MemberRepository memberRepository;
 
     // 동행 모집 글 목록
-    public List<CompanionPost> findCompanionPostList() {
-        return companionPostRepository.findAll();
+    public CompanionPostListResponse findCompanionPostList(final String keyword, final int page) {
+
+        PageRequest pageRequest = PageRequest.of(page - 1, SIZE);
+
+        Page<CompanionPost> pagedCompanionPost = companionPostRepository.findPagedList(keyword, pageRequest);
+
+        List<CompanionPostListResponse.CompanionPostResponse> companionPostList = pagedCompanionPost.getContent()
+                .stream().map(CompanionPostListResponse.CompanionPostResponse::new)
+                .toList();
+
+        return CompanionPostListResponse
+                .builder()
+                .companionPostList(companionPostList)
+                .totalPages(pagedCompanionPost.getTotalPages())
+                .build();
     }
 
-    // 동행 모집 글 단건 조회
-    public CompanionPost findCompanionPost(final Long id) {
+    // 동행 모집 글 상세 조회
+    public CompanionPostDetailResponse findCompanionPostDetail(final Long id) {
 
-        return findCompanionPostById(id);
+        return new CompanionPostDetailResponse(findCompanionPostById(id));
     }
 
     // 동행 모집 글 저장
@@ -97,7 +116,7 @@ public class CompanionPostService {
     /* private methods */
 
     private CompanionPost findCompanionPostById(final Long id) {
-        return companionPostRepository.findById(id)
+        return companionPostRepository.findDetail(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "모집 글을 찾을 수 없습니다"));
     }
 
