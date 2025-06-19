@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static com.side.anything.back.exception.BasicExceptionEnum.*;
 
@@ -74,7 +73,7 @@ public class CompanionService {
         CompanionPost findCompanionPost = findCompanionPostById(companionPostId);
 
         // 작성자 검증
-        if(!findCompanionPost.getWriter().getId().equals(tokenInfo.getId())) {
+        if(!findCompanionPost.getMember().getId().equals(tokenInfo.getId())) {
             throw new CustomException(FORBIDDEN, "작성자만 수정할 수 있습니다");
         }
 

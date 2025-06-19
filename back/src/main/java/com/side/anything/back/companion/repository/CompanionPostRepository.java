@@ -32,7 +32,7 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
     Page<CompanionPost> findPagedList(@Param("keyword") String keyword,
                                       Pageable pageable);
 
-    @Query("SELECT cp FROM CompanionPost cp JOIN FETCH cp.writer w WHERE cp.id = :id")
+    @Query("SELECT cp FROM CompanionPost cp JOIN FETCH cp.member m WHERE cp.id = :id")
     Optional<CompanionPost> findDetail(@Param("id") Long id);
 
     @Modifying

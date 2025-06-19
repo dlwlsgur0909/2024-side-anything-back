@@ -35,13 +35,13 @@ public class CompanionPost extends BaseEntity {
     private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_id")
-    private Member writer;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(name = "is_closed")
     private Boolean isClosed;
 
-    public static CompanionPost of(CompanionPostSaveRequest request, Member writer) {
+    public static CompanionPost of(CompanionPostSaveRequest request, Member member) {
 
         CompanionPost companionPost = new CompanionPost();
         companionPost.title = request.getTitle();
@@ -49,7 +49,7 @@ public class CompanionPost extends BaseEntity {
         companionPost.location = request.getLocation();
         companionPost.startDate = request.getStartDate();
         companionPost.endDate = request.getEndDate();
-        companionPost.writer = writer;
+        companionPost.member = member;
         companionPost.isClosed = false;
 
         return companionPost;

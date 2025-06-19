@@ -25,8 +25,8 @@ public class CompanionPostDetailResponse {
         this.location = companionPost.getLocation();
         this.startDate = companionPost.getStartDate();
         this.endDate = companionPost.getEndDate();
-        this.memberId = companionPost.getWriter().getId();
-        this.writer = companionPost.getWriter().getNickname();
+        this.memberId = companionPost.getMember().getId();
+        this.writer = companionPost.getMember().getNickname();
         this.isClosed = companionPost.getIsClosed();
     }
 
