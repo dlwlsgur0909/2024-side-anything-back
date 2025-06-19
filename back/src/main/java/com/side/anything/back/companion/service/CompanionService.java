@@ -37,15 +37,7 @@ public class CompanionService {
 
         Page<CompanionPost> pagedCompanionPost = companionPostRepository.findPagedList(keyword, pageRequest);
 
-        List<CompanionPostListResponse.CompanionPostResponse> companionPostList = pagedCompanionPost.getContent()
-                .stream().map(CompanionPostListResponse.CompanionPostResponse::new)
-                .toList();
-
-        return CompanionPostListResponse
-                .builder()
-                .companionPostList(companionPostList)
-                .totalPages(pagedCompanionPost.getTotalPages())
-                .build();
+        return new CompanionPostListResponse(pagedCompanionPost.getContent(), pagedCompanionPost.getTotalPages());
     }
 
     // 동행 모집 글 상세 조회
@@ -103,12 +95,15 @@ public class CompanionService {
 
         findCompanionPost.update(request);
 
-        // 삭제 시 신청 내역 초기화
+        // 수정 시 신청 내역이 있는 경우 처리 필요
 
     }
 
     @Transactional
     public void deleteCompanionPost(final Long companionPostId) {
+
+        // 삭제 시 신청 내역 같이 삭제 처리 필요
+
         companionPostRepository.deleteById(companionPostId);
     }
 

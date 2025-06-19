@@ -20,10 +20,6 @@ public class CompanionPostSaveRequest {
     private String location;
 
     @NotNull
-    @Positive
-    private Integer recruitCount;
-
-    @NotNull
     private LocalDate startDate;
 
     @NotNull

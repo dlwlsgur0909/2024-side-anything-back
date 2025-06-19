@@ -1,29 +1,30 @@
 package com.side.anything.back.companion.dto.response;
 
 import com.side.anything.back.companion.entity.CompanionPost;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
 public class CompanionPostListResponse {
 
-    @Builder.Default
-    private List<CompanionPostResponse> companionPostList = new ArrayList<>();
+    private List<CompanionPostResponse> companionPostList;
     private Integer totalPages;
 
-    @Getter
-    public static class CompanionPostResponse {
+    public CompanionPostListResponse(List<CompanionPost> companionPostList, Integer totalPages) {
+        this.companionPostList = companionPostList.stream()
+                .map(CompanionPostResponse::new)
+                .toList();
+        this.totalPages = totalPages;
+    }
+
+    static class CompanionPostResponse {
         private Long id;
         private String title;
         private String location;
         private LocalDate startDate;
         private LocalDate endDate;
-        private Integer recruitCount;
         private Boolean isClosed;
 
         public CompanionPostResponse(CompanionPost companionPost) {
@@ -32,7 +33,6 @@ public class CompanionPostListResponse {
             this.location = companionPost.getLocation();
             this.startDate = companionPost.getStartDate();
             this.endDate = companionPost.getEndDate();
-            this.recruitCount = companionPost.getRecruitCount();
             this.isClosed = companionPost.getIsClosed();
         }
 

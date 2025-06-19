@@ -28,9 +28,6 @@ public class CompanionPost extends BaseEntity {
     @Column(name = "location")
     private String location;
 
-    @Column(name = "recruit_count")
-    private Integer recruitCount;
-
     @Column(name = "start_date")
     private LocalDate startDate;
 
@@ -50,7 +47,6 @@ public class CompanionPost extends BaseEntity {
         companionPost.title = request.getTitle();
         companionPost.content = request.getContent();
         companionPost.location = request.getLocation();
-        companionPost.recruitCount = request.getRecruitCount();
         companionPost.startDate = request.getStartDate();
         companionPost.endDate = request.getEndDate();
         companionPost.writer = writer;
@@ -63,7 +59,6 @@ public class CompanionPost extends BaseEntity {
         this.title = request.getTitle();
         this.content = request.getContent();
         this.location = request.getLocation();
-        this.recruitCount = request.getRecruitCount();
         this.startDate = request.getStartDate();
         this.endDate = request.getEndDate();
     }

@@ -18,6 +18,7 @@ public class CompanionController {
 
     private final CompanionService companionService;
 
+    // 동행 모집 목록 조회
     @GetMapping
     public ResponseEntity<CompanionPostListResponse> findCompanionPostList(@RequestParam(name = "keyword", defaultValue = "") String keyword,
                                                                            @RequestParam(name = "page", defaultValue = "1") int page) {
@@ -26,6 +27,7 @@ public class CompanionController {
                 .ok(companionService.findCompanionPostList(keyword, page));
     }
 
+    // 동행 모집 단건 조회
     @GetMapping("/{companionPostId}")
     public ResponseEntity<CompanionPostDetailResponse> findCompanionPostDetail(@PathVariable Long companionPostId) {
 
@@ -33,6 +35,7 @@ public class CompanionController {
                 .ok(companionService.findCompanionPostDetail(companionPostId));
     }
 
+    // 동행 모집 저장
     @PostMapping
     public ResponseEntity<Void> saveCompanionPost(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                   @RequestBody @Valid CompanionPostSaveRequest request) {
@@ -43,4 +46,9 @@ public class CompanionController {
                 .ok()
                 .build();
     }
+
+    // 동행 모집 수정
+
+    // 동행 모집 삭제
+
 }

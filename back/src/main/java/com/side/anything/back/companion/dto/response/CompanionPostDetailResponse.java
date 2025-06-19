@@ -12,7 +12,6 @@ public class CompanionPostDetailResponse {
     private String title;
     private String content;
     private String location;
-    private Integer recruitCount;
     private LocalDate startDate;
     private LocalDate endDate;
     private String writer;
@@ -22,7 +21,6 @@ public class CompanionPostDetailResponse {
         this.title = companionPost.getTitle();
         this.content = companionPost.getContent();
         this.location = companionPost.getLocation();
-        this.recruitCount = companionPost.getRecruitCount();
         this.startDate = companionPost.getStartDate();
         this.endDate = companionPost.getEndDate();
         this.writer = companionPost.getWriter().getNickname();
