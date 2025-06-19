@@ -14,7 +14,9 @@ public class CompanionPostDetailResponse {
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Long memberId;
     private String writer;
+    private Boolean isClosed;
 
     public CompanionPostDetailResponse(CompanionPost companionPost) {
         this.id = companionPost.getId();
@@ -23,7 +25,9 @@ public class CompanionPostDetailResponse {
         this.location = companionPost.getLocation();
         this.startDate = companionPost.getStartDate();
         this.endDate = companionPost.getEndDate();
+        this.memberId = companionPost.getWriter().getId();
         this.writer = companionPost.getWriter().getNickname();
+        this.isClosed = companionPost.getIsClosed();
     }
 
 }
