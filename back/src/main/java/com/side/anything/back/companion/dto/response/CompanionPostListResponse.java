@@ -19,6 +19,7 @@ public class CompanionPostListResponse {
         this.totalPages = totalPages;
     }
 
+    @Getter
     static class CompanionPostResponse {
         private Long id;
         private String title;
