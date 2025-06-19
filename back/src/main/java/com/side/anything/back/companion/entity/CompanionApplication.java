@@ -1,6 +1,7 @@
 package com.side.anything.back.companion.entity;
 
 import com.side.anything.back.base.BaseEntity;
+import com.side.anything.back.companion.dto.request.CompanionApplicationSaveRequest;
 import com.side.anything.back.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -30,5 +31,18 @@ public class CompanionApplication extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "companion_post_id")
     private CompanionPost companionPost;
+
+    public static CompanionApplication of(CompanionApplicationSaveRequest request, Member member,
+                                          CompanionPost companionPost) {
+
+        CompanionApplication companionApplication = new CompanionApplication();
+
+        companionApplication.message = request.getMessage();
+        companionApplication.status = CompanionApplicationStatus.PENDING;
+        companionApplication.member = member;
+        companionApplication.companionPost = companionPost;
+
+        return companionApplication;
+    }
 
 }

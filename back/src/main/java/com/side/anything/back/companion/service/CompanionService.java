@@ -1,9 +1,12 @@
 package com.side.anything.back.companion.service;
 
+import com.side.anything.back.companion.dto.request.CompanionApplicationSaveRequest;
 import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
 import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
+import com.side.anything.back.companion.entity.CompanionApplication;
 import com.side.anything.back.companion.entity.CompanionPost;
+import com.side.anything.back.companion.repository.CompanionApplicationRepository;
 import com.side.anything.back.companion.repository.CompanionPostRepository;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.member.entity.Member;
@@ -28,6 +31,7 @@ public class CompanionService {
 
     private final CompanionPostRepository companionPostRepository;
     private final MemberRepository memberRepository;
+    private final CompanionApplicationRepository companionApplicationRepository;
 
     // 동행 모집 글 목록
     public CompanionPostListResponse findCompanionPostList(final String keyword, final int page) {
@@ -40,9 +44,12 @@ public class CompanionService {
     }
 
     // 동행 모집 글 상세 조회
-    public CompanionPostDetailResponse findCompanionPostDetail(final Long id) {
+    public CompanionPostDetailResponse findCompanionPostDetail(final TokenInfo tokenInfo, final Long companionPostId) {
 
-        return new CompanionPostDetailResponse(findCompanionPostById(id));
+        return new CompanionPostDetailResponse(
+                findCompanionPostDetailById(companionPostId),
+                checkIsApplied(tokenInfo.getId(), companionPostId)
+        );
     }
 
     // 동행 모집 글 저장
@@ -70,7 +77,7 @@ public class CompanionService {
     public void updateCompanionPost(final TokenInfo tokenInfo, final Long companionPostId,
                                     final CompanionPostSaveRequest request) {
 
-        CompanionPost findCompanionPost = findCompanionPostById(companionPostId);
+        CompanionPost findCompanionPost = findCompanionPostDetailById(companionPostId);
 
         // 작성자 검증
         if(!findCompanionPost.getMember().getId().equals(tokenInfo.getId())) {
@@ -106,17 +113,53 @@ public class CompanionService {
         companionPostRepository.deleteById(companionPostId);
     }
 
+    // 동행 신청
+    @Transactional
+    public void saveCompanionApplication(final TokenInfo tokenInfo, final Long companionPostId,
+                                         final CompanionApplicationSaveRequest request) {
+
+        Member findMember = findMemberById(tokenInfo.getId());
+        CompanionPost findCompanionPost = findCompanionPostById(companionPostId);
+
+        if (checkIsApplied(findMember.getId(), findCompanionPost.getId())) {
+            throw new CustomException(BAD_REQUEST, "이미 지원한 동행입니다");
+        }
+
+        if(findCompanionPost.getIsClosed()) {
+            throw new CustomException(FORBIDDEN, "마감된 동행입니다");
+        }
+
+        if(findMember.getId().equals(findCompanionPost.getMember().getId())) {
+            throw new CustomException(FORBIDDEN, "작성자는 신청할 수 없습니다");
+        }
+
+        companionApplicationRepository.save(CompanionApplication.of(request, findMember, findCompanionPost));
+    }
+
 
     /* private methods */
 
-    private CompanionPost findCompanionPostById(final Long id) {
-        return companionPostRepository.findDetail(id)
+    // 동행 모집 조회 상세
+    private CompanionPost findCompanionPostDetailById(final Long id) {
+        return companionPostRepository.findDetailById(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "모집 글을 찾을 수 없습니다"));
     }
 
+    // 동행 모집 조회 단건
+    private CompanionPost findCompanionPostById(final Long id) {
+        return companionPostRepository.findById(id)
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "모집 글을 찾을 수 없습니다"));
+    }
+
+    // 회원 조회 단건
     private Member findMemberById(final Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "회원 정보를 찾을 수 없습니다"));
+    }
+
+    // 신청 여부 확인
+    private Boolean checkIsApplied(Long memberId, Long companionPostId) {
+        return companionApplicationRepository.existsByMemberIdAndCompanionPostId(memberId, companionPostId);
     }
 
 }

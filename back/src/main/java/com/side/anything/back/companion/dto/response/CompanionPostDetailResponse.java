@@ -17,8 +17,9 @@ public class CompanionPostDetailResponse {
     private Long memberId;
     private String writer;
     private Boolean isClosed;
+    private Boolean isApplied;
 
-    public CompanionPostDetailResponse(CompanionPost companionPost) {
+    public CompanionPostDetailResponse(CompanionPost companionPost, Boolean isApplied) {
         this.id = companionPost.getId();
         this.title = companionPost.getTitle();
         this.content = companionPost.getContent();
@@ -28,6 +29,7 @@ public class CompanionPostDetailResponse {
         this.memberId = companionPost.getMember().getId();
         this.writer = companionPost.getMember().getNickname();
         this.isClosed = companionPost.getIsClosed();
+        this.isApplied = isApplied;
     }
 
 }

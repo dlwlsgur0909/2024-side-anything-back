@@ -33,9 +33,10 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
                                       Pageable pageable);
 
     @Query("SELECT cp FROM CompanionPost cp JOIN FETCH cp.member m WHERE cp.id = :id")
-    Optional<CompanionPost> findDetail(@Param("id") Long id);
+    Optional<CompanionPost> findDetailById(@Param("id") Long id);
 
     @Modifying
     @Query("DELETE FROM CompanionPost cp WHERE cp.id = :id")
     void deleteById(@NonNull @Param("id") Long id);
+
 }

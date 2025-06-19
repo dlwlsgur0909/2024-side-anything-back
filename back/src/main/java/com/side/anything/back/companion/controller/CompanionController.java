@@ -1,5 +1,6 @@
 package com.side.anything.back.companion.controller;
 
+import com.side.anything.back.companion.dto.request.CompanionApplicationSaveRequest;
 import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
 import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
@@ -29,10 +30,11 @@ public class CompanionController {
 
     // 동행 모집 단건 조회
     @GetMapping("/{companionPostId}")
-    public ResponseEntity<CompanionPostDetailResponse> findCompanionPostDetail(@PathVariable Long companionPostId) {
+    public ResponseEntity<CompanionPostDetailResponse> findCompanionPostDetail(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                               @PathVariable Long companionPostId) {
 
         return ResponseEntity
-                .ok(companionService.findCompanionPostDetail(companionPostId));
+                .ok(companionService.findCompanionPostDetail(tokenInfo, companionPostId));
     }
 
     // 동행 모집 저장
@@ -50,5 +52,18 @@ public class CompanionController {
     // 동행 모집 수정
 
     // 동행 모집 삭제
+
+    // 동행 신청
+    @PostMapping("{companionPostId}/application")
+    public ResponseEntity<?> saveCompanionApplication(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                      @PathVariable Long companionPostId,
+                                                      @RequestBody @Valid CompanionApplicationSaveRequest request) {
+
+        companionService.saveCompanionApplication(tokenInfo, companionPostId, request);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 
 }
