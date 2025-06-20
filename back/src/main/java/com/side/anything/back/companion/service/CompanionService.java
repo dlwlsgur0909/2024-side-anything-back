@@ -6,6 +6,7 @@ import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
 import com.side.anything.back.companion.entity.CompanionApplication;
 import com.side.anything.back.companion.entity.CompanionPost;
+import com.side.anything.back.companion.entity.CompanionPostStatus;
 import com.side.anything.back.companion.repository.CompanionApplicationRepository;
 import com.side.anything.back.companion.repository.CompanionPostRepository;
 import com.side.anything.back.exception.CustomException;
@@ -77,29 +78,29 @@ public class CompanionService {
     public void updateCompanionPost(final TokenInfo tokenInfo, final Long companionPostId,
                                     final CompanionPostSaveRequest request) {
 
-        CompanionPost findCompanionPost = findCompanionPostDetailById(companionPostId);
-
-        // 작성자 검증
-        if(!findCompanionPost.getMember().getId().equals(tokenInfo.getId())) {
-            throw new CustomException(FORBIDDEN, "작성자만 수정할 수 있습니다");
-        }
-
-        // 마감 여부 검증
-        if(findCompanionPost.getIsClosed()) {
-            throw new CustomException(FORBIDDEN, "마감된 모집은 수정할 수 없습니다");
-        }
-
-        // 시작일 오늘 날짜 검증
-        if (request.getStartDate().isBefore(LocalDate.now())) {
-            throw new CustomException(BAD_REQUEST, "시작일은 오늘 이전일 수 없습니다");
-        }
-
-        // 시작일, 종료일 검증
-        if(request.getStartDate().isAfter(request.getEndDate())) {
-            throw new CustomException(BAD_REQUEST, "시작일은 종료일 이전일 수 없습니다");
-        }
-
-        findCompanionPost.update(request);
+//        CompanionPost findCompanionPost = findCompanionPostDetailById(companionPostId);
+//
+//        // 작성자 검증
+//        if(!findCompanionPost.getMember().getId().equals(tokenInfo.getId())) {
+//            throw new CustomException(FORBIDDEN, "작성자만 수정할 수 있습니다");
+//        }
+//
+//        // 마감 여부 검증
+//        if(findCompanionPost.getIsClosed()) {
+//            throw new CustomException(FORBIDDEN, "마감된 모집은 수정할 수 없습니다");
+//        }
+//
+//        // 시작일 오늘 날짜 검증
+//        if (request.getStartDate().isBefore(LocalDate.now())) {
+//            throw new CustomException(BAD_REQUEST, "시작일은 오늘 이전일 수 없습니다");
+//        }
+//
+//        // 시작일, 종료일 검증
+//        if(request.getStartDate().isAfter(request.getEndDate())) {
+//            throw new CustomException(BAD_REQUEST, "시작일은 종료일 이전일 수 없습니다");
+//        }
+//
+//        findCompanionPost.update(request);
 
         // 수정 시 신청 내역이 있는 경우 처리 필요
 
@@ -125,7 +126,7 @@ public class CompanionService {
             throw new CustomException(BAD_REQUEST, "이미 지원한 동행입니다");
         }
 
-        if(findCompanionPost.getIsClosed()) {
+        if(findCompanionPost.getStatus() != CompanionPostStatus.OPEN) {
             throw new CustomException(FORBIDDEN, "마감된 동행입니다");
         }
 

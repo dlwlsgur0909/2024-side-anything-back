@@ -1,6 +1,7 @@
 package com.side.anything.back.companion.dto.response;
 
 import com.side.anything.back.companion.entity.CompanionPost;
+import com.side.anything.back.companion.entity.CompanionPostStatus;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -28,7 +29,7 @@ public class CompanionPostDetailResponse {
         this.endDate = companionPost.getEndDate();
         this.memberId = companionPost.getMember().getId();
         this.writer = companionPost.getMember().getNickname();
-        this.isClosed = companionPost.getIsClosed();
+        this.isClosed = companionPost.getStatus() != CompanionPostStatus.OPEN;
         this.isApplied = isApplied;
     }
 

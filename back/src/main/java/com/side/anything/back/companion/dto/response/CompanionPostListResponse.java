@@ -26,7 +26,7 @@ public class CompanionPostListResponse {
         private String location;
         private LocalDate startDate;
         private LocalDate endDate;
-        private Boolean isClosed;
+        private String status;
 
         public CompanionPostResponse(CompanionPost companionPost) {
             this.id = companionPost.getId();
@@ -34,7 +34,7 @@ public class CompanionPostListResponse {
             this.location = companionPost.getLocation();
             this.startDate = companionPost.getStartDate();
             this.endDate = companionPost.getEndDate();
-            this.isClosed = companionPost.getIsClosed();
+            this.status = companionPost.getStatus().getDescription();
         }
 
     }

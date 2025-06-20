@@ -38,8 +38,9 @@ public class CompanionPost extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "is_closed")
-    private Boolean isClosed;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private CompanionPostStatus status;
 
     public static CompanionPost of(CompanionPostSaveRequest request, Member member) {
 
@@ -50,17 +51,9 @@ public class CompanionPost extends BaseEntity {
         companionPost.startDate = request.getStartDate();
         companionPost.endDate = request.getEndDate();
         companionPost.member = member;
-        companionPost.isClosed = false;
+        companionPost.status = CompanionPostStatus.OPEN;
 
         return companionPost;
-    }
-
-    public void update(CompanionPostSaveRequest request) {
-        this.title = request.getTitle();
-        this.content = request.getContent();
-        this.location = request.getLocation();
-        this.startDate = request.getStartDate();
-        this.endDate = request.getEndDate();
     }
 
 }
