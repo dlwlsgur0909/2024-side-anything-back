@@ -1,13 +1,12 @@
 package com.side.anything.back.companion.repository;
 
 import com.side.anything.back.companion.entity.CompanionPost;
+import com.side.anything.back.companion.entity.CompanionPostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.lang.NonNull;
 
 import java.util.Optional;
 
@@ -17,26 +16,29 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
             value = """
                     SELECT cp FROM CompanionPost cp
                     WHERE
-                        cp.title LIKE %:keyword%
-                        OR cp.location LIKE  %:keyword%
+                        (
+                            cp.title LIKE %:keyword%
+                            OR cp.location LIKE  %:keyword%
+                        )
+                        AND cp.status != :status
                     ORDER BY
                         cp.id DESC
                     """,
             countQuery = """
                         SELECT COUNT(cp) FROM CompanionPost cp
                         WHERE
-                            cp.title LIKE %:keyword%
-                            OR cp.location LIKE %:keyword%
+                            (
+                                cp.title LIKE %:keyword%
+                                OR cp.location LIKE  %:keyword%
+                            )
+                            AND cp.status != :status
                         """
     )
     Page<CompanionPost> findPagedList(@Param("keyword") String keyword,
+                                      @Param("status") CompanionPostStatus status,
                                       Pageable pageable);
 
-    @Query("SELECT cp FROM CompanionPost cp JOIN FETCH cp.member m WHERE cp.id = :id")
-    Optional<CompanionPost> findDetailById(@Param("id") Long id);
-
-    @Modifying
-    @Query("DELETE FROM CompanionPost cp WHERE cp.id = :id")
-    void deleteById(@NonNull @Param("id") Long id);
+    @Query("SELECT cp FROM CompanionPost cp JOIN FETCH cp.member m WHERE cp.id = :id AND cp.status != :status")
+    Optional<CompanionPost> findDetailById(@Param("id") Long id, @Param("status") CompanionPostStatus status);
 
 }

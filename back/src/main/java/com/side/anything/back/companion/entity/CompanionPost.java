@@ -56,4 +56,11 @@ public class CompanionPost extends BaseEntity {
         return companionPost;
     }
 
+    public void close() {
+        this.status = CompanionPostStatus.CLOSED;
+    }
+
+    public void delete() {
+        this.status = CompanionPostStatus.DELETED;
+    }
 }

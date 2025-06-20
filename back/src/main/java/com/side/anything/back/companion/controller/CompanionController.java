@@ -49,13 +49,33 @@ public class CompanionController {
                 .build();
     }
 
-    // 동행 모집 수정
+    // 동행 모집 마감
+    @PatchMapping("/{companionPostId}")
+    public ResponseEntity<Void> closeCompanionPost(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                   @PathVariable Long companionPostId) {
+
+        companionService.closeCompanionPost(tokenInfo, companionPostId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 
     // 동행 모집 삭제
+    @DeleteMapping("/{companionPostId}")
+    public ResponseEntity<Void> deleteCompanionPost(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                    @PathVariable Long companionPostId) {
+
+        companionService.deleteCompanionPost(tokenInfo, companionPostId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 
     // 동행 신청
-    @PostMapping("{companionPostId}/application")
-    public ResponseEntity<?> saveCompanionApplication(@AuthenticationPrincipal TokenInfo tokenInfo,
+    @PostMapping("/{companionPostId}/application")
+    public ResponseEntity<Void> saveCompanionApplication(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                       @PathVariable Long companionPostId,
                                                       @RequestBody @Valid CompanionApplicationSaveRequest request) {
 

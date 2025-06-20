@@ -5,6 +5,7 @@ import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
 import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
 import com.side.anything.back.companion.entity.CompanionApplication;
+import com.side.anything.back.companion.entity.CompanionApplicationStatus;
 import com.side.anything.back.companion.entity.CompanionPost;
 import com.side.anything.back.companion.entity.CompanionPostStatus;
 import com.side.anything.back.companion.repository.CompanionApplicationRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.side.anything.back.exception.BasicExceptionEnum.*;
 
@@ -34,17 +36,19 @@ public class CompanionService {
     private final MemberRepository memberRepository;
     private final CompanionApplicationRepository companionApplicationRepository;
 
-    // 동행 모집 글 목록
+    // 동행 모집 목록
     public CompanionPostListResponse findCompanionPostList(final String keyword, final int page) {
 
         PageRequest pageRequest = PageRequest.of(page - 1, SIZE);
 
-        Page<CompanionPost> pagedCompanionPost = companionPostRepository.findPagedList(keyword, pageRequest);
+        Page<CompanionPost> pagedCompanionPost = companionPostRepository.findPagedList(
+                keyword, CompanionPostStatus.DELETED, pageRequest
+        );
 
         return new CompanionPostListResponse(pagedCompanionPost.getContent(), pagedCompanionPost.getTotalPages());
     }
 
-    // 동행 모집 글 상세 조회
+    // 동행 모집 상세 조회
     public CompanionPostDetailResponse findCompanionPostDetail(final TokenInfo tokenInfo, final Long companionPostId) {
 
         return new CompanionPostDetailResponse(
@@ -53,7 +57,7 @@ public class CompanionService {
         );
     }
 
-    // 동행 모집 글 저장
+    // 동행 모집 저장
     @Transactional
     public void saveCompanionPost(final TokenInfo tokenInfo, final CompanionPostSaveRequest request) {
 
@@ -73,45 +77,46 @@ public class CompanionService {
         companionPostRepository.save(companionPost);
     }
 
-    // 동행 모집 글 수정
+    // 동행 모집 마감
     @Transactional
-    public void updateCompanionPost(final TokenInfo tokenInfo, final Long companionPostId,
-                                    final CompanionPostSaveRequest request) {
+    public void closeCompanionPost(final TokenInfo tokenInfo, final Long companionPostId) {
 
-//        CompanionPost findCompanionPost = findCompanionPostDetailById(companionPostId);
-//
-//        // 작성자 검증
-//        if(!findCompanionPost.getMember().getId().equals(tokenInfo.getId())) {
-//            throw new CustomException(FORBIDDEN, "작성자만 수정할 수 있습니다");
-//        }
-//
-//        // 마감 여부 검증
-//        if(findCompanionPost.getIsClosed()) {
-//            throw new CustomException(FORBIDDEN, "마감된 모집은 수정할 수 없습니다");
-//        }
-//
-//        // 시작일 오늘 날짜 검증
-//        if (request.getStartDate().isBefore(LocalDate.now())) {
-//            throw new CustomException(BAD_REQUEST, "시작일은 오늘 이전일 수 없습니다");
-//        }
-//
-//        // 시작일, 종료일 검증
-//        if(request.getStartDate().isAfter(request.getEndDate())) {
-//            throw new CustomException(BAD_REQUEST, "시작일은 종료일 이전일 수 없습니다");
-//        }
-//
-//        findCompanionPost.update(request);
+        CompanionPost findCompanionPost = findCompanionPostDetailById(companionPostId);
 
-        // 수정 시 신청 내역이 있는 경우 처리 필요
+        // 작성자 검증
+        if(!findCompanionPost.getMember().getId().equals(tokenInfo.getId())) {
+            throw new CustomException(FORBIDDEN, "모집 마감은 작성자만 가능합니다");
+        }
 
+        // 마감 여부 검증
+        if(findCompanionPost.getStatus() != CompanionPostStatus.OPEN) {
+            throw new CustomException(FORBIDDEN, "이미 마감된 동행입니다");
+        }
+
+        findCompanionPost.close();
     }
 
+    // 동행 모집 삭제
     @Transactional
-    public void deleteCompanionPost(final Long companionPostId) {
+    public void deleteCompanionPost(final TokenInfo tokenInfo, final Long companionPostId) {
 
-        // 삭제 시 신청 내역 같이 삭제 처리 필요
+        CompanionPost findCompanionPost = findCompanionPostDetailById(companionPostId);
 
-        companionPostRepository.deleteById(companionPostId);
+        // 작성자 검증
+        if(!findCompanionPost.getMember().getId().equals(tokenInfo.getId())) {
+            throw new CustomException(FORBIDDEN, "동행 삭제는 작성자만 가능합니다");
+        }
+
+        // 마감전이면 신청 내역에 반영
+        if(findCompanionPost.getStatus() == CompanionPostStatus.OPEN) {
+            companionApplicationRepository.cancelByHost(
+                    companionPostId,
+                    CompanionApplicationStatus.CANCELLED_BY_HOST,
+                    List.of(CompanionApplicationStatus.PENDING, CompanionApplicationStatus.APPROVED)
+            );
+            }
+
+        findCompanionPost.delete();
     }
 
     // 동행 신청
@@ -142,7 +147,7 @@ public class CompanionService {
 
     // 동행 모집 조회 상세
     private CompanionPost findCompanionPostDetailById(final Long id) {
-        return companionPostRepository.findDetailById(id)
+        return companionPostRepository.findDetailById(id, CompanionPostStatus.DELETED)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "모집 글을 찾을 수 없습니다"));
     }
 
