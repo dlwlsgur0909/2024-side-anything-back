@@ -108,4 +108,28 @@ public class CompanionController {
                 .ok(myCompanionService.findMyCompanionApplicationList(tokenInfo, page));
     }
 
+    // 내 동행 신청 취소
+    @PatchMapping("/my-applications/{companionApplicationId}")
+    public ResponseEntity<Void> cancelMyCompanionApplication(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                             @PathVariable Long companionApplicationId) {
+
+        myCompanionService.cancelMyCompanionApplication(tokenInfo, companionApplicationId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
+    // 동행 신청 삭제
+    @DeleteMapping("/my-applications/{companionApplicationId}")
+    public ResponseEntity<Void> deleteMyCompanionApplication(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                             @PathVariable Long companionApplicationId) {
+
+        myCompanionService.deleteMyCompanionApplication(tokenInfo, companionApplicationId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
 }

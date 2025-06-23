@@ -1,6 +1,7 @@
 package com.side.anything.back.companion.dto.response;
 
 import com.side.anything.back.companion.entity.CompanionApplication;
+import com.side.anything.back.companion.entity.CompanionApplicationStatus;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class CompanionApplicationListResponse {
 
         private Long applicationId;
         private String applicationStatus;
+        private Boolean isCancelable;
         private Long postId;
         private String postTitle;
         private String postLocation;
@@ -32,6 +34,10 @@ public class CompanionApplicationListResponse {
         public CompanionApplicationResponse(CompanionApplication companionApplication) {
             this.applicationId = companionApplication.getId();
             this.applicationStatus = companionApplication.getStatus().getDescription();
+            this.isCancelable = List.of(
+                        CompanionApplicationStatus.PENDING, CompanionApplicationStatus.APPROVED
+                    )
+                    .contains(companionApplication.getStatus());
             this.postId = companionApplication.getCompanionPost().getId();
             this.postTitle = companionApplication.getCompanionPost().getTitle();
             this.postLocation = companionApplication.getCompanionPost().getLocation();

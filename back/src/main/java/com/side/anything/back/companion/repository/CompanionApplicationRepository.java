@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CompanionApplicationRepository extends JpaRepository<CompanionApplication, Long> {
     Boolean existsByMemberIdAndCompanionPostId(Long memberId, Long companionPostId);
@@ -49,5 +50,17 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
     Page<CompanionApplication> findMyApplicationList(@Param("memberId") Long memberId,
                                                      @Param("status") CompanionApplicationStatus status,
                                                      Pageable pageable);
+
+    @Query(
+            """
+            SELECT ca FROM CompanionApplication ca
+            JOIN FETCH ca.companionPost cp
+            WHERE
+                ca.id = :companionApplicationId
+                AND ca.member.id = :memberId
+            """
+    )
+    Optional<CompanionApplication> findMyApplication(@Param("companionApplicationId") Long companionApplicationId,
+                                                     @Param("memberId") Long memberId);
 
 }

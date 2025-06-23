@@ -45,4 +45,12 @@ public class CompanionApplication extends BaseEntity {
         return companionApplication;
     }
 
+    public void cancel() {
+        this.status = CompanionApplicationStatus.CANCELLED;
+    }
+
+    public void delete() {
+        this.status = CompanionApplicationStatus.DELETED;
+    }
+
 }
