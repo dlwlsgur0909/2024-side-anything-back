@@ -4,7 +4,6 @@ import com.side.anything.back.companion.entity.CompanionApplication;
 import com.side.anything.back.companion.entity.CompanionApplicationStatus;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter

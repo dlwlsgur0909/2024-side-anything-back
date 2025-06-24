@@ -165,7 +165,14 @@ public class CompanionService {
 
     // 신청 여부 확인
     private Boolean checkIsApplied(Long memberId, Long companionPostId) {
-        return companionApplicationRepository.existsByMemberIdAndCompanionPostId(memberId, companionPostId);
+        return companionApplicationRepository.isApplied(
+                memberId, companionPostId,
+                List.of(
+                        CompanionApplicationStatus.PENDING,
+                        CompanionApplicationStatus.APPROVED,
+                        CompanionApplicationStatus.REJECTED
+                )
+        );
     }
 
 }

@@ -13,7 +13,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CompanionApplicationRepository extends JpaRepository<CompanionApplication, Long> {
-    Boolean existsByMemberIdAndCompanionPostId(Long memberId, Long companionPostId);
+
+    @Query(
+            """
+            SELECT COUNT(ca) > 0 FROM CompanionApplication ca
+            WHERE
+                ca.member.id = :memberId
+                AND ca.companionPost.id = :companionPostId
+                AND ca.status IN :statusList
+            """
+    )
+    Boolean isApplied(Long memberId, Long companionPostId,
+                      List<CompanionApplicationStatus> statusList);
 
     @Modifying
     @Query(
@@ -23,12 +34,12 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
                 status = :status
             WHERE
                 ca.companionPost.id = :companionPostId
-                AND ca.status IN :targetStatusList
+                AND ca.status IN :statusList
             """
     )
     void cancelByHost(@Param("companionPostId") Long companionPostId,
                       @Param("status") CompanionApplicationStatus status,
-                      @Param("targetStatusList")List<CompanionApplicationStatus> targetStatusList);
+                      @Param("targetStatusList")List<CompanionApplicationStatus> statusList);
 
     @Query(
             value = """
