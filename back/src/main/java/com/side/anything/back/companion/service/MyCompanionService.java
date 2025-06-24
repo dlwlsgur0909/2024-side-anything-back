@@ -58,6 +58,7 @@ public class MyCompanionService {
     }
 
     // 내 동행 신청 취소
+    @Transactional
     public void cancelMyCompanionApplication(final TokenInfo tokenInfo, final Long companionApplicationId) {
 
         CompanionApplication findCompanionApplication = findMyApplication(companionApplicationId, tokenInfo.getId());
@@ -74,6 +75,7 @@ public class MyCompanionService {
     }
 
     // 내 동행 신청 삭제
+    @Transactional
     public void deleteMyCompanionApplication(final TokenInfo tokenInfo, final Long companionApplicationId) {
 
         CompanionApplication findCompanionApplication = findMyApplication(companionApplicationId, tokenInfo.getId());
