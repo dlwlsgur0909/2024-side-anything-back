@@ -10,11 +10,11 @@ import java.util.List;
 @Getter
 public class CompanionApplicationListResponse {
 
-    private List<CompanionApplicationResponse> myCompanionApplicationList;
+    private List<CompanionApplicationResponse> companionApplicationList;
     private Integer totalPages;
 
     public CompanionApplicationListResponse(List<CompanionApplication> companionApplicationList, Integer totalPages) {
-        this.myCompanionApplicationList = companionApplicationList.stream()
+        this.companionApplicationList = companionApplicationList.stream()
                 .map(CompanionApplicationResponse::new)
                 .toList();
         this.totalPages = totalPages;
