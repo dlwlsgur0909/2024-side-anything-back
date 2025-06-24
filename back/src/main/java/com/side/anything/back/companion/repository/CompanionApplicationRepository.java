@@ -39,7 +39,7 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
     )
     void cancelByHost(@Param("companionPostId") Long companionPostId,
                       @Param("status") CompanionApplicationStatus status,
-                      @Param("targetStatusList")List<CompanionApplicationStatus> statusList);
+                      @Param("statusList")List<CompanionApplicationStatus> statusList);
 
     @Query(
             value = """
