@@ -41,7 +41,7 @@ public class CompanionService {
 
         PageRequest pageRequest = PageRequest.of(page - 1, SIZE);
 
-        Page<CompanionPost> pagedCompanionPost = companionPostRepository.findPagedList(
+        Page<CompanionPost> pagedCompanionPost = companionPostRepository.findPostList(
                 keyword, CompanionPostStatus.DELETED, pageRequest
         );
 
@@ -147,7 +147,7 @@ public class CompanionService {
 
     // 동행 모집 조회 상세
     private CompanionPost findCompanionPostDetailById(final Long id) {
-        return companionPostRepository.findDetailById(id, CompanionPostStatus.DELETED)
+        return companionPostRepository.findPostDetail(id, CompanionPostStatus.DELETED)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "모집 글을 찾을 수 없습니다"));
     }
 
@@ -165,7 +165,14 @@ public class CompanionService {
 
     // 신청 여부 확인
     private Boolean checkIsApplied(Long memberId, Long companionPostId) {
-        return companionApplicationRepository.existsByMemberIdAndCompanionPostId(memberId, companionPostId);
+        return companionApplicationRepository.isApplied(
+                memberId, companionPostId,
+                List.of(
+                        CompanionApplicationStatus.PENDING,
+                        CompanionApplicationStatus.APPROVED,
+                        CompanionApplicationStatus.REJECTED
+                )
+        );
     }
 
 }

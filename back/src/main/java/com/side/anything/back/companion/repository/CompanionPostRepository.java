@@ -34,11 +34,39 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
                             AND cp.status != :status
                         """
     )
-    Page<CompanionPost> findPagedList(@Param("keyword") String keyword,
-                                      @Param("status") CompanionPostStatus status,
-                                      Pageable pageable);
+    Page<CompanionPost> findPostList(@Param("keyword") String keyword,
+                                     @Param("status") CompanionPostStatus status,
+                                     Pageable pageable);
 
     @Query("SELECT cp FROM CompanionPost cp JOIN FETCH cp.member m WHERE cp.id = :id AND cp.status != :status")
-    Optional<CompanionPost> findDetailById(@Param("id") Long id, @Param("status") CompanionPostStatus status);
+    Optional<CompanionPost> findPostDetail(@Param("id") Long id, @Param("status") CompanionPostStatus status);
 
+    @Query(
+            value = """
+                    SELECT cp FROM CompanionPost cp
+                    WHERE
+                        (
+                            cp.title LIKE %:keyword%
+                            OR cp.location LIKE %:keyword%
+                        )
+                        AND cp.status != :status
+                        AND cp.member.id = :memberId
+                    ORDER BY
+                        cp.id DESC
+                    """,
+            countQuery = """
+                        SELECT COUNT(cp) FROM CompanionPost cp
+                        WHERE
+                            (
+                                cp.title LIKE %:keyword%
+                                OR cp.location LIKE %:keyword%
+                            )
+                            AND cp.status != :status
+                            AND cp.member.id = :memberId
+                        """
+    )
+    Page<CompanionPost> findMyPostList(@Param("keyword") String keyword,
+                                       @Param("status") CompanionPostStatus status,
+                                       @Param("memberId") Long memberId,
+                                       Pageable pageable);
 }
