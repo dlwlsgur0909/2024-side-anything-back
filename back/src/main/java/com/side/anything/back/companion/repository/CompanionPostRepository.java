@@ -69,4 +69,17 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
                                        @Param("status") CompanionPostStatus status,
                                        @Param("memberId") Long memberId,
                                        Pageable pageable);
+
+    @Query(
+            """
+            SELECT cp FROM CompanionPost cp
+            WHERE
+                cp.id = :companionPostId
+                AND cp.member.id = :memberId
+                AND cp.status != :status
+            """
+    )
+    Optional<CompanionPost> findMyPostDetail(@Param("companionPostId") Long companionPostId,
+                                             @Param("memberId") Long memberId,
+                                             @Param("status") CompanionPostStatus status);
 }

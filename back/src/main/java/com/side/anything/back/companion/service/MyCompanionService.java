@@ -2,6 +2,7 @@ package com.side.anything.back.companion.service;
 
 import com.side.anything.back.companion.dto.response.CompanionApplicationListResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
+import com.side.anything.back.companion.dto.response.MyCompanionPostDetailResponse;
 import com.side.anything.back.companion.entity.CompanionApplication;
 import com.side.anything.back.companion.entity.CompanionApplicationStatus;
 import com.side.anything.back.companion.entity.CompanionPost;
@@ -40,6 +41,19 @@ public class MyCompanionService {
         );
 
         return new CompanionPostListResponse(pagedCompanionPost.getContent(), pagedCompanionPost.getTotalPages());
+    }
+
+    // 내 동행 모집 상세
+    public MyCompanionPostDetailResponse findMyCompanionPostDetail(final TokenInfo tokenInfo, final Long companionPostId) {
+
+        CompanionPost findCompanionPost = companionPostRepository.findMyPostDetail(companionPostId, tokenInfo.getId(), CompanionPostStatus.DELETED)
+                .orElseThrow(() -> new CustomException(BasicExceptionEnum.NOT_FOUND, "모집 글을 찾을 수 없습니다"));
+
+        List<CompanionApplication> companionApplicationList = companionApplicationRepository.findApplicationListByPost(
+                findCompanionPost.getId(), List.of(CompanionApplicationStatus.PENDING, CompanionApplicationStatus.APPROVED)
+        );
+
+        return new MyCompanionPostDetailResponse(findCompanionPost, companionApplicationList);
     }
 
     // 내 동행 신청 목록

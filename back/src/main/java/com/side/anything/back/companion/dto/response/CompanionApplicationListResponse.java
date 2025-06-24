@@ -21,7 +21,7 @@ public class CompanionApplicationListResponse {
     }
 
     @Getter
-    static class CompanionApplicationResponse {
+    private static class CompanionApplicationResponse {
 
         private Long applicationId;
         private String applicationStatus;

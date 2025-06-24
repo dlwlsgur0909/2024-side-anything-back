@@ -5,6 +5,7 @@ import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
 import com.side.anything.back.companion.dto.response.CompanionApplicationListResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
+import com.side.anything.back.companion.dto.response.MyCompanionPostDetailResponse;
 import com.side.anything.back.companion.service.CompanionService;
 import com.side.anything.back.companion.service.MyCompanionService;
 import com.side.anything.back.security.jwt.TokenInfo;
@@ -97,6 +98,15 @@ public class CompanionController {
 
         return ResponseEntity
                 .ok(myCompanionService.findMyCompanionPostList(tokenInfo, keyword, page));
+    }
+
+    // 내 동행 모집 상세
+    @GetMapping("/my-posts/{companionPostId}")
+    public ResponseEntity<MyCompanionPostDetailResponse> findMyCompanionPostDetail(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                                   @PathVariable Long companionPostId) {
+
+        return ResponseEntity
+                .ok(myCompanionService.findMyCompanionPostDetail(tokenInfo, companionPostId));
     }
 
     // 내 동행 신청 목록

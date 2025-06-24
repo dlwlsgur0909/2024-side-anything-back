@@ -20,7 +20,7 @@ public class CompanionPostListResponse {
     }
 
     @Getter
-    static class CompanionPostResponse {
+    private static class CompanionPostResponse {
         private Long id;
         private String title;
         private String location;

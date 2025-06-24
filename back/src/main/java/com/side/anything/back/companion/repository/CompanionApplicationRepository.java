@@ -74,4 +74,19 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
     Optional<CompanionApplication> findMyApplication(@Param("companionApplicationId") Long companionApplicationId,
                                                      @Param("memberId") Long memberId);
 
+    @Query(
+            """
+            SELECT ca FROM CompanionApplication ca
+            JOIN FETCH ca.member m
+            WHERE
+                ca.companionPost.id = :companionPostId
+                AND ca.status IN :statusList
+            ORDER BY
+                ca.id DESC
+            """
+    )
+    List<CompanionApplication> findApplicationListByPost(@Param("companionPostId") Long companionPostId,
+                                                         @Param("statusList") List<CompanionApplicationStatus> statusList);
+
+
 }
