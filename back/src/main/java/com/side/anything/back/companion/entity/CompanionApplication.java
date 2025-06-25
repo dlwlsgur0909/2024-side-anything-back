@@ -32,6 +32,9 @@ public class CompanionApplication extends BaseEntity {
     @JoinColumn(name = "companion_post_id")
     private CompanionPost companionPost;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
     public static CompanionApplication of(CompanionApplicationSaveRequest request, Member member,
                                           CompanionPost companionPost) {
 
@@ -41,16 +44,25 @@ public class CompanionApplication extends BaseEntity {
         companionApplication.status = CompanionApplicationStatus.PENDING;
         companionApplication.member = member;
         companionApplication.companionPost = companionPost;
+        companionApplication.isDeleted = false;
 
         return companionApplication;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 
     public void cancel() {
         this.status = CompanionApplicationStatus.CANCELLED;
     }
 
-    public void delete() {
-        this.status = CompanionApplicationStatus.DELETED;
+    public void approve() {
+        this.status = CompanionApplicationStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = CompanionApplicationStatus.REJECTED;
     }
 
 }

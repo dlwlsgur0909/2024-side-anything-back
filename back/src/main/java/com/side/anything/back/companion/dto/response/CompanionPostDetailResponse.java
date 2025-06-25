@@ -15,21 +15,19 @@ public class CompanionPostDetailResponse {
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long memberId;
-    private String writer;
+    private String nickname;
     private Boolean isClosed;
     private Boolean isApplied;
 
-    public CompanionPostDetailResponse(CompanionPost companionPost, Boolean isApplied) {
-        this.id = companionPost.getId();
-        this.title = companionPost.getTitle();
-        this.content = companionPost.getContent();
-        this.location = companionPost.getLocation();
-        this.startDate = companionPost.getStartDate();
-        this.endDate = companionPost.getEndDate();
-        this.memberId = companionPost.getMember().getId();
-        this.writer = companionPost.getMember().getNickname();
-        this.isClosed = companionPost.getStatus() != CompanionPostStatus.OPEN;
+    public CompanionPostDetailResponse(CompanionPost post, Boolean isApplied) {
+        this.id = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.location = post.getLocation();
+        this.startDate = post.getStartDate();
+        this.endDate = post.getEndDate();
+        this.nickname = post.getMember().getNickname();
+        this.isClosed = post.getStatus() != CompanionPostStatus.OPEN;
         this.isApplied = isApplied;
     }
 

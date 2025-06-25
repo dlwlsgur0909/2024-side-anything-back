@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum CompanionPostStatus {
 
     OPEN("모집중"),
-    CLOSED("마감"),
-    DELETED("삭제")
+    CLOSED("마감됨"),
+    DELETED("삭제됨")
     ;
 
     private final String description;

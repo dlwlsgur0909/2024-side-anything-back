@@ -2,6 +2,7 @@ package com.side.anything.back.companion.service;
 
 import com.side.anything.back.companion.dto.response.CompanionApplicationListResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
+import com.side.anything.back.companion.dto.response.MyCompanionPostDetailResponse;
 import com.side.anything.back.companion.entity.CompanionApplication;
 import com.side.anything.back.companion.entity.CompanionApplicationStatus;
 import com.side.anything.back.companion.entity.CompanionPost;
@@ -26,8 +27,8 @@ public class MyCompanionService {
 
     private static final int SIZE = 5;
 
-    private final CompanionPostRepository companionPostRepository;
-    private final CompanionApplicationRepository companionApplicationRepository;
+    private final CompanionPostRepository postRepository;
+    private final CompanionApplicationRepository applicationRepository;
 
     // 내 동행 모집 목록
     public CompanionPostListResponse findMyCompanionPostList(final TokenInfo tokenInfo,
@@ -35,11 +36,24 @@ public class MyCompanionService {
 
         PageRequest pageRequest = PageRequest.of(page - 1, SIZE);
 
-        Page<CompanionPost> pagedCompanionPost = companionPostRepository.findMyPostList(
+        Page<CompanionPost> pagedPost = postRepository.findMyPostList(
                 keyword, CompanionPostStatus.DELETED, tokenInfo.getId(), pageRequest
         );
 
-        return new CompanionPostListResponse(pagedCompanionPost.getContent(), pagedCompanionPost.getTotalPages());
+        return new CompanionPostListResponse(pagedPost.getContent(), pagedPost.getTotalPages());
+    }
+
+    // 내 동행 모집 상세
+    public MyCompanionPostDetailResponse findMyCompanionPostDetail(final TokenInfo tokenInfo, final Long postId) {
+
+        CompanionPost findPost = postRepository.findMyPostDetail(postId, tokenInfo.getId(), CompanionPostStatus.DELETED)
+                .orElseThrow(() -> new CustomException(BasicExceptionEnum.NOT_FOUND, "모집 글을 찾을 수 없습니다"));
+
+        List<CompanionApplication> findApplicationList = applicationRepository.findApplicationListByPost(
+                findPost.getId(), List.of(CompanionApplicationStatus.PENDING, CompanionApplicationStatus.APPROVED)
+        );
+
+        return new MyCompanionPostDetailResponse(findPost, findApplicationList);
     }
 
     // 내 동행 신청 목록
@@ -47,49 +61,49 @@ public class MyCompanionService {
 
         PageRequest pageRequest = PageRequest.of(page - 1, SIZE);
 
-        Page<CompanionApplication> pagedCompanionApplication = companionApplicationRepository.findMyApplicationList(
-                tokenInfo.getId(), CompanionApplicationStatus.DELETED, pageRequest
+        Page<CompanionApplication> pagedApplication = applicationRepository.findMyApplicationList(
+                tokenInfo.getId(), pageRequest
         );
 
         return new CompanionApplicationListResponse(
-                pagedCompanionApplication.getContent(), pagedCompanionApplication.getTotalPages()
+                pagedApplication.getContent(), pagedApplication.getTotalPages()
         );
 
     }
 
     // 내 동행 신청 취소
     @Transactional
-    public void cancelMyCompanionApplication(final TokenInfo tokenInfo, final Long companionApplicationId) {
+    public void cancelMyCompanionApplication(final TokenInfo tokenInfo, final Long applicationId) {
 
-        CompanionApplication findCompanionApplication = findMyApplication(companionApplicationId, tokenInfo.getId());
+        CompanionApplication findApplication = findMyApplication(applicationId, tokenInfo.getId());
 
-        if(findCompanionApplication.getCompanionPost().getStatus() != CompanionPostStatus.OPEN) {
+        if(findApplication.getCompanionPost().getStatus() != CompanionPostStatus.OPEN) {
             throw new CustomException(BasicExceptionEnum.FORBIDDEN, "이미 마감/삭제된 동행입니다");
         }
 
-        if(!List.of(CompanionApplicationStatus.PENDING, CompanionApplicationStatus.APPROVED).contains(findCompanionApplication.getStatus())) {
+        if(!List.of(CompanionApplicationStatus.PENDING, CompanionApplicationStatus.APPROVED).contains(findApplication.getStatus())) {
             throw new CustomException(BasicExceptionEnum.FORBIDDEN, "대기/승인 상태의 신청만 취소 가능합니다");
         }
 
-        findCompanionApplication.cancel();
+        findApplication.cancel();
     }
 
     // 내 동행 신청 삭제
     @Transactional
-    public void deleteMyCompanionApplication(final TokenInfo tokenInfo, final Long companionApplicationId) {
+    public void deleteMyCompanionApplication(final TokenInfo tokenInfo, final Long applicationId) {
 
-        CompanionApplication findCompanionApplication = findMyApplication(companionApplicationId, tokenInfo.getId());
+        CompanionApplication findApplication = findMyApplication(applicationId, tokenInfo.getId());
 
-        if(findCompanionApplication.getStatus() == CompanionApplicationStatus.DELETED) {
+        if(findApplication.getIsDeleted()) {
             throw new CustomException(BasicExceptionEnum.FORBIDDEN, "이미 삭제된 동행 신청입니다");
         }
 
-        findCompanionApplication.delete();
+        findApplication.delete();
     }
 
     /* private methods */
-    private CompanionApplication findMyApplication(Long companionApplicationId, Long memberId) {
-        return companionApplicationRepository.findMyApplication(companionApplicationId, memberId)
+    private CompanionApplication findMyApplication(Long applicationId, Long memberId) {
+        return applicationRepository.findMyApplication(applicationId, memberId)
                 .orElseThrow(() -> new CustomException(BasicExceptionEnum.NOT_FOUND, "신청 내역을 찾을 수 없습니다"));
     }
 
