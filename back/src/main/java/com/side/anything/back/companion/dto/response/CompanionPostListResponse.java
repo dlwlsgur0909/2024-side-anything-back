@@ -9,11 +9,11 @@ import java.util.List;
 @Getter
 public class CompanionPostListResponse {
 
-    private List<CompanionPostResponse> companionPostList;
+    private List<CompanionPostResponse> postList;
     private Integer totalPages;
 
-    public CompanionPostListResponse(List<CompanionPost> companionPostList, Integer totalPages) {
-        this.companionPostList = companionPostList.stream()
+    public CompanionPostListResponse(List<CompanionPost> postList, Integer totalPages) {
+        this.postList = postList.stream()
                 .map(CompanionPostResponse::new)
                 .toList();
         this.totalPages = totalPages;
@@ -28,13 +28,13 @@ public class CompanionPostListResponse {
         private LocalDate endDate;
         private String status;
 
-        public CompanionPostResponse(CompanionPost companionPost) {
-            this.id = companionPost.getId();
-            this.title = companionPost.getTitle();
-            this.location = companionPost.getLocation();
-            this.startDate = companionPost.getStartDate();
-            this.endDate = companionPost.getEndDate();
-            this.status = companionPost.getStatus().getDescription();
+        public CompanionPostResponse(CompanionPost post) {
+            this.id = post.getId();
+            this.title = post.getTitle();
+            this.location = post.getLocation();
+            this.startDate = post.getStartDate();
+            this.endDate = post.getEndDate();
+            this.status = post.getStatus().getDescription();
         }
 
     }

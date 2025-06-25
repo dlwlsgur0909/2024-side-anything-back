@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class CompanionApplicationUpdateRequest {
+public class CompanionApplicationUpdateStatusRequest {
 
     @NotNull
     private Boolean isApproval;

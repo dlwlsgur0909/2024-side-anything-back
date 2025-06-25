@@ -10,11 +10,11 @@ import java.util.List;
 @Getter
 public class CompanionApplicationListResponse {
 
-    private List<CompanionApplicationResponse> companionApplicationList;
+    private List<CompanionApplicationResponse> applicationList;
     private Integer totalPages;
 
-    public CompanionApplicationListResponse(List<CompanionApplication> companionApplicationList, Integer totalPages) {
-        this.companionApplicationList = companionApplicationList.stream()
+    public CompanionApplicationListResponse(List<CompanionApplication> applicationList, Integer totalPages) {
+        this.applicationList = applicationList.stream()
                 .map(CompanionApplicationResponse::new)
                 .toList();
         this.totalPages = totalPages;
@@ -31,14 +31,14 @@ public class CompanionApplicationListResponse {
         private String postLocation;
         private String postStatus;
 
-        public CompanionApplicationResponse(CompanionApplication companionApplication) {
-            this.applicationId = companionApplication.getId();
-            this.applicationStatus = companionApplication.getStatus().getDescription();
-            this.isCancelable = checkIsCancelable(companionApplication.getStatus(), companionApplication.getCompanionPost().getStatus());
-            this.postId = companionApplication.getCompanionPost().getId();
-            this.postTitle = companionApplication.getCompanionPost().getTitle();
-            this.postLocation = companionApplication.getCompanionPost().getLocation();
-            this.postStatus = companionApplication.getCompanionPost().getStatus().getDescription();
+        public CompanionApplicationResponse(CompanionApplication application) {
+            this.applicationId = application.getId();
+            this.applicationStatus = application.getStatus().getDescription();
+            this.isCancelable = checkIsCancelable(application.getStatus(), application.getCompanionPost().getStatus());
+            this.postId = application.getCompanionPost().getId();
+            this.postTitle = application.getCompanionPost().getTitle();
+            this.postLocation = application.getCompanionPost().getLocation();
+            this.postStatus = application.getCompanionPost().getStatus().getDescription();
         }
 
         private Boolean checkIsCancelable(CompanionApplicationStatus applicationStatus, CompanionPostStatus postStatus) {

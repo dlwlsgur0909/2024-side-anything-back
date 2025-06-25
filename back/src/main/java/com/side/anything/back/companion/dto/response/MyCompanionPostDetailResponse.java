@@ -1,6 +1,7 @@
 package com.side.anything.back.companion.dto.response;
 
 import com.side.anything.back.companion.entity.CompanionApplication;
+import com.side.anything.back.companion.entity.CompanionApplicationStatus;
 import com.side.anything.back.companion.entity.CompanionPost;
 import com.side.anything.back.companion.entity.CompanionPostStatus;
 import lombok.Getter;
@@ -20,13 +21,13 @@ public class MyCompanionPostDetailResponse {
 
     private List<CompanionApplicationResponse> applicationList;
 
-    public MyCompanionPostDetailResponse(CompanionPost companionPost, List<CompanionApplication> applicationList) {
-        this.title = companionPost.getTitle();
-        this.content = companionPost.getContent();
-        this.location = companionPost.getLocation();
-        this.startDate = companionPost.getStartDate();
-        this.endDate = companionPost.getEndDate();
-        this.isClosed = companionPost.getStatus() == CompanionPostStatus.CLOSED;
+    public MyCompanionPostDetailResponse(CompanionPost post, List<CompanionApplication> applicationList) {
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.location = post.getLocation();
+        this.startDate = post.getStartDate();
+        this.endDate = post.getEndDate();
+        this.isClosed = post.getStatus() == CompanionPostStatus.CLOSED;
 
         this.applicationList = applicationList.stream()
                 .map(CompanionApplicationResponse::new)
@@ -42,6 +43,7 @@ public class MyCompanionPostDetailResponse {
         private String nickname;
         private LocalDate dob;
         private String gender;
+        private Boolean isPending;
 
         public CompanionApplicationResponse(CompanionApplication application) {
             this.id = application.getId();
@@ -50,6 +52,7 @@ public class MyCompanionPostDetailResponse {
             this.nickname = application.getMember().getNickname();
             this.dob = application.getMember().getDob();
             this.gender = application.getMember().getGender().equals("MALE") ? "남성" : "여성";
+            this.isPending = application.getStatus() == CompanionApplicationStatus.PENDING;
         }
 
     }
