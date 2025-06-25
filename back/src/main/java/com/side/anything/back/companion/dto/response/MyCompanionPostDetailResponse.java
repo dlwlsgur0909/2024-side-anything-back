@@ -39,7 +39,7 @@ public class MyCompanionPostDetailResponse {
 
         private Long id;
         private String message;
-        private String status;
+        private CompanionApplicationStatus status;
         private String nickname;
         private LocalDate dob;
         private String gender;
@@ -48,7 +48,7 @@ public class MyCompanionPostDetailResponse {
         public CompanionApplicationResponse(CompanionApplication application) {
             this.id = application.getId();
             this.message = application.getMessage();
-            this.status = application.getStatus().getDescription();
+            this.status = application.getStatus();
             this.nickname = application.getMember().getNickname();
             this.dob = application.getMember().getDob();
             this.gender = application.getMember().getGender().equals("MALE") ? "남성" : "여성";

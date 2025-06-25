@@ -24,7 +24,7 @@ public class CompanionApplicationListResponse {
     private static class CompanionApplicationResponse {
 
         private Long applicationId;
-        private String applicationStatus;
+        private CompanionApplicationStatus applicationStatus;
         private Boolean isCancelable;
         private Long postId;
         private String postTitle;
@@ -33,7 +33,7 @@ public class CompanionApplicationListResponse {
 
         public CompanionApplicationResponse(CompanionApplication application) {
             this.applicationId = application.getId();
-            this.applicationStatus = application.getStatus().getDescription();
+            this.applicationStatus = application.getStatus();
             this.isCancelable = checkIsCancelable(application.getStatus(), application.getCompanionPost().getStatus());
             this.postId = application.getCompanionPost().getId();
             this.postTitle = application.getCompanionPost().getTitle();

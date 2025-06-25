@@ -1,6 +1,7 @@
 package com.side.anything.back.companion.dto.response;
 
 import com.side.anything.back.companion.entity.CompanionPost;
+import com.side.anything.back.companion.entity.CompanionPostStatus;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ public class CompanionPostListResponse {
         private String location;
         private LocalDate startDate;
         private LocalDate endDate;
-        private String status;
+        private CompanionPostStatus status;
 
         public CompanionPostResponse(CompanionPost post) {
             this.id = post.getId();
@@ -34,7 +35,7 @@ public class CompanionPostListResponse {
             this.location = post.getLocation();
             this.startDate = post.getStartDate();
             this.endDate = post.getEndDate();
-            this.status = post.getStatus().getDescription();
+            this.status = post.getStatus();
         }
 
     }
