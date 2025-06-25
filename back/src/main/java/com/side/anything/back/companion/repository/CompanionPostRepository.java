@@ -21,6 +21,7 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
                             OR cp.location LIKE  %:keyword%
                         )
                         AND cp.status != :status
+                        AND cp.member.id != :memberId
                     ORDER BY
                         cp.id DESC
                     """,
@@ -32,10 +33,12 @@ public interface CompanionPostRepository extends JpaRepository<CompanionPost, Lo
                                 OR cp.location LIKE  %:keyword%
                             )
                             AND cp.status != :status
+                            AND cp.member.id != :memberId
                         """
     )
     Page<CompanionPost> findPostList(@Param("keyword") String keyword,
                                      @Param("status") CompanionPostStatus status,
+                                     @Param("memberId") Long memberId,
                                      Pageable pageable);
 
     @Query("SELECT cp FROM CompanionPost cp JOIN FETCH cp.member m WHERE cp.id = :id AND cp.status != :status")

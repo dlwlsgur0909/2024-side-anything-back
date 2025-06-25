@@ -62,7 +62,7 @@ public class MyCompanionService {
         PageRequest pageRequest = PageRequest.of(page - 1, SIZE);
 
         Page<CompanionApplication> pagedApplication = applicationRepository.findMyApplicationList(
-                tokenInfo.getId(), CompanionApplicationStatus.DELETED, pageRequest
+                tokenInfo.getId(), pageRequest
         );
 
         return new CompanionApplicationListResponse(
@@ -94,7 +94,7 @@ public class MyCompanionService {
 
         CompanionApplication findApplication = findMyApplication(applicationId, tokenInfo.getId());
 
-        if(findApplication.getStatus() == CompanionApplicationStatus.DELETED) {
+        if(findApplication.getIsDeleted()) {
             throw new CustomException(BasicExceptionEnum.FORBIDDEN, "이미 삭제된 동행 신청입니다");
         }
 

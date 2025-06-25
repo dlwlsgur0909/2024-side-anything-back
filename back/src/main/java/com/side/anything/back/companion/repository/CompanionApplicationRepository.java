@@ -49,7 +49,7 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
                     JOIN FETCH ca.companionPost cp
                     WHERE
                         ca.member.id = :memberId
-                        AND ca.status != :status
+                        AND ca.isDeleted = false
                     ORDER BY
                         ca.id DESC
                     """,
@@ -57,11 +57,10 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
                         SELECT COUNT(ca) FROM CompanionApplication ca
                         WHERE
                             ca.member.id = :memberId
-                            AND ca.status != :status
+                            AND ca.isDeleted != false
                         """
     )
     Page<CompanionApplication> findMyApplicationList(@Param("memberId") Long memberId,
-                                                     @Param("status") CompanionApplicationStatus status,
                                                      Pageable pageable);
 
     @Query(

@@ -15,7 +15,6 @@ public class CompanionPostDetailResponse {
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long memberId;
     private String nickname;
     private Boolean isClosed;
     private Boolean isApplied;
@@ -27,7 +26,6 @@ public class CompanionPostDetailResponse {
         this.location = post.getLocation();
         this.startDate = post.getStartDate();
         this.endDate = post.getEndDate();
-        this.memberId = post.getMember().getId();
         this.nickname = post.getMember().getNickname();
         this.isClosed = post.getStatus() != CompanionPostStatus.OPEN;
         this.isApplied = isApplied;

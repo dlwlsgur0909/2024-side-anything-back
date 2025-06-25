@@ -39,12 +39,12 @@ public class CompanionService {
     private final CompanionApplicationRepository applicationRepository;
 
     // 동행 모집 목록
-    public CompanionPostListResponse findCompanionPostList(final String keyword, final int page) {
+    public CompanionPostListResponse findCompanionPostList(final TokenInfo tokenInfo, final String keyword, final int page) {
 
         PageRequest pageRequest = PageRequest.of(page - 1, SIZE);
 
         Page<CompanionPost> pagedPost = postRepository.findPostList(
-                keyword, CompanionPostStatus.DELETED, pageRequest
+                keyword, CompanionPostStatus.DELETED, tokenInfo.getId(), pageRequest
         );
 
         return new CompanionPostListResponse(pagedPost.getContent(), pagedPost.getTotalPages());
@@ -53,10 +53,13 @@ public class CompanionService {
     // 동행 모집 상세 조회
     public CompanionPostDetailResponse findCompanionPostDetail(final TokenInfo tokenInfo, final Long postId) {
 
-        return new CompanionPostDetailResponse(
-                findPostDetailById(postId),
-                checkIsApplied(tokenInfo.getId(), postId)
-        );
+        CompanionPost findPost = findPostDetailById(postId);
+
+        if(findPost.getMember().getId().equals(tokenInfo.getId())) {
+            throw new CustomException(FORBIDDEN, "내가 작성한 동행은 '내 동행 모집'에서 확인해주세요");
+        }
+
+        return new CompanionPostDetailResponse(findPost, checkIsApplied(tokenInfo.getId(), postId));
     }
 
     // 동행 모집 저장

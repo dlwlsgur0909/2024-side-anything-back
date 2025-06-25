@@ -26,11 +26,12 @@ public class CompanionController {
 
     // 동행 모집 목록 조회
     @GetMapping
-    public ResponseEntity<CompanionPostListResponse> findCompanionPostList(@RequestParam(name = "keyword", defaultValue = "") String keyword,
+    public ResponseEntity<CompanionPostListResponse> findCompanionPostList(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                           @RequestParam(name = "keyword", defaultValue = "") String keyword,
                                                                            @RequestParam(name = "page", defaultValue = "1") int page) {
 
         return ResponseEntity
-                .ok(companionService.findCompanionPostList(keyword, page));
+                .ok(companionService.findCompanionPostList(tokenInfo, keyword, page));
     }
 
     // 동행 모집 단건 조회
