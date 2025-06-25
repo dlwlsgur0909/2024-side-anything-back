@@ -1,6 +1,7 @@
 package com.side.anything.back.companion.service;
 
 import com.side.anything.back.companion.dto.request.CompanionApplicationSaveRequest;
+import com.side.anything.back.companion.dto.request.CompanionApplicationUpdateRequest;
 import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
 import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostListResponse;
@@ -10,6 +11,7 @@ import com.side.anything.back.companion.entity.CompanionPost;
 import com.side.anything.back.companion.entity.CompanionPostStatus;
 import com.side.anything.back.companion.repository.CompanionApplicationRepository;
 import com.side.anything.back.companion.repository.CompanionPostRepository;
+import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.member.entity.Member;
 import com.side.anything.back.member.repository.MemberRepository;
@@ -141,6 +143,27 @@ public class CompanionService {
 
         companionApplicationRepository.save(CompanionApplication.of(request, findMember, findCompanionPost));
     }
+
+    // 동행 신청 승인/거절
+    @Transactional
+    public void updateCompanionApplicationStatus(final TokenInfo tokenInfo,
+                                                 final Long companionPostId,
+                                                 final Long companionApplicationId,
+                                                 final CompanionApplicationUpdateRequest request) {
+
+        CompanionApplication findApplication = companionApplicationRepository.findApplicationByPost(
+                companionPostId, CompanionPostStatus.OPEN, tokenInfo.getId(),
+                companionApplicationId, CompanionApplicationStatus.PENDING
+        ).orElseThrow(() -> new CustomException(BasicExceptionEnum.NOT_FOUND));
+
+        if(request.getIsApproval()) {
+            findApplication.approve();
+        }else {
+            findApplication.reject();
+        }
+
+    }
+
 
 
     /* private methods */

@@ -2,6 +2,7 @@ package com.side.anything.back.companion.repository;
 
 import com.side.anything.back.companion.entity.CompanionApplication;
 import com.side.anything.back.companion.entity.CompanionApplicationStatus;
+import com.side.anything.back.companion.entity.CompanionPostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -88,5 +89,22 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
     List<CompanionApplication> findApplicationListByPost(@Param("companionPostId") Long companionPostId,
                                                          @Param("statusList") List<CompanionApplicationStatus> statusList);
 
+
+    @Query(
+            """
+            SELECT ca FROM CompanionApplication ca
+            WHERE
+                ca.companionPost.id = :companionPostId
+                AND ca.companionPost.status = :postStatus
+                AND ca.companionPost.member.id = :memberId
+                AND ca.id = :companionApplicationId
+                AND ca.status = :applicationStatus
+            """
+    )
+    Optional<CompanionApplication> findApplicationByPost(@Param("companionPostId") Long companionPostId,
+                                                         @Param("postStatus") CompanionPostStatus postStatus,
+                                                         @Param("memberId") Long memberId,
+                                                         @Param("companionApplicationId") Long companionApplicationId,
+                                                         @Param("applicationStatus") CompanionApplicationStatus applicationStatus);
 
 }

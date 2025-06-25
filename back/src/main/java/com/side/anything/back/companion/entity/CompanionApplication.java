@@ -53,4 +53,12 @@ public class CompanionApplication extends BaseEntity {
         this.status = CompanionApplicationStatus.DELETED;
     }
 
+    public void approve() {
+        this.status = CompanionApplicationStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = CompanionApplicationStatus.REJECTED;
+    }
+
 }

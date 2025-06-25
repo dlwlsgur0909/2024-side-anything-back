@@ -1,6 +1,7 @@
 package com.side.anything.back.companion.controller;
 
 import com.side.anything.back.companion.dto.request.CompanionApplicationSaveRequest;
+import com.side.anything.back.companion.dto.request.CompanionApplicationUpdateRequest;
 import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
 import com.side.anything.back.companion.dto.response.CompanionApplicationListResponse;
 import com.side.anything.back.companion.dto.response.CompanionPostDetailResponse;
@@ -84,6 +85,20 @@ public class CompanionController {
                                                          @RequestBody @Valid CompanionApplicationSaveRequest request) {
 
         companionService.saveCompanionApplication(tokenInfo, companionPostId, request);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
+    // 동행 신청 승인/거절
+    @PatchMapping("/{companionPostId}/applications/{companionApplicationId}")
+    public ResponseEntity<Void> updateCompanionApplicationStatus(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                 @PathVariable Long companionPostId,
+                                                                 @PathVariable Long companionApplicationId,
+                                                                 @RequestBody @Valid CompanionApplicationUpdateRequest request) {
+
+        companionService.updateCompanionApplicationStatus(tokenInfo, companionPostId, companionApplicationId, request);
 
         return ResponseEntity
                 .ok()
