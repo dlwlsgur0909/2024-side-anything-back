@@ -18,4 +18,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             """
     )
     Optional<ChatRoom> findChatRoom(@Param("roomId") Long roomId);
+
+    Boolean existsByIdAndIsActiveTrue(@Param("roomId") Long roomId);
+
 }
