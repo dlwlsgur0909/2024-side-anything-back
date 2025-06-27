@@ -27,4 +27,15 @@ public class ChatMessage extends BaseEntity {
     @Column(name = "message")
     private String message;
 
+    public static ChatMessage of(ChatRoom chatRoom, Member member, String message) {
+
+        ChatMessage chatMessage = new ChatMessage();
+
+        chatMessage.chatRoom = chatRoom;
+        chatMessage.member = member;
+        chatMessage.message = message;
+
+        return chatMessage;
+    }
+
 }
