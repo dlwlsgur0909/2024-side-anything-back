@@ -30,6 +30,8 @@ public class ChatService {
     private final RedisPublisher redisPublisher;
     private final ObjectMapper objectMapper;
 
+    private static final String REDIS_TOPIC_PREFIX = "chatRoom-";
+
     @Transactional
     public void sendMessage(ChatMessageRequest request) {
 
@@ -51,7 +53,7 @@ public class ChatService {
             // Request 문자열로 직렬화
             String messageJson = objectMapper.writeValueAsString(request);
             // Redis에 topic(채널명)으로 메세지 발행(publish)
-            String topic = "여기에 topic prefix" + request.getRoomId();
+            String topic = REDIS_TOPIC_PREFIX + request.getRoomId();
             redisPublisher.publish(topic, messageJson);
         } catch (JsonProcessingException e) {
             throw new CustomException(INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");

@@ -60,7 +60,7 @@ public class RedisConfig {
         여기서는 단일 채팅 채널 "chatChannel"을 명시적으로 구독
         리스너를 등록하면 구독 중인 채널로 메세지가 올 때 자동으로 호출되는 방식
          */
-        container.addMessageListener(redisSubscriber, new PatternTopic("chatChannel"));
+        container.addMessageListener(redisSubscriber, new PatternTopic("chatRoom-*"));
 
         return container;
     }
