@@ -1,17 +1,21 @@
 package com.side.anything.back.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@RequiredArgsConstructor
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")
@@ -19,6 +23,8 @@ public class RedisConfig {
 
     @Value("${spring.data.redis.port}")
     private int port;
+
+    private final RedisSubscriber redisSubscriber;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -50,7 +56,7 @@ public class RedisConfig {
     파라미터인 RedisSubscriber는 실제 메세지를 처리할 사용자 정의 리스너 클래스
      */
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(RedisSubscriber redisSubscriber) {
+    public RedisMessageListenerContainer redisMessageListenerContainer() {
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory());
@@ -60,14 +66,14 @@ public class RedisConfig {
         여기서는 단일 채팅 채널 "chatChannel"을 명시적으로 구독
         리스너를 등록하면 구독 중인 채널로 메세지가 올 때 자동으로 호출되는 방식
          */
-        container.addMessageListener(redisSubscriber, new PatternTopic("chatRoom-*"));
+        container.addMessageListener(redisSubscriber, new PatternTopic("chatRoom.*"));
 
         return container;
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+    public MessageListenerAdapter messageListenerAdapter() {
+        return new MessageListenerAdapter(redisSubscriber, "onMessage");
     }
 
 }
