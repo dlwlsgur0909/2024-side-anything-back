@@ -13,8 +13,6 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
                 cp.chatRoom.id = :roomId
                 AND cp.chatRoom.isActive = true
                 AND cp.member.id = :memberId
-                AND cp.member.isVerified = true
-                AND cp.member.isProfileCompleted = true
                 AND cp.isActive = true
             """
     )

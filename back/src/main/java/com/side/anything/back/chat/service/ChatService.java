@@ -1,22 +1,21 @@
 package com.side.anything.back.chat.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.side.anything.back.chat.dto.request.ChatMessageRequest;
-import com.side.anything.back.chat.entity.ChatParticipant;
+import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.ChatRoom;
 import com.side.anything.back.chat.repository.ChatMessageRepository;
 import com.side.anything.back.chat.repository.ChatParticipantRepository;
 import com.side.anything.back.chat.repository.ChatRoomRepository;
 import com.side.anything.back.config.RedisPublisher;
-import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.CustomException;
+import com.side.anything.back.member.entity.Member;
+import com.side.anything.back.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.side.anything.back.exception.BasicExceptionEnum.*;
+import static com.side.anything.back.exception.BasicExceptionEnum.FORBIDDEN;
+import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -26,39 +25,33 @@ public class ChatService {
     private final ChatRoomRepository roomRepository;
     private final ChatParticipantRepository participantRepository;
     private final ChatMessageRepository messageRepository;
+    private final MemberRepository memberRepository;
 
     private final RedisPublisher redisPublisher;
-    private final ObjectMapper objectMapper;
-
-    private static final String REDIS_TOPIC_PREFIX = "chatRoom-";
 
     @Transactional
     public void sendMessage(ChatMessageRequest request) {
 
-        // 채팅방 존재 여부 확인
-        Boolean exists = roomRepository.existsByIdAndIsActiveTrue(request.getRoomId());
+        // 사용자 조회
+        Member findMember = memberRepository.findMemberById(request.getMemberId())
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "사용자를 찾을 수 없습니다"));
 
-        if(!exists) {
-            throw new CustomException(NOT_FOUND, "채팅방을 찾을 수 없습니다");
-        }
+        // 채팅방 조회
+        ChatRoom findChatRoom = roomRepository.findChatRoom(request.getRoomId())
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "채팅방을 찾을 수 없습니다"));
 
-        // 참가자 여부 확인
+        // 참가자 조회
         Boolean isParticipant = participantRepository.isParticipant(request.getRoomId(), request.getMemberId());
 
         if(!isParticipant) {
             throw new CustomException(FORBIDDEN, "해당 채팅방의 참가자가 아닙니다");
         }
 
-        try {
-            // Request 문자열로 직렬화
-            String messageJson = objectMapper.writeValueAsString(request);
-            // Redis에 topic(채널명)으로 메세지 발행(publish)
-            String topic = REDIS_TOPIC_PREFIX + request.getRoomId();
-            redisPublisher.publish(topic, messageJson);
-        } catch (JsonProcessingException e) {
-            throw new CustomException(INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
-        }
+        // 메세지 엔티티 저장
+        messageRepository.save(ChatMessage.of(findChatRoom, findMember, request.getMessage()));
 
+        // Redis publish
+        redisPublisher.publish(request);
 
     }
 
