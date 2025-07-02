@@ -30,4 +30,16 @@ public class ChatParticipant extends BaseEntity {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    public static ChatParticipant of(ChatRoom chatRoom, Member member, Boolean isHost) {
+
+        ChatParticipant chatParticipant = new ChatParticipant();
+
+        chatParticipant.chatRoom = chatRoom;
+        chatParticipant.member = member;
+        chatParticipant.isHost = isHost;
+        chatParticipant.isActive = true;
+
+        return chatParticipant;
+    }
+
 }

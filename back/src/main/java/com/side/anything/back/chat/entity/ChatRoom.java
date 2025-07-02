@@ -23,4 +23,18 @@ public class ChatRoom extends BaseEntity {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    public static ChatRoom of(CompanionPost companionPost) {
+
+        ChatRoom chatRoom = new ChatRoom();
+
+        chatRoom.companionPost = companionPost;
+        chatRoom.isActive = true;
+
+        return chatRoom;
+    }
+
+    public void delete() {
+        this.isActive = false;
+    }
+
 }
