@@ -26,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // /auth 하위 경로는 검증 하지 않음
-        if(request.getRequestURI().startsWith("/auth")) {
+        if(request.getRequestURI().startsWith("/auth") || request.getRequestURI().startsWith("/ws-chat")) {
             filterChain.doFilter(request, response);
             return;
         }
