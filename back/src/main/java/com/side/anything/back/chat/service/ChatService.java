@@ -10,6 +10,7 @@ import com.side.anything.back.config.RedisPublisher;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.member.entity.Member;
 import com.side.anything.back.member.repository.MemberRepository;
+import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +31,10 @@ public class ChatService {
     private final RedisPublisher redisPublisher;
 
     @Transactional
-    public void sendMessage(ChatMessageRequest request) {
+    public void sendMessage(ChatMessageRequest request, TokenInfo tokenInfo) {
 
         // 사용자 조회
-        Member findMember = memberRepository.findMemberById(request.getMemberId())
+        Member findMember = memberRepository.findMemberById(tokenInfo.getId())
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "사용자를 찾을 수 없습니다"));
 
         // 채팅방 조회

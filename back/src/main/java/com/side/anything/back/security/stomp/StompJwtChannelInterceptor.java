@@ -11,6 +11,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
 
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        if(StompCommand.CONNECT.equals(accessor.getCommand())) {
+        if(StompCommand.SEND.equals(accessor.getCommand()) || StompCommand.CONNECT.equals(accessor.getCommand())) {
 
             String authorization = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
 
@@ -49,7 +51,9 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
                     tokenInfo, null, List.of(new SimpleGrantedAuthority(tokenInfo.getRole().name()))
             );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            accessor.setUser(authentication);
+
+            return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
         }
 
         return message;
