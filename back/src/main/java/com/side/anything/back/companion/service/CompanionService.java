@@ -1,5 +1,9 @@
 package com.side.anything.back.companion.service;
 
+import com.side.anything.back.chat.entity.ChatParticipant;
+import com.side.anything.back.chat.entity.ChatRoom;
+import com.side.anything.back.chat.repository.ChatParticipantRepository;
+import com.side.anything.back.chat.repository.ChatRoomRepository;
 import com.side.anything.back.companion.dto.request.CompanionApplicationSaveRequest;
 import com.side.anything.back.companion.dto.request.CompanionApplicationUpdateStatusRequest;
 import com.side.anything.back.companion.dto.request.CompanionPostSaveRequest;
@@ -37,6 +41,9 @@ public class CompanionService {
     private final CompanionPostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CompanionApplicationRepository applicationRepository;
+
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatParticipantRepository chatParticipantRepository;
 
     // 동행 모집 목록
     public CompanionPostListResponse findCompanionPostList(final TokenInfo tokenInfo, final String keyword, final int page) {
@@ -78,7 +85,14 @@ public class CompanionService {
             throw new CustomException(BAD_REQUEST, "시작일은 종료일 이후일 수 없습니다");
         }
 
-        postRepository.save(CompanionPost.of(request, findMember));
+        // 동행 모집 저장
+        CompanionPost savedCompanionPost = postRepository.save(CompanionPost.of(request, findMember));
+
+        // 동행 모집에 연결된 채팅방 생성
+        ChatRoom savedChatRoom = chatRoomRepository.save(ChatRoom.of(savedCompanionPost));
+
+        // 채팅방에 동행 모집 작성자 추가
+        chatParticipantRepository.save(ChatParticipant.of(savedChatRoom, findMember, true));
     }
 
     // 동행 모집 마감
@@ -120,7 +134,14 @@ public class CompanionService {
             );
             }
 
+        // 동행 모집 삭제
         findPost.delete();
+
+        // 채팅방 삭제
+        ChatRoom findChatRoom = chatRoomRepository.findChatRoomByPost(findPost.getId())
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
+
+        findChatRoom.delete();
     }
 
     // 동행 신청
@@ -159,8 +180,18 @@ public class CompanionService {
         ).orElseThrow(() -> new CustomException(BasicExceptionEnum.NOT_FOUND));
 
         if(request.getIsApproval()) {
+            // 승인
             findApplication.approve();
+
+            // 채팅방에 승인된 참가자 추가
+            Member findMember = findMemberById(findApplication.getMember().getId());
+
+            ChatRoom findChatRoom = chatRoomRepository.findChatRoomByPost(postId)
+                    .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
+
+            chatParticipantRepository.save(ChatParticipant.of(findChatRoom, findMember, false));
         }else {
+            // 거절
             findApplication.reject();
         }
 
