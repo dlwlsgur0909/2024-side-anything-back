@@ -8,7 +8,7 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
 
     @Query(
             """
-            SELECT COUNT(cp) FROM ChatParticipant cp
+            SELECT COUNT(cp) > 0 FROM ChatParticipant cp
             WHERE
                 cp.chatRoom.id = :roomId
                 AND cp.chatRoom.isActive = true
@@ -16,7 +16,7 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
                 AND cp.isActive = true
             """
     )
-    Boolean isParticipant(Long roomID, Long memberId);
+    Boolean isParticipant(Long roomId, Long memberId);
 
 
 }
