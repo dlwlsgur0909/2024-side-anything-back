@@ -21,7 +21,7 @@ import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ChatService {
+public class ChatMessageService {
 
     private final ChatRoomRepository roomRepository;
     private final ChatParticipantRepository participantRepository;
