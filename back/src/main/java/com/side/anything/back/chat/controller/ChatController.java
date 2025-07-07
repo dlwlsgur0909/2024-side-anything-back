@@ -1,15 +1,13 @@
 package com.side.anything.back.chat.controller;
 
+import com.side.anything.back.chat.dto.response.ChatMessageListResponse;
 import com.side.anything.back.chat.dto.response.ChatRoomListResponse;
 import com.side.anything.back.chat.service.ChatService;
 import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +23,14 @@ public class ChatController {
 
         return ResponseEntity
                 .ok(chatService.findChatRoomList(tokenInfo, keyword, page));
+    }
+
+    @GetMapping("/{roomId}")
+    public ResponseEntity<ChatMessageListResponse> findChatMessageList(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                       @PathVariable Long roomId) {
+
+        return ResponseEntity
+                .ok(chatService.findChatMessageList(tokenInfo, roomId));
     }
 
 }

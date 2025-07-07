@@ -4,7 +4,6 @@ import com.side.anything.back.chat.entity.ChatParticipant;
 import com.side.anything.back.companion.entity.CompanionPostStatus;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
