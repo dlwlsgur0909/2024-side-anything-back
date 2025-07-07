@@ -9,12 +9,12 @@ import java.util.List;
 @Getter
 public class ChatRoomListResponse {
 
-    private List<ChatRoomResponse> chatRoomList;
+    private List<ChatRoomResponse> roomList;
     private Integer totalPages;
 
     public ChatRoomListResponse(List<ChatParticipant> chatParticipantList, Integer totalPages) {
 
-        this.chatRoomList = chatParticipantList.stream()
+        this.roomList = chatParticipantList.stream()
                 .map(ChatRoomResponse::new)
                 .toList();
         this.totalPages = totalPages;
@@ -22,14 +22,14 @@ public class ChatRoomListResponse {
 
     @Getter
     private static class ChatRoomResponse {
-        private Long chatRoomId;
-        private String companionPostTitle;
-        private CompanionPostStatus companionPostStatus;
+        private Long roomId;
+        private String postTitle;
+        private CompanionPostStatus postStatus;
 
         public ChatRoomResponse(ChatParticipant chatParticipant) {
-            this.chatRoomId = chatParticipant.getChatRoom().getId();
-            this.companionPostTitle = chatParticipant.getChatRoom().getCompanionPost().getTitle();
-            this.companionPostStatus = chatParticipant.getChatRoom().getCompanionPost().getStatus();
+            this.roomId = chatParticipant.getChatRoom().getId();
+            this.postTitle = chatParticipant.getChatRoom().getCompanionPost().getTitle();
+            this.postStatus = chatParticipant.getChatRoom().getCompanionPost().getStatus();
         }
     }
 
