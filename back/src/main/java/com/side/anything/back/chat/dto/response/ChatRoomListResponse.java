@@ -10,13 +10,15 @@ import java.util.List;
 @Getter
 public class ChatRoomListResponse {
 
-    List<ChatRoomResponse> chatRoomList = new ArrayList<>();
+    private List<ChatRoomResponse> chatRoomList;
+    private Integer totalPages;
 
-    public ChatRoomListResponse(List<ChatParticipant> chatParticipantList) {
+    public ChatRoomListResponse(List<ChatParticipant> chatParticipantList, Integer totalPages) {
 
         this.chatRoomList = chatParticipantList.stream()
                 .map(ChatRoomResponse::new)
                 .toList();
+        this.totalPages = totalPages;
     }
 
     @Getter

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,10 +19,12 @@ public class ChatController {
     private final ChatService chatService;
 
     @GetMapping
-    public ResponseEntity<ChatRoomListResponse> findChatRoomList(@AuthenticationPrincipal TokenInfo tokenInfo) {
+    public ResponseEntity<ChatRoomListResponse> findChatRoomList(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                 @RequestParam(name = "keyword", defaultValue = "") String keyword,
+                                                                 @RequestParam(name = "page", defaultValue = "1") int page) {
 
         return ResponseEntity
-                .ok(chatService.findChatRoomList(tokenInfo));
+                .ok(chatService.findChatRoomList(tokenInfo, keyword, page));
     }
 
 }
