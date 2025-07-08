@@ -96,7 +96,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(request ->
                     request
-                            .requestMatchers("/auth/**", "/ws-chat/**").permitAll()
+                            .requestMatchers("/auth/**", "/ws/**").permitAll()
                             .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                             .anyRequest().authenticated()
                 )
