@@ -18,14 +18,17 @@ import java.nio.charset.StandardCharsets;
 public class RedisSubscriber implements MessageListener {
 
     private final ObjectMapper objectMapper;
-    private final SimpMessagingTemplate messagingTemplate; // STOMP 메세지 전송용
+    private final SimpMessagingTemplate messagingTemplate; // STOMP 프로토콜 기반으로 WebSocket 클라이언트에게 메세지를 전송
 
-    // Redis에서 메세지를 수신하면 호출됨
+    // Redis Pub/Sub을 통해 들어온 메세지를 받아서 처리하는 콜백 메서드
     @Override
     public void onMessage(Message message, byte[] pattern) {
 
         try {
-            // Redis에서 수신한 메세지(바이트)를 문자열로 변환
+            /*
+            message.getBody()로 Redis에서 수신한 메세지의 바이트 배열을 가져옴
+            new String()을 통해 바이트 배열을 UTF-8 인코딩된 문자열로 변환
+             */
             String messageBody = new String(message.getBody(), StandardCharsets.UTF_8);
 
             // JSON 문자열을 DTO로 역직렬화

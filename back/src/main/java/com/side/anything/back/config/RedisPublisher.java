@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisPublisher {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate; // RedisConfig에서 등록한 Redis에 데이터를 읽고 쓰기 위한 템플릿 객체
     private final ObjectMapper objectMapper;
 
     // 지정한 채널(topic)에 문자열 메세지를 전송
@@ -22,10 +22,17 @@ public class RedisPublisher {
         try {
             // JSON 문자열로 직렬화
             String messageJson = objectMapper.writeValueAsString(request);
-            // 채널명
-            String topic = "chatRoom." + request.getRoomId();
 
-            // 직렬화한 문자열을 publish
+            /*
+            RedisConfig의 RedisMessageListenerContainer 빈에 등록한
+            messageListener의 PatternTopic(chatRoom.*)에 맞는 채널명
+             */
+            String topic = "chatRoom." + request.getRoomId(); // 채널명
+
+            /*
+            직렬화한 문자열을 publish
+            지정한 채널(topic)에 메세지를 발행해서 구독 중인 리스너에게 전달
+             */
             redisTemplate.convertAndSend(topic, messageJson);
 
         } catch (JsonProcessingException e) {
