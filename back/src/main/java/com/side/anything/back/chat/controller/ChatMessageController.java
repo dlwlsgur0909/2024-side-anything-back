@@ -14,6 +14,11 @@ public class ChatMessageController {
 
     private final ChatMessageService messageService;
 
+    /*
+    Authentication 대신 Principal을 바로 받으면 TokenInfo 객체가 아니라
+    Spring 내부에서 생성한 Principal 타입의 구현체인 org.springframework.security.core.userdetails.User 깉은 객체가 들어간다
+    Authentication으로 받아 getPrincipal 메서드를 사용하면 StompJwtChannelInterceptor에서 설정한 TokenInfo 객체가 들어온다
+     */
     @MessageMapping("/chat/{roomId}") // 클라이언트가 서버로 메세지를 보낼 때의 경로
     public void sendMessage(@DestinationVariable Long roomId,
                             @Payload ChatMessageRequest request,
