@@ -58,6 +58,12 @@ public class SecurityConfig {
 
                             CorsConfiguration corsConfiguration = new CorsConfiguration();
 
+                            /*
+                            SockJS가 연결 과정(특히 handshake 단계)에서 withCredentials: true처럼 동작하기 때문에,
+                            CORS preflight 요청에 대해 Access-Control-Allow-Credentials: true가 설정되어 있어야 합니다.
+                            그렇지 않으면 CORS 오류 발생 (특히 브라우저가 자동으로 credentials를 포함시키기 때문)
+                             */
+                            corsConfiguration.setAllowCredentials(true);
                             corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
                             corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
                             corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
@@ -90,7 +96,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(request ->
                     request
-                            .requestMatchers("/auth/**").permitAll()
+                            .requestMatchers("/auth/**", "/ws/**").permitAll()
                             .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                             .anyRequest().authenticated()
                 )

@@ -14,12 +14,14 @@ public class CustomException extends RuntimeException{
     private final String errorMessage;
 
     public CustomException(BasicExceptionEnum basicExceptionEnum, String errorMessage) {
+        super(errorMessage);
         this.status = basicExceptionEnum.getStatus();
         this.errorCode = basicExceptionEnum.getErrorCode();
         this.errorMessage = StringUtils.hasText(errorMessage) ? errorMessage : basicExceptionEnum.getErrorMessage();
     }
 
     public CustomException(BasicExceptionEnum basicExceptionEnum) {
+        super(basicExceptionEnum.getErrorMessage());
         this.status = basicExceptionEnum.getStatus();
         this.errorCode = basicExceptionEnum.getErrorCode();
         this.errorMessage = basicExceptionEnum.getErrorMessage();

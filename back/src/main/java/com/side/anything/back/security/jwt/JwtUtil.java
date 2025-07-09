@@ -26,18 +26,17 @@ public class JwtUtil {
     private final SecretKey secretKey;
     private final Long accessTimeout;
     private final Long refreshTimeout;
-    private final RedisService redisService;
+//    private final RedisService redisService;
 
 
     public JwtUtil(@Value("${spring.jwt.secret}") String secret,
                    @Value("${spring.jwt.access-timeout}") Long accessTimeout,
-                   @Value("${spring.jwt.refresh-timeout}") Long refreshTimeout,
-                   RedisService redisService) {
+                   @Value("${spring.jwt.refresh-timeout}") Long refreshTimeout) {
 
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         this.accessTimeout = accessTimeout;
         this.refreshTimeout = refreshTimeout;
-        this.redisService = redisService;
+//        this.redisService = redisService;
     }
 
     private String createJwt(TokenInfo tokenInfo, Long expiration) {
@@ -58,7 +57,7 @@ public class JwtUtil {
     public String createRefreshToken(TokenInfo tokenInfo) {
 
         String refreshToken = createJwt(tokenInfo, refreshTimeout * 60 * 1000L);
-        redisService.setValue(refreshToken, refreshToken, Duration.ofMinutes(refreshTimeout));
+//        redisService.setValue(refreshToken, refreshToken, Duration.ofMinutes(refreshTimeout));
         return refreshToken;
     }
 
@@ -96,12 +95,12 @@ public class JwtUtil {
         return objectMapper.convertValue(tokenInfo, TokenInfo.class);
     }
 
-    public Boolean checkRefreshToken(String key) {
-        return Objects.nonNull(redisService.getValue(key));
-    }
-
-    public void deleteRefreshToken(String key) {
-        redisService.deleteValue(key);
-    }
+//    public Boolean checkRefreshToken(String key) {
+//        return Objects.nonNull(redisService.getValue(key));
+//    }
+//
+//    public void deleteRefreshToken(String key) {
+//        redisService.deleteValue(key);
+//    }
 
 }

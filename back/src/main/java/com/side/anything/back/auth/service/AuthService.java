@@ -187,12 +187,12 @@ public class AuthService {
             throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
         }
 
-        if(!jwtUtil.checkRefreshToken(refreshToken)) {
-            log.error("Reissue Error - Refresh Token Does Not Exist in Redis");
-            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
-        }
-
-        jwtUtil.deleteRefreshToken(refreshToken);
+//        if(!jwtUtil.checkRefreshToken(refreshToken)) {
+//            log.error("Reissue Error - Refresh Token Does Not Exist in Redis");
+//            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
+//        }
+//
+//        jwtUtil.deleteRefreshToken(refreshToken);
 
         TokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
 
@@ -246,12 +246,12 @@ public class AuthService {
             throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
         }
 
-        if(!jwtUtil.checkRefreshToken(refreshToken)) {
-            log.error("Social Join Error - Refresh Token Does Not Exist in Redis");
-            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
-        }
-
-        jwtUtil.deleteRefreshToken(refreshToken);
+//        if(!jwtUtil.checkRefreshToken(refreshToken)) {
+//            log.error("Social Join Error - Refresh Token Does Not Exist in Redis");
+//            throw new CustomException(UNAUTHORIZED, "로그인이 만료되었습니다");
+//        }
+//
+//        jwtUtil.deleteRefreshToken(refreshToken);
 
         Member findMember = memberRepository.findById(socialJoinRequest.getId())
                 .orElseThrow(() -> new CustomException(UNAUTHORIZED, "미가입 회원입니다"));
@@ -334,21 +334,21 @@ public class AuthService {
     // 로그아웃
     public void logout(final HttpServletRequest request, final HttpServletResponse response) {
 
-        String refresh = null;
-        Cookie[] cookies = request.getCookies();
-
-        if(cookies != null) {
-            for (Cookie cookie : cookies) {
-                if(cookie.getName().equals("Refresh")) {
-                    refresh = cookie.getValue();
-                    break;
-                }
-            }
-
-            if(refresh != null) {
-                jwtUtil.deleteRefreshToken(refresh);
-            }
-        }
+//        String refresh = null;
+//        Cookie[] cookies = request.getCookies();
+//
+//        if(cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if(cookie.getName().equals("Refresh")) {
+//                    refresh = cookie.getValue();
+//                    break;
+//                }
+//            }
+//
+//            if(refresh != null) {
+//                jwtUtil.deleteRefreshToken(refresh);
+//            }
+//        }
 
         Cookie cookie = new Cookie("Refresh", null);
         cookie.setPath("/auth/reissue");
