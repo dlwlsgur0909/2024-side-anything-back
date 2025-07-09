@@ -25,7 +25,7 @@ public class ChatMessageController {
                             Authentication authentication) {
 
         TokenInfo tokenInfo = (TokenInfo) authentication.getPrincipal();
-        messageService.sendMessage(request, tokenInfo);
+        messageService.sendMessage(tokenInfo, roomId, request);
     }
 
     // 에러 처리 필요

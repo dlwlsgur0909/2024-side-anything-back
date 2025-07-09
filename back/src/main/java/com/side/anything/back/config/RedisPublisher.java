@@ -3,6 +3,7 @@ package com.side.anything.back.config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.side.anything.back.chat.dto.request.ChatMessageRequest;
+import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +18,17 @@ public class RedisPublisher {
     private final ObjectMapper objectMapper;
 
     // 지정한 채널(topic)에 문자열 메세지를 전송
-    public void publish(ChatMessageRequest request) {
+    public void publish(ChatMessageResponse response) {
 
         try {
             // JSON 문자열로 직렬화
-            String messageJson = objectMapper.writeValueAsString(request);
+            String messageJson = objectMapper.writeValueAsString(response);
 
             /*
             RedisConfig의 RedisMessageListenerContainer 빈에 등록한
             messageListener의 PatternTopic(chatRoom.*)에 맞는 채널명
              */
-            String topic = "chatRoom." + request.getRoomId(); // 채널명
+            String topic = "chatRoom." + response.getRoomId(); // 채널명
 
             /*
             직렬화한 문자열을 publish

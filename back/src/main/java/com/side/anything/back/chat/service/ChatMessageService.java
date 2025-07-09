@@ -1,6 +1,7 @@
 package com.side.anything.back.chat.service;
 
 import com.side.anything.back.chat.dto.request.ChatMessageRequest;
+import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.ChatRoom;
 import com.side.anything.back.chat.repository.ChatMessageRepository;
@@ -31,32 +32,39 @@ public class ChatMessageService {
     private final RedisPublisher redisPublisher;
 
     @Transactional
-    public void sendMessage(ChatMessageRequest request, TokenInfo tokenInfo) {
+    public void sendMessage(final TokenInfo tokenInfo, final Long roomId, final ChatMessageRequest request) {
 
         // 사용자 조회
         Member findMember = memberRepository.findMemberById(tokenInfo.getId())
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "사용자를 찾을 수 없습니다"));
 
         // 채팅방 조회
-        ChatRoom findChatRoom = roomRepository.findChatRoom(request.getRoomId())
+        ChatRoom findChatRoom = roomRepository.findChatRoom(roomId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "채팅방을 찾을 수 없습니다"));
 
         // 참가자 조회
-        Boolean isParticipant = participantRepository.isParticipant(request.getRoomId(), request.getMemberId());
+        Boolean isParticipant = participantRepository.isParticipant(roomId, findMember.getId());
 
         if(!isParticipant) {
             throw new CustomException(FORBIDDEN, "해당 채팅방의 참가자가 아닙니다");
         }
 
         // 메세지 엔티티 저장
-        messageRepository.save(ChatMessage.of(findChatRoom, findMember, request.getMessage()));
+        ChatMessage saveChatMessage = ChatMessage.of(findChatRoom, findMember, request.getMessage());
+        messageRepository.save(saveChatMessage);
+
+        // ChatMessageResponse 객체 생성
+        ChatMessageResponse response = ChatMessageResponse.builder()
+                .roomId(roomId)
+                .memberId(findMember.getId())
+                .nickname(findMember.getNickname())
+                .message(saveChatMessage.getMessage())
+                .sentAt(saveChatMessage.getCreatedAt())
+                .build();
 
         // Redis publish
-        redisPublisher.publish(request);
+        redisPublisher.publish(response);
 
     }
-
-
-
 
 }
