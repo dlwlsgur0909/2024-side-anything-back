@@ -23,13 +23,15 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
 
-        // /auth 하위 경로는 검증 하지 않음
-        if(request.getRequestURI().startsWith("/auth") || request.getRequestURI().startsWith("/ws-chat")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        // /auth, /ws 하위 경로는 검증 하지 않음
+        return request.getRequestURI().startsWith("/auth") ||
+                request.getRequestURI().startsWith("/ws");
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
