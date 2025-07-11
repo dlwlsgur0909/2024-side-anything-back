@@ -2,9 +2,13 @@ package com.side.anything.back.chat.controller;
 
 import com.side.anything.back.chat.dto.request.ChatMessageRequest;
 import com.side.anything.back.chat.service.ChatMessageService;
+import com.side.anything.back.exception.BasicExceptionResponse;
+import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Controller;
 public class ChatMessageController {
 
     private final ChatMessageService messageService;
+    private final SimpMessageSendingOperations messagingTemplate; // STOMP 프로토콜 기반으로 WebSocket 클라이언트에게 메세지를 전송
 
     /*
     Authentication 대신 Principal을 바로 받으면 TokenInfo 객체가 아니라
@@ -28,10 +33,11 @@ public class ChatMessageController {
         messageService.sendMessage(tokenInfo, roomId, request);
     }
 
-    // 에러 처리 필요
-//    @MessageExceptionHandler(CustomException.class)
-//    @SendToUser("/chat/errors")
-//    public BasicExceptionResponse handleCustomException(CustomException ce) {
-//        return new BasicExceptionResponse(ce);
-//    }
+    // 에러 처리
+    @MessageExceptionHandler(CustomException.class)
+    public void handleCustomException(CustomException ce, Authentication authentication) {
+
+        TokenInfo tokenInfo = (TokenInfo) authentication.getPrincipal();
+        messagingTemplate.convertAndSendToUser(tokenInfo.getId().toString(), "/queue/errors", new BasicExceptionResponse(ce));
+    }
 }
