@@ -1,13 +1,13 @@
 package com.side.anything.back.security.stomp;
 
-import com.side.anything.back.exception.BasicExceptionEnum;
-import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.JwtUtil;
 import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -22,6 +22,7 @@ import java.util.List;
 /*
 메세지 채널 인터셉터로 WebSocket 메세지를 처리하기 전에 가로챈다
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StompJwtChannelInterceptor implements ChannelInterceptor {
@@ -45,13 +46,15 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
             String authorization = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
 
             if(authorization == null || !authorization.startsWith("Bearer ")) {
-                throw new CustomException(BasicExceptionEnum.UNAUTHORIZED, "Invalid Authorization");
+                log.error("WebSocket Invalid Authorization - {}", authorization);
+                throw new MessagingException("UNAUTHORIZED");
             }
 
             String token = authorization.substring(7);
 
             if(jwtUtil.isInvalid(token)) {
-                throw new CustomException(BasicExceptionEnum.UNAUTHORIZED, "Invalid JWT");
+                log.error("WebSocket Invalid JWT - {}", token);
+                throw new MessagingException("UNAUTHORIZED");
             }
 
             TokenInfo tokenInfo = jwtUtil.parseToken(token);
