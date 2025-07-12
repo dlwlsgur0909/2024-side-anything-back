@@ -45,10 +45,6 @@ public class RedisSubscriber implements MessageListener {
             // STOMP 구독자에게 브로드캐스트
             messagingTemplate.convertAndSend(destination, response);
 
-            if(response.getRoomId() == 1L) {
-                throw new RuntimeException("에러발생!");
-            }
-
         } catch (JsonProcessingException e) {
             CustomException ce = new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
             if(response == null) {
