@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.side.anything.back.chat.dto.request.ChatMessageRequest;
 import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.exception.BasicExceptionEnum;
+import com.side.anything.back.exception.BasicExceptionResponse;
 import com.side.anything.back.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.connection.Message;
@@ -26,6 +27,8 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
 
+        ChatMessageResponse response = null;
+
         try {
             /*
             message.getBody()로 Redis에서 수신한 메세지의 바이트 배열을 가져옴
@@ -34,7 +37,7 @@ public class RedisSubscriber implements MessageListener {
             String messageBody = new String(message.getBody(), StandardCharsets.UTF_8);
 
             // JSON 문자열을 DTO로 역직렬화
-            ChatMessageResponse response =  objectMapper.readValue(messageBody, ChatMessageResponse.class);
+            response =  objectMapper.readValue(messageBody, ChatMessageResponse.class);
 
             // 채팅방 식별
             String destination = "/sub/chat/" + response.getRoomId();
@@ -42,10 +45,32 @@ public class RedisSubscriber implements MessageListener {
             // STOMP 구독자에게 브로드캐스트
             messagingTemplate.convertAndSend(destination, response);
 
+            if(response.getRoomId() == 1L) {
+                throw new RuntimeException("에러발생!");
+            }
+
         } catch (JsonProcessingException e) {
-            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 저장에 실패했습니다");
+            CustomException ce = new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+            if(response == null) {
+                // 시스템 에러 처리?
+            }else {
+                handleSubscribeException(ce, response.getMemberId());
+            }
+            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+        } catch (Exception e) {
+            CustomException ce = new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+            if(response == null) {
+                // 시스템 에러 처리?
+            }else {
+                handleSubscribeException(ce, response.getMemberId());
+            }
+            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
         }
 
+    }
+
+    private void handleSubscribeException(CustomException ce, Long memberId) {
+        messagingTemplate.convertAndSendToUser(memberId.toString(), "/queue/errors", new BasicExceptionResponse(ce));
     }
 
 }
