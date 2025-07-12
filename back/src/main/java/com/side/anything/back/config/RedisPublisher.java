@@ -2,14 +2,17 @@ package com.side.anything.back.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.side.anything.back.chat.dto.request.ChatMessageRequest;
 import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.CustomException;
+import io.jsonwebtoken.io.SerializationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RedisPublisher {
@@ -37,6 +40,16 @@ public class RedisPublisher {
             redisTemplate.convertAndSend(topic, messageJson);
 
         } catch (JsonProcessingException e) {
+            log.error("Redis Publish Failed: Cannot covert response to json", e);
+            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+        } catch (RedisConnectionFailureException e) {
+            log.error("Redis Publish Failed: Cannot connect to redis server", e);
+            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+        } catch (SerializationException e) {
+            log.error("Redis Publish Failed: Cannot serialized message", e);
+            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+        } catch (Exception e) {
+            log.error("Redis Publish Failed: Unexpected error occurred", e);
             throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
         }
     }
