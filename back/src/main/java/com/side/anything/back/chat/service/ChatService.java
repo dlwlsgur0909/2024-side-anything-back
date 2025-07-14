@@ -4,6 +4,7 @@ import com.side.anything.back.chat.dto.response.ChatMessageListResponse;
 import com.side.anything.back.chat.dto.response.ChatRoomListResponse;
 import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.ChatParticipant;
+import com.side.anything.back.chat.entity.MessageType;
 import com.side.anything.back.chat.repository.ChatMessageRepository;
 import com.side.anything.back.chat.repository.ChatParticipantRepository;
 import com.side.anything.back.chat.repository.ChatRoomRepository;
@@ -52,7 +53,7 @@ public class ChatService {
             throw new CustomException(BasicExceptionEnum.NOT_FOUND, "채팅방을 찾을 수 없습니다");
         }
 
-        List<ChatMessage> messageList = messageRepository.findMessageList(chatRoomId);
+        List<ChatMessage> messageList = messageRepository.findMessageList(chatRoomId, tokenInfo.getId(), MessageType.ENTER);
 
         return new ChatMessageListResponse(messageList);
     }
