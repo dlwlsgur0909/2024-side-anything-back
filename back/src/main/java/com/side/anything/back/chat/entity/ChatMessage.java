@@ -6,12 +6,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -33,13 +27,18 @@ public class ChatMessage extends BaseTimeEntity {
     @Column(name = "message")
     private String message;
 
-    public static ChatMessage of(ChatRoom chatRoom, Member member, String message) {
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+
+    public static ChatMessage of(ChatRoom chatRoom, Member member, String message, MessageType type) {
 
         ChatMessage chatMessage = new ChatMessage();
 
         chatMessage.chatRoom = chatRoom;
         chatMessage.member = member;
         chatMessage.message = message;
+        chatMessage.type = type;
 
         return chatMessage;
     }

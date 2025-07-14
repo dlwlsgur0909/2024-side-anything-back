@@ -1,4 +1,4 @@
-package com.side.anything.back.chat.dto.request;
+package com.side.anything.back.chat.entity;
 
 public enum MessageType {
 
@@ -6,6 +6,5 @@ public enum MessageType {
     TALK,
     LEAVE,
     KICK,
-    CLOSE
 
 }

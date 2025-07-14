@@ -16,6 +16,7 @@ public class ChatController {
 
     private final ChatService chatService;
 
+    // 채팅방 목록 API
     @GetMapping
     public ResponseEntity<ChatRoomListResponse> findChatRoomList(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                                  @RequestParam(name = "keyword", defaultValue = "") String keyword,
@@ -25,6 +26,7 @@ public class ChatController {
                 .ok(chatService.findChatRoomList(tokenInfo, keyword, page));
     }
 
+    // 채팅방 상세 API
     @GetMapping("/{roomId}")
     public ResponseEntity<ChatMessageListResponse> findChatMessageList(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                                        @PathVariable Long roomId) {

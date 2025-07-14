@@ -50,7 +50,7 @@ public class ChatMessageService {
         }
 
         // 메세지 엔티티 저장
-        ChatMessage saveChatMessage = ChatMessage.of(findChatRoom, findMember, request.getMessage());
+        ChatMessage saveChatMessage = ChatMessage.of(findChatRoom, findMember, request.getMessage(), request.getMessageType());
         messageRepository.save(saveChatMessage);
 
         // ChatMessageResponse 객체 생성
