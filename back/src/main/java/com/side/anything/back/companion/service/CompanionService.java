@@ -1,7 +1,10 @@
 package com.side.anything.back.companion.service;
 
+import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.ChatParticipant;
 import com.side.anything.back.chat.entity.ChatRoom;
+import com.side.anything.back.chat.entity.MessageType;
+import com.side.anything.back.chat.repository.ChatMessageRepository;
 import com.side.anything.back.chat.repository.ChatParticipantRepository;
 import com.side.anything.back.chat.repository.ChatRoomRepository;
 import com.side.anything.back.companion.dto.request.CompanionApplicationSaveRequest;
@@ -44,6 +47,7 @@ public class CompanionService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     // 동행 모집 목록
     public CompanionPostListResponse findCompanionPostList(final TokenInfo tokenInfo, final String keyword, final int page) {
@@ -93,6 +97,12 @@ public class CompanionService {
 
         // 채팅방에 동행 모집 작성자 추가
         chatParticipantRepository.save(ChatParticipant.of(savedChatRoom, findMember, true));
+
+        // 채팅방 입장 메세지 저장
+        chatMessageRepository.save(
+                ChatMessage.of(savedChatRoom, findMember, findMember.getNickname() + "님이 입장했습니다", MessageType.ENTER)
+        );
+
     }
 
     // 동행 모집 마감
@@ -142,6 +152,7 @@ public class CompanionService {
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
 
         findChatRoom.delete();
+
     }
 
     // 동행 신청
@@ -190,6 +201,10 @@ public class CompanionService {
                     .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
 
             chatParticipantRepository.save(ChatParticipant.of(findChatRoom, findMember, false));
+
+            // 참가자 채팅방 입장 메세지 저장
+            chatMessageRepository.save(ChatMessage.of(findChatRoom, findMember, findMember.getNickname() + "님이 입장했습니다", MessageType.ENTER));
+
         }else {
             // 거절
             findApplication.reject();
