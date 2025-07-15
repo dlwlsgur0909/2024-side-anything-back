@@ -54,13 +54,7 @@ public class ChatMessageService {
         messageRepository.save(saveChatMessage);
 
         // ChatMessageResponse 객체 생성
-        ChatMessageResponse response = ChatMessageResponse.builder()
-                .roomId(roomId)
-                .memberId(findMember.getId())
-                .nickname(findMember.getNickname())
-                .message(saveChatMessage.getMessage())
-                .sentAt(saveChatMessage.getCreatedAt())
-                .build();
+        ChatMessageResponse response = new ChatMessageResponse(saveChatMessage);
 
         // Redis publish
         redisPublisher.publish(response);
