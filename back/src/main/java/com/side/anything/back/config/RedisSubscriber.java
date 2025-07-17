@@ -7,6 +7,7 @@ import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.BasicExceptionResponse;
 import com.side.anything.back.exception.CustomException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
@@ -46,27 +47,34 @@ public class RedisSubscriber implements MessageListener {
             messagingTemplate.convertAndSend(destination, response);
 
         } catch (JsonProcessingException e) {
-            CustomException ce = new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
             if(response == null) {
                 // 시스템 에러 처리?
             }else {
-                handleSubscribeException(ce, response.getMemberId());
+                handleSubscribeException(response.getRoomId(), response.getMemberId());
             }
-            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
         } catch (Exception e) {
-            CustomException ce = new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
             if(response == null) {
                 // 시스템 에러 처리?
             }else {
-                handleSubscribeException(ce, response.getMemberId());
+                handleSubscribeException(response.getRoomId(), response.getMemberId());
             }
-            throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
         }
-
     }
 
-    private void handleSubscribeException(CustomException ce, Long memberId) {
-        messagingTemplate.convertAndSendToUser(memberId.toString(), "/queue/errors", new BasicExceptionResponse(ce));
+    private void handleSubscribeException(Long roomId, Long memberId) {
+        String errorMessage = "메세지 전송에 실패했습니다";
+        String destination = "/sub/chat/" + roomId + "/errors";
+        messagingTemplate.convertAndSend(destination, new ErrorPayload(memberId, errorMessage));
     }
 
+    @Getter
+    private static class ErrorPayload {
+        private Long memberId;
+        private String errorMessage;
+
+        public ErrorPayload(Long memberId, String errorMessage) {
+            this.memberId = memberId;
+            this.errorMessage = errorMessage;
+        }
+    }
 }

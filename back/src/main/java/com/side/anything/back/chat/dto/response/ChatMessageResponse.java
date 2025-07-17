@@ -5,10 +5,12 @@ import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.MessageType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 public class ChatMessageResponse {
 
     private Long roomId;
