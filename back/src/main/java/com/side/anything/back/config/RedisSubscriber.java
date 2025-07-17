@@ -3,6 +3,7 @@ package com.side.anything.back.config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.side.anything.back.chat.dto.request.ChatMessageRequest;
+import com.side.anything.back.chat.dto.response.ChatExceptionResponse;
 import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.BasicExceptionResponse;
@@ -62,19 +63,9 @@ public class RedisSubscriber implements MessageListener {
     }
 
     private void handleSubscribeException(Long roomId, Long memberId) {
-        String errorMessage = "메세지 전송에 실패했습니다";
+        ChatExceptionResponse chatExceptionResponse = new ChatExceptionResponse(memberId, 500, "메세지 전송에 실패했습니다");
         String destination = "/sub/chat/" + roomId + "/errors";
-        messagingTemplate.convertAndSend(destination, new ErrorPayload(memberId, errorMessage));
+        messagingTemplate.convertAndSend(destination, chatExceptionResponse);
     }
 
-    @Getter
-    private static class ErrorPayload {
-        private Long memberId;
-        private String errorMessage;
-
-        public ErrorPayload(Long memberId, String errorMessage) {
-            this.memberId = memberId;
-            this.errorMessage = errorMessage;
-        }
-    }
 }
