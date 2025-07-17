@@ -8,9 +8,11 @@ import java.util.List;
 @Getter
 public class ChatMessageListResponse {
 
+    private String postTitle;
     private List<ChatMessageResponse> messageList;
 
-    public ChatMessageListResponse(List<ChatMessage> messageList) {
+    public ChatMessageListResponse(String postTitle, List<ChatMessage> messageList) {
+        this.postTitle = postTitle;
         this.messageList = messageList.stream()
                 .map(ChatMessageResponse::new)
                 .toList();

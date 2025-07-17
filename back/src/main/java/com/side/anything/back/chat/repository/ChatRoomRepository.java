@@ -1,6 +1,7 @@
 package com.side.anything.back.chat.repository;
 
 import com.side.anything.back.chat.entity.ChatRoom;
+import com.side.anything.back.companion.entity.CompanionPostStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,17 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             """
     )
     Optional<ChatRoom> findChatRoomByPost(@Param("postId") Long postId);
+
+    @Query(
+            """
+            SELECT cr FROM ChatRoom cr
+            JOIN FETCH
+                cr.companionPost post
+            WHERE
+                cr.id = :roomId
+                AND cr.isActive = true
+                AND post.status != :status
+            """
+    )
+    Optional<ChatRoom> findWithPost(@Param("roomId") Long roomId, @Param("status")CompanionPostStatus status);
 }

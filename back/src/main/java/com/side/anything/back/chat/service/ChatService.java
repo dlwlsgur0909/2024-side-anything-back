@@ -4,11 +4,13 @@ import com.side.anything.back.chat.dto.response.ChatMessageListResponse;
 import com.side.anything.back.chat.dto.response.ChatRoomListResponse;
 import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.ChatParticipant;
+import com.side.anything.back.chat.entity.ChatRoom;
 import com.side.anything.back.chat.entity.MessageType;
 import com.side.anything.back.chat.repository.ChatMessageRepository;
 import com.side.anything.back.chat.repository.ChatParticipantRepository;
 import com.side.anything.back.chat.repository.ChatRoomRepository;
 import com.side.anything.back.companion.entity.CompanionPostStatus;
+import com.side.anything.back.companion.repository.CompanionPostRepository;
 import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.TokenInfo;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.side.anything.back.exception.BasicExceptionEnum.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,12 +54,14 @@ public class ChatService {
         Boolean isParticipant = participantRepository.isParticipant(chatRoomId, tokenInfo.getId());
 
         if(!isParticipant) {
-            throw new CustomException(BasicExceptionEnum.NOT_FOUND, "채팅방을 찾을 수 없습니다");
+            throw new CustomException(NOT_FOUND, "채팅방을 찾을 수 없습니다");
         }
 
+        ChatRoom findChatRoom = roomRepository.findWithPost(chatRoomId, CompanionPostStatus.DELETED)
+                .orElseThrow(() -> new CustomException(NOT_FOUND, "존재하지 않는 동행입니다"));
         List<ChatMessage> messageList = messageRepository.findMessageList(chatRoomId, tokenInfo.getId(), MessageType.ENTER);
 
-        return new ChatMessageListResponse(messageList);
+        return new ChatMessageListResponse(findChatRoom.getCompanionPost().getTitle(), messageList);
     }
 
 }
