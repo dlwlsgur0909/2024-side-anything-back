@@ -1,6 +1,6 @@
 package com.side.anything.back.chat.controller;
 
-import com.side.anything.back.chat.dto.response.ChatMessageListResponse;
+import com.side.anything.back.chat.dto.response.ChatRoomEnterResponse;
 import com.side.anything.back.chat.dto.response.ChatRoomListResponse;
 import com.side.anything.back.chat.service.ChatService;
 import com.side.anything.back.security.jwt.TokenInfo;
@@ -28,11 +28,11 @@ public class ChatController {
 
     // 채팅방 상세 API
     @GetMapping("/{roomId}")
-    public ResponseEntity<ChatMessageListResponse> findChatMessageList(@AuthenticationPrincipal TokenInfo tokenInfo,
-                                                                       @PathVariable Long roomId) {
+    public ResponseEntity<ChatRoomEnterResponse> enterChatRoom(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                     @PathVariable Long roomId) {
 
         return ResponseEntity
-                .ok(chatService.findChatMessageList(tokenInfo, roomId));
+                .ok(chatService.enterChatRoom(tokenInfo, roomId));
     }
 
 }

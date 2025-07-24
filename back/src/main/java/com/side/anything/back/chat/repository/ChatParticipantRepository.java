@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ChatParticipantRepository extends JpaRepository<ChatParticipant, Long> {
 
     @Query(
@@ -53,9 +55,49 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
                             AND post.title LIKE %:keyword%
                         """
     )
-    Page<ChatParticipant> findParticipantList(@Param("keyword") String keyword,
-                                              @Param("memberId")Long memberId,
-                                              @Param("postStatus")CompanionPostStatus postStatus,
-                                              Pageable pageable);
+    Page<ChatParticipant> searchMyChatRoomList(@Param("keyword") String keyword,
+                                               @Param("memberId")Long memberId,
+                                               @Param("postStatus")CompanionPostStatus postStatus,
+                                               Pageable pageable);
+
+
+    @Query(
+            """
+            SELECT cp FROM ChatParticipant cp
+            JOIN FETCH
+                cp.member m
+            WHERE
+                cp.isActive = true
+                AND cp.chatRoom.id = :chatRoomId
+                AND cp.chatRoom.isActive = true
+                AND cp.chatRoom.companionPost.status != :postStatus
+            """
+    )
+    List<ChatParticipant> findParticipantList(@Param("chatRoomId") Long chatRoomId,
+                                              @Param("postStatus") CompanionPostStatus postStatus);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
