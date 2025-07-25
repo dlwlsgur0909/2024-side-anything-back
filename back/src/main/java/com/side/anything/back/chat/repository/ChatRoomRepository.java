@@ -38,8 +38,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             WHERE
                 cr.id = :roomId
                 AND cr.isActive = true
-                AND post.status != :status
+                AND post.status != :postStatus
             """
     )
-    Optional<ChatRoom> findWithPost(@Param("roomId") Long roomId, @Param("status")CompanionPostStatus status);
+    Optional<ChatRoom> findWithPost(@Param("roomId") Long roomId,
+                                    @Param("postStatus")CompanionPostStatus postStatus);
 }

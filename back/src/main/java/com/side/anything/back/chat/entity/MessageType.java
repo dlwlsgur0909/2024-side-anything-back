@@ -5,6 +5,6 @@ public enum MessageType {
     ENTER,
     TALK,
     LEAVE,
-    KICK,
+    BANNED,
 
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatParticipantRepository extends JpaRepository<ChatParticipant, Long> {
 
@@ -68,36 +69,46 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
                 cp.member m
             WHERE
                 cp.isActive = true
-                AND cp.chatRoom.id = :chatRoomId
+                AND cp.chatRoom.id = :roomId
                 AND cp.chatRoom.isActive = true
                 AND cp.chatRoom.companionPost.status != :postStatus
             """
     )
-    List<ChatParticipant> findParticipantList(@Param("chatRoomId") Long chatRoomId,
+    List<ChatParticipant> findParticipantList(@Param("roomId") Long roomId,
                                               @Param("postStatus") CompanionPostStatus postStatus);
 
 
+    @Query(
+            """
+            SELECT cp FROM ChatParticipant cp
+            JOIN FETCH
+                cp.member member
+            WHERE
+                cp.id = :participantId
+                AND cp.isActive = true
+                AND cp.chatRoom.id = :roomId
+                AND cp.chatRoom.isActive = true
+                AND cp.chatRoom.companionPost.status != :postStatus
+            """
+    )
+    Optional<ChatParticipant> findParticipant(@Param("roomId") Long roomId,
+                                              @Param("participantId") Long participantId,
+                                              @Param("postStatus") CompanionPostStatus postStatus);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Query(
+            """
+            SELECT cp FROM ChatParticipant cp
+            JOIN FETCH
+                cp.member member
+            WHERE
+                member.id = :memberId
+                AND cp.isActive = true
+                AND cp.chatRoom.id = :roomId
+                AND cp.chatRoom.isActive = true
+                AND cp.chatRoom.companionPost.status != :postStatus
+            """
+    )
+    Optional<ChatParticipant> findHost(@Param("roomId") Long roomId,
+                                       @Param("memberId") Long memberId,
+                                       @Param("postStatus") CompanionPostStatus postStatus);
 }

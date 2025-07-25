@@ -65,4 +65,8 @@ public class CompanionApplication extends BaseEntity {
         this.status = CompanionApplicationStatus.REJECTED;
     }
 
+    public void cancelledByHost() {
+        this.status = CompanionApplicationStatus.CANCELLED_BY_HOST;
+    }
+
 }

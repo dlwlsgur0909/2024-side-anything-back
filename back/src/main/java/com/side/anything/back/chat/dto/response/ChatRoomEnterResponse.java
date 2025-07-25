@@ -28,12 +28,14 @@ public class ChatRoomEnterResponse {
     @Getter
     private static class ChatParticipantResponse {
 
+        private Long id;
         private Long memberId;
         private String nickname;
         private String gender;
         private Boolean isHost;
 
         public ChatParticipantResponse(ChatParticipant chatParticipant) {
+            this.id = chatParticipant.getId();
             this.memberId = chatParticipant.getMember().getId();
             this.nickname = chatParticipant.getMember().getNickname();
             this.gender = chatParticipant.getMember().getGender();

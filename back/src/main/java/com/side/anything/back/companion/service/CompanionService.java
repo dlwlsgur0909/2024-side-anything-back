@@ -1,5 +1,7 @@
 package com.side.anything.back.companion.service;
 
+import com.side.anything.back.chat.dto.response.ChatExceptionResponse;
+import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.ChatParticipant;
 import com.side.anything.back.chat.entity.ChatRoom;
@@ -18,6 +20,7 @@ import com.side.anything.back.companion.entity.CompanionPost;
 import com.side.anything.back.companion.entity.CompanionPostStatus;
 import com.side.anything.back.companion.repository.CompanionApplicationRepository;
 import com.side.anything.back.companion.repository.CompanionPostRepository;
+import com.side.anything.back.config.RedisPublisher;
 import com.side.anything.back.exception.BasicExceptionEnum;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.member.entity.Member;
@@ -26,6 +29,7 @@ import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +52,9 @@ public class CompanionService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatMessageRepository chatMessageRepository;
+
+    private final RedisPublisher redisPublisher;
+    private final SimpMessageSendingOperations messagingTemplate;
 
     // 동행 모집 목록
     public CompanionPostListResponse findCompanionPostList(final TokenInfo tokenInfo, final String keyword, final int page) {
@@ -142,7 +149,7 @@ public class CompanionService {
                     CompanionApplicationStatus.CANCELLED_BY_HOST,
                     List.of(CompanionApplicationStatus.PENDING, CompanionApplicationStatus.APPROVED)
             );
-            }
+        }
 
         // 동행 모집 삭제
         findPost.delete();
@@ -199,11 +206,24 @@ public class CompanionService {
 
             ChatRoom findChatRoom = chatRoomRepository.findChatRoomByPost(postId)
                     .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
+            try {
+                chatParticipantRepository.save(ChatParticipant.of(findChatRoom, findMember, false));
 
-            chatParticipantRepository.save(ChatParticipant.of(findChatRoom, findMember, false));
+                // 참가자 채팅방 입장 메세지 저장
+                ChatMessage saveChatMessage = chatMessageRepository.save(
+                        ChatMessage.of(findChatRoom, findMember, findMember.getNickname() + "님이 입장했습니다", MessageType.ENTER)
+                );
 
-            // 참가자 채팅방 입장 메세지 저장
-            chatMessageRepository.save(ChatMessage.of(findChatRoom, findMember, findMember.getNickname() + "님이 입장했습니다", MessageType.ENTER));
+                // ChatMessageResponse 객체 생성
+                ChatMessageResponse response = new ChatMessageResponse(saveChatMessage);
+
+                // Redis publish
+                redisPublisher.publish(response);
+            }catch (CustomException ce) {
+                ChatExceptionResponse chatExceptionResponse = new ChatExceptionResponse(tokenInfo.getId(), ce.getErrorCode(), ce.getErrorMessage());
+                String destination = "/sub/chat/" + findChatRoom.getId() + "/errors";
+                messagingTemplate.convertAndSend(destination, chatExceptionResponse);
+            }
 
         }else {
             // 거절

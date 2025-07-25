@@ -42,4 +42,9 @@ public class ChatParticipant extends BaseEntity {
         return chatParticipant;
     }
 
+    // 참가자 isActive 상태 변경
+    public void changeIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
 }

@@ -29,10 +29,24 @@ public class ChatController {
     // 채팅방 상세 API
     @GetMapping("/{roomId}")
     public ResponseEntity<ChatRoomEnterResponse> enterChatRoom(@AuthenticationPrincipal TokenInfo tokenInfo,
-                                                                     @PathVariable Long roomId) {
+                                                               @PathVariable Long roomId) {
 
         return ResponseEntity
                 .ok(chatService.enterChatRoom(tokenInfo, roomId));
     }
+
+    // 참가자 강퇴 API
+    @DeleteMapping("/{roomId}/participants/{participantId}")
+    public ResponseEntity<Void> banChatParticipant(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                   @PathVariable Long roomId,
+                                                   @PathVariable Long participantId) {
+
+        chatService.banChatParticipant(tokenInfo, roomId, participantId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
 
 }
