@@ -36,7 +36,7 @@ public class ChatController {
     }
 
     // 참가자 강퇴 API
-    @DeleteMapping("/{roomId}/participants/{participantId}")
+    @PatchMapping("/{roomId}/participants/{participantId}")
     public ResponseEntity<Void> banChatParticipant(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                    @PathVariable Long roomId,
                                                    @PathVariable Long participantId) {
