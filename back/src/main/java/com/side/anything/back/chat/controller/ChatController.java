@@ -48,5 +48,17 @@ public class ChatController {
                 .build();
     }
 
+    // 채팅방 나가기 API
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<Void> leaveChatRoom(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                              @PathVariable Long roomId) {
+
+
+        chatService.leaveChatRoom(tokenInfo, roomId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 
 }

@@ -117,10 +117,10 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
                 AND cp.status = :applicationStatus
             """
     )
-    Optional<CompanionApplication> findApplicationForBan(@Param("postId") Long postId,
-                                                         @Param("memberId") Long memberId,
-                                                         @Param("postStatus") CompanionPostStatus postStatus,
-                                                         @Param("applicationStatus") CompanionApplicationStatus applicationStatus);
+    Optional<CompanionApplication> findApplicationForLeave(@Param("postId") Long postId,
+                                                           @Param("memberId") Long memberId,
+                                                           @Param("postStatus") CompanionPostStatus postStatus,
+                                                           @Param("applicationStatus") CompanionApplicationStatus applicationStatus);
 
 
 }

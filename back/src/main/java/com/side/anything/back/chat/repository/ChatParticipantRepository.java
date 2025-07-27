@@ -111,4 +111,22 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
     Optional<ChatParticipant> findHost(@Param("roomId") Long roomId,
                                        @Param("memberId") Long memberId,
                                        @Param("postStatus") CompanionPostStatus postStatus);
+
+    @Query(
+            """
+            SELECT cp FROM ChatParticipant cp
+            JOIN FETCH
+                cp.member member
+            WHERE
+                member.id = :memberId
+                AND cp.isActive = true
+                AND cp.chatRoom.id = :roomId
+                AND cp.chatRoom.isActive = true
+                AND cp.chatRoom.companionPost.status != :postStatus
+            """
+    )
+    Optional<ChatParticipant> findSelf(@Param("roomId") Long roomId,
+                                       @Param("memberId") Long memberId,
+                                       @Param("postStatus") CompanionPostStatus postStatus);
+
 }
