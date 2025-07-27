@@ -19,7 +19,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
                 cm.chatRoom.id = :roomId
                 AND cm.createdAt >=
                 (
-                    SELECT (cm2.createdAt) FROM ChatMessage cm2
+                    SELECT MAX(cm2.createdAt) FROM ChatMessage cm2
                     WHERE
                         cm2.chatRoom.id = :roomId
                         AND cm2.member.id = :memberId
