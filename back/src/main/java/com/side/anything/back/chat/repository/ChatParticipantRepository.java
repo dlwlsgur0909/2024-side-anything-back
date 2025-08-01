@@ -5,6 +5,7 @@ import com.side.anything.back.companion.entity.CompanionPostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -128,5 +129,18 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
     Optional<ChatParticipant> findSelf(@Param("roomId") Long roomId,
                                        @Param("memberId") Long memberId,
                                        @Param("postStatus") CompanionPostStatus postStatus);
+
+
+    @Modifying
+    @Query(
+            """
+            UPDATE ChatParticipant cp
+            SET
+                cp.isActive = false
+            WHERE
+                cp.chatRoom.id = :roomId
+            """
+    )
+    void leaveAllByChatRoom(@Param("roomId") Long roomId);
 
 }

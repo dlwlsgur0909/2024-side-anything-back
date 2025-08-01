@@ -18,6 +18,7 @@ import com.side.anything.back.companion.repository.CompanionApplicationRepositor
 import com.side.anything.back.config.RedisPublisher;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.TokenInfo;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -121,6 +122,7 @@ public class ChatService {
 
             // Redis publish
             redisPublisher.publish(response);
+
         }catch (CustomException ce) {
             ChatExceptionResponse chatExceptionResponse = new ChatExceptionResponse(tokenInfo.getId(), ce.getErrorCode(), ce.getErrorMessage());
             String destination = "/sub/chat/" + roomId + "/errors";
@@ -141,10 +143,11 @@ public class ChatService {
             ChatParticipant findParticipant = participantRepository.findSelf(roomId, tokenInfo.getId(), CompanionPostStatus.DELETED)
                     .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 채팅방의 참가자가 아닙니다"));
 
-            findParticipant.leave();
-
             // 방장인 경우와 아닌 경우 분기 처리
             if(findParticipant.getIsHost()) {
+                // 채팅방에 속한 모든 참가자 상태 변경
+                participantRepository.leaveAllByChatRoom(findChatRoom.getId());
+
                 // 마감전이면 신청 내역에 반영
                 if(findChatRoom.getCompanionPost().getStatus() == CompanionPostStatus.OPEN) {
                     applicationRepository.cancelByHost(
@@ -161,6 +164,9 @@ public class ChatService {
                 findChatRoom.delete();
 
             }else {
+                // 참가자 참여 상태 변경
+                findParticipant.leave();
+
                 // 참가자 동행 모집 신청 상태 변경
                 CompanionApplication findApplication = applicationRepository.findApplicationForLeave(
                         findChatRoom.getCompanionPost().getId(), findParticipant.getMember().getId(),
