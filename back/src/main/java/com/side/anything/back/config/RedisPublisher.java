@@ -52,30 +52,26 @@ public class RedisPublisher {
 
                     } catch (JsonProcessingException e) {
                         log.error("Redis Publish Failed: Cannot covert response to json", e);
-                        handleSubscribeException(response.getRoomId(), response.getMemberId());
-                        throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+                        handlePublishException(response.getRoomId(), response.getMemberId());
                     } catch (RedisConnectionFailureException e) {
                         log.error("Redis Publish Failed: Cannot connect to redis server", e);
-                        handleSubscribeException(response.getRoomId(), response.getMemberId());
-                        throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+                        handlePublishException(response.getRoomId(), response.getMemberId());
                     } catch (SerializationException e) {
                         log.error("Redis Publish Failed: Cannot serialized message", e);
-                        handleSubscribeException(response.getRoomId(), response.getMemberId());
-                        throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+                        handlePublishException(response.getRoomId(), response.getMemberId());
                     } catch (Exception e) {
                         log.error("Redis Publish Failed: Unexpected error occurred", e);
-                        handleSubscribeException(response.getRoomId(), response.getMemberId());
-                        throw new CustomException(BasicExceptionEnum.INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
+                        handlePublishException(response.getRoomId(), response.getMemberId());
                     }
                 }
             });
         }else {
             log.error("Missing Transaction while redis publish");
-            handleSubscribeException(response.getRoomId(), response.getMemberId());
+            handlePublishException(response.getRoomId(), response.getMemberId());
         }
     }
 
-    private void handleSubscribeException(Long roomId, Long memberId) {
+    private void handlePublishException(Long roomId, Long memberId) {
         ChatExceptionResponse chatExceptionResponse = new ChatExceptionResponse(memberId, 500, "메세지 전송에 실패했습니다");
         String destination = "/sub/chat/" + roomId + "/errors";
         messagingTemplate.convertAndSend(destination, chatExceptionResponse);
