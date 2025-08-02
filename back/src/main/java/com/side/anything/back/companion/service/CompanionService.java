@@ -1,6 +1,5 @@
 package com.side.anything.back.companion.service;
 
-import com.side.anything.back.chat.dto.response.ChatExceptionResponse;
 import com.side.anything.back.chat.dto.response.ChatMessageResponse;
 import com.side.anything.back.chat.entity.ChatMessage;
 import com.side.anything.back.chat.entity.ChatParticipant;
@@ -49,9 +48,9 @@ public class CompanionService {
     private final MemberRepository memberRepository;
     private final CompanionApplicationRepository applicationRepository;
 
-    private final ChatRoomRepository chatRoomRepository;
-    private final ChatParticipantRepository chatParticipantRepository;
-    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository roomRepository;
+    private final ChatParticipantRepository participantRepository;
+    private final ChatMessageRepository messageRepository;
 
     private final RedisPublisher redisPublisher;
     private final SimpMessageSendingOperations messagingTemplate;
@@ -100,13 +99,13 @@ public class CompanionService {
         CompanionPost savedCompanionPost = postRepository.save(CompanionPost.of(request, findMember));
 
         // 동행 모집에 연결된 채팅방 생성
-        ChatRoom savedChatRoom = chatRoomRepository.save(ChatRoom.of(savedCompanionPost));
+        ChatRoom savedChatRoom = roomRepository.save(ChatRoom.of(savedCompanionPost));
 
         // 채팅방에 동행 모집 작성자 추가
-        chatParticipantRepository.save(ChatParticipant.of(savedChatRoom, findMember, true));
+        participantRepository.save(ChatParticipant.of(savedChatRoom, findMember, true));
 
         // 채팅방 입장 메세지 저장
-        chatMessageRepository.save(
+        messageRepository.save(
                 ChatMessage.of(savedChatRoom, findMember, findMember.getNickname() + "님이 입장했습니다", MessageType.ENTER)
         );
 
@@ -155,7 +154,7 @@ public class CompanionService {
         findPost.delete();
 
         // 채팅방 삭제
-        ChatRoom findChatRoom = chatRoomRepository.findChatRoomByPost(findPost.getId())
+        ChatRoom findChatRoom = roomRepository.findChatRoomByPost(findPost.getId())
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
 
         findChatRoom.delete();
@@ -204,26 +203,22 @@ public class CompanionService {
             // 채팅방에 승인된 참가자 추가
             Member findMember = findMemberById(findApplication.getMember().getId());
 
-            ChatRoom findChatRoom = chatRoomRepository.findChatRoomByPost(postId)
+            // 채팅방 조회
+            ChatRoom findChatRoom = roomRepository.findChatRoomByPost(postId)
                     .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
-            try {
-                chatParticipantRepository.save(ChatParticipant.of(findChatRoom, findMember, false));
 
-                // 참가자 채팅방 입장 메세지 저장
-                ChatMessage saveChatMessage = chatMessageRepository.save(
-                        ChatMessage.of(findChatRoom, findMember, findMember.getNickname() + "님이 입장했습니다", MessageType.ENTER)
-                );
+            participantRepository.save(ChatParticipant.of(findChatRoom, findMember, false));
 
-                // ChatMessageResponse 객체 생성
-                ChatMessageResponse response = new ChatMessageResponse(saveChatMessage);
+            // 참가자 채팅방 입장 메세지 저장
+            ChatMessage saveChatMessage = messageRepository.save(
+                    ChatMessage.of(findChatRoom, findMember, findMember.getNickname() + "님이 입장했습니다", MessageType.ENTER)
+            );
 
-                // Redis publish
-                redisPublisher.publish(response);
-            }catch (CustomException ce) {
-                ChatExceptionResponse chatExceptionResponse = new ChatExceptionResponse(tokenInfo.getId(), ce.getErrorCode(), ce.getErrorMessage());
-                String destination = "/sub/chat/" + findChatRoom.getId() + "/errors";
-                messagingTemplate.convertAndSend(destination, chatExceptionResponse);
-            }
+            // ChatMessageResponse 객체 생성
+            ChatMessageResponse response = new ChatMessageResponse(saveChatMessage);
+
+            // Redis publish
+            redisPublisher.publish(response);
 
         }else {
             // 거절
