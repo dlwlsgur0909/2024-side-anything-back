@@ -53,7 +53,6 @@ public class CompanionService {
     private final ChatMessageRepository messageRepository;
 
     private final RedisPublisher redisPublisher;
-    private final SimpMessageSendingOperations messagingTemplate;
 
     // 동행 모집 목록
     public CompanionPostListResponse findCompanionPostList(final TokenInfo tokenInfo, final String keyword, final int page) {
