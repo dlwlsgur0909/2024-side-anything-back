@@ -18,7 +18,6 @@ import com.side.anything.back.companion.repository.CompanionApplicationRepositor
 import com.side.anything.back.config.RedisPublisher;
 import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.TokenInfo;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.side.anything.back.exception.BasicExceptionEnum.*;
+import static com.side.anything.back.exception.BasicExceptionEnum.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -145,8 +144,6 @@ public class ChatService {
 
             // 방장인 경우와 아닌 경우 분기 처리
             if(findParticipant.getIsHost()) {
-                // 채팅방에 속한 모든 참가자 상태 변경
-                participantRepository.leaveAllByChatRoom(findChatRoom.getId());
 
                 // 마감전이면 신청 내역에 반영
                 if(findChatRoom.getCompanionPost().getStatus() == CompanionPostStatus.OPEN) {
@@ -159,6 +156,9 @@ public class ChatService {
 
                 // 동행 모집 삭제
                 findChatRoom.getCompanionPost().delete();
+
+                // 채팅방에 속한 모든 참가자 상태 변경
+                participantRepository.leaveAllByChatRoom(findChatRoom.getId());
 
                 // 채팅방 삭제
                 findChatRoom.delete();
