@@ -152,11 +152,26 @@ public class CompanionService {
         // 동행 모집 삭제
         findPost.delete();
 
-        // 채팅방 삭제
+        // 채팅방 조회
         ChatRoom findChatRoom = roomRepository.findChatRoomByPost(findPost.getId())
                 .orElseThrow(() -> new CustomException(NOT_FOUND, "해당 동행에 연결된 채팅방이 없습니다"));
 
+        // 채팅방에 속한 모든 참가자 상태 변경
+        participantRepository.leaveAllByChatRoom(findChatRoom.getId());
+
+        // 채팅방 삭제
         findChatRoom.delete();
+
+        // 참가자 퇴장 메세지 저장
+        ChatMessage saveChatMessage = messageRepository.save(
+                ChatMessage.of(findChatRoom, findPost.getMember(), findPost.getMember().getNickname() + "님이 나갔습니다", MessageType.LEAVE)
+        );
+
+        // ChatMessageResponse 객체 생성
+        ChatMessageResponse response = new ChatMessageResponse(saveChatMessage);
+
+        // Redis publish
+        redisPublisher.publish(response);
 
     }
 
