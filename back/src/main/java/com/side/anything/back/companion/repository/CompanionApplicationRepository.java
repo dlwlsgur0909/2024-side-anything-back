@@ -107,4 +107,20 @@ public interface CompanionApplicationRepository extends JpaRepository<CompanionA
                                                          @Param("applicationId") Long applicationId,
                                                          @Param("applicationStatus") CompanionApplicationStatus applicationStatus);
 
+    @Query(
+            """
+            SELECT cp FROM CompanionApplication cp
+            WHERE
+                cp.companionPost.id = :postId
+                AND cp.member.id = :memberId
+                AND cp.companionPost.status != :postStatus
+                AND cp.status = :applicationStatus
+            """
+    )
+    Optional<CompanionApplication> findApplicationForLeave(@Param("postId") Long postId,
+                                                           @Param("memberId") Long memberId,
+                                                           @Param("postStatus") CompanionPostStatus postStatus,
+                                                           @Param("applicationStatus") CompanionApplicationStatus applicationStatus);
+
+
 }

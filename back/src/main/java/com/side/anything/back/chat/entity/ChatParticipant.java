@@ -42,4 +42,9 @@ public class ChatParticipant extends BaseEntity {
         return chatParticipant;
     }
 
+    // 참가자 채팅방 나가기
+    public void leave() {
+        this.isActive = false;
+    }
+
 }

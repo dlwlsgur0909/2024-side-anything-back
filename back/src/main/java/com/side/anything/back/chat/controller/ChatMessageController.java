@@ -2,9 +2,14 @@ package com.side.anything.back.chat.controller;
 
 import com.side.anything.back.chat.dto.request.ChatMessageRequest;
 import com.side.anything.back.chat.service.ChatMessageService;
+import com.side.anything.back.exception.BasicExceptionResponse;
+import com.side.anything.back.exception.CustomException;
 import com.side.anything.back.security.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
@@ -28,10 +33,11 @@ public class ChatMessageController {
         messageService.sendMessage(tokenInfo, roomId, request);
     }
 
-    // 에러 처리 필요
+    // 에러 처리
 //    @MessageExceptionHandler(CustomException.class)
-//    @SendToUser("/chat/errors")
-//    public BasicExceptionResponse handleCustomException(CustomException ce) {
-//        return new BasicExceptionResponse(ce);
+//    public void handleCustomException(CustomException ce, Authentication authentication) {
+//
+//        TokenInfo tokenInfo = (TokenInfo) authentication.getPrincipal();
+//        messagingTemplate.convertAndSendToUser(tokenInfo.getId().toString(), "/queue/errors", new BasicExceptionResponse(ce));
 //    }
 }

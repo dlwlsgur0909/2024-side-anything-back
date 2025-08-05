@@ -1,6 +1,6 @@
 package com.side.anything.back.chat.controller;
 
-import com.side.anything.back.chat.dto.response.ChatMessageListResponse;
+import com.side.anything.back.chat.dto.response.ChatRoomEnterResponse;
 import com.side.anything.back.chat.dto.response.ChatRoomListResponse;
 import com.side.anything.back.chat.service.ChatService;
 import com.side.anything.back.security.jwt.TokenInfo;
@@ -16,6 +16,7 @@ public class ChatController {
 
     private final ChatService chatService;
 
+    // 채팅방 목록 API
     @GetMapping
     public ResponseEntity<ChatRoomListResponse> findChatRoomList(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                                  @RequestParam(name = "keyword", defaultValue = "") String keyword,
@@ -25,12 +26,39 @@ public class ChatController {
                 .ok(chatService.findChatRoomList(tokenInfo, keyword, page));
     }
 
+    // 채팅방 상세 API
     @GetMapping("/{roomId}")
-    public ResponseEntity<ChatMessageListResponse> findChatMessageList(@AuthenticationPrincipal TokenInfo tokenInfo,
-                                                                       @PathVariable Long roomId) {
+    public ResponseEntity<ChatRoomEnterResponse> enterChatRoom(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                               @PathVariable Long roomId) {
 
         return ResponseEntity
-                .ok(chatService.findChatMessageList(tokenInfo, roomId));
+                .ok(chatService.enterChatRoom(tokenInfo, roomId));
+    }
+
+    // 참가자 강퇴 API
+    @DeleteMapping("/{roomId}/participants/{participantId}")
+    public ResponseEntity<Void> banChatParticipant(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                   @PathVariable Long roomId,
+                                                   @PathVariable Long participantId) {
+
+        chatService.banChatParticipant(tokenInfo, roomId, participantId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
+    // 채팅방 나가기 API
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<Void> leaveChatRoom(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                              @PathVariable Long roomId) {
+
+
+        chatService.leaveChatRoom(tokenInfo, roomId);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
 }
